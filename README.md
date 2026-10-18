@@ -60,4 +60,20 @@ plugins/nucifera/
 
 ## License
 
-Apache-2.0. See `NOTICE` for the projects whose ideas informed this skill. Geist and Geist Mono are by Vercel under the SIL Open Font License 1.1.
+MIT No Attribution (MIT-0). Use it for anything: personal projects, free or paid products, change it, sell it. No credit required.
+
+Geist and Geist Mono are by Vercel under the SIL Open Font License 1.1 and load from Google Fonts.
+
+## Credits
+
+The rules were informed by public research and by ideas from other design skills; no text was copied:
+
+- anthropics/skills frontend-design: tell clusters, "the brief wins", spending boldness in one place.
+- pbakaus/impeccable: operate vs persuade screens, honouring pinned aesthetics.
+- MrIago/better-frontend: grounding design in the subject, decorative dots and pills over images as tells.
+- connerkward/ckw-design-skill: rendering and judging the image, not the code.
+- arsprengel/design-skill-claude-code: a scene and direction contract before code.
+- Leonxlnx/taste-skill, funboy322/avoid-ai-design, AdrianKrebs/design-slop-cop: catalogues and thresholds of AI tells.
+- VoltAgent/awesome-design-md: the Linear DESIGN.md as a reference for precision.
+
+With love, kokosik.

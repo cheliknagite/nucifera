@@ -3,7 +3,7 @@
   "description": "Design skill for Claude Code: a precise dark Linear-grade style with a light 'Dusk' theme, Cyrillic-ready typography, signature moves from the subject, and screen verification before hand-over.",
   "version": "0.1.0",
   "author": { "name": "cheliknagite" },
-  "license": "Apache-2.0",
+  "license": "MIT-0",
   "repository": "https://github.com/cheliknagite/nucifera",
   "keywords": ["design", "ui", "dark-theme", "design-system", "anti-slop", "cyrillic"]
 }

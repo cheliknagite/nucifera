@@ -8,7 +8,7 @@ description: >-
   line of Linear, Raycast and Reflect) with a light "Dusk" theme, from tokens
   plus the project's brand file, and checks the rendered screens before
   hand-over. Not for backend, data or copy-only tasks.
-license: Apache-2.0
+license: MIT-0
 ---
 
 # UI: precise dark style
