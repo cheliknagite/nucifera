@@ -1,0 +1,123 @@
+/* nucifera tokens: the closed vocabulary of the house style.
+   Dark is the default (:root). Light "Dusk" is [data-theme="light"].
+   .night re-applies the dark roles to one element (the hero object in the light theme).
+   Use roles in code (var(--accent)), never the raw values. Brand overrides go to .design/brand.css. */
+
+@import url("https://fonts.googleapis.com/css2?family=Geist:wght@400..700&family=Geist+Mono:wght@400..600&display=swap");
+
+:root, .night {
+  color-scheme: dark;
+  /* surfaces: a lightness ladder, each step lighter */
+  --bg-0: #07060b;      /* canvas */
+  --bg-1: #100f16;      /* raised: cards, fields */
+  --bg-2: #17161f;      /* raised twice: chips, icon tiles, hover */
+  --bg-3: #1f1e29;      /* selected, pressed */
+  /* hairlines */
+  --line-1: rgb(255 255 255 / .07);
+  --line-2: rgb(255 255 255 / .11);
+  --line-3: rgb(255 255 255 / .16);
+  --edge-hi: rgb(255 255 255 / .16);   /* top-edge highlight of raised panels */
+  /* text */
+  --fg-1: #f5f4fa;      /* 17:1 primary */
+  --fg-2: #c9c8d4;      /* 11:1 secondary */
+  --fg-3: #9896a8;      /* 6:1 meta, captions */
+  --fg-4: #6a6879;      /* 3.5:1 decoration only, never text you must read */
+  /* accent: one hue, three uses */
+  --accent: #8b7cff;            /* text, links, state on dark */
+  --accent-solid: #6e56cf;      /* fills; white label 5.4:1 */
+  --accent-tint: rgb(139 124 255 / .14);
+  --on-accent: #ffffff;
+  /* main action */
+  --cta-bg: var(--accent-solid);
+  --cta-fg: var(--on-accent);
+  /* status: text colour + its own tint behind */
+  --ok: #4fd18f;   --ok-tint: rgb(79 209 143 / .12);
+  --warn: #f2b84b; --warn-tint: rgb(242 184 75 / .12);
+  --err: #ff6b6b;  --err-tint: rgb(255 107 107 / .12);
+  --focus: rgb(139 124 255 / .55);
+  /* depth */
+  --shadow-float: 0 4px 24px rgb(0 0 0 / .45), 0 8px 32px rgb(0 0 0 / .35);
+  --shadow-card: none;
+  /* glass: full on capable devices, solid fallback is the default in CSS */
+  --glass-bg: rgb(7 6 11 / .96);
+  --glass-fx: none;
+  /* one soft light, landing pages only, behind the hero object */
+  --wash: radial-gradient(70% 55% at 50% 0%, rgb(147 130 255 / .08), transparent 75%);
+  /* photos keep their clarity */
+  --photo-fx: none;
+}
+
+:root[data-theme="light"], [data-theme="light"] {
+  color-scheme: light;
+  --bg-0: #dfddef;      /* lilac mist canvas */
+  --bg-1: #f8f7fd;      /* cards */
+  --bg-2: #d6d3e7;
+  --bg-3: #cecbe0;
+  --line-1: rgb(40 25 90 / .10);
+  --line-2: rgb(40 25 90 / .15);
+  --line-3: rgb(40 25 90 / .22);
+  --edge-hi: rgb(40 25 90 / .14);
+  --fg-1: #221a46;      /* violet ink, 12:1 */
+  --fg-2: #3c3657;
+  --fg-3: #59566c;      /* 5.3:1 */
+  --fg-4: #85829a;
+  --accent: #5a42b2;
+  --accent-solid: #5a42b2;
+  --accent-tint: rgb(90 66 178 / .10);
+  --on-accent: #ffffff;
+  --cta-bg: #1d1545;    /* the night window: dark violet button */
+  --cta-fg: #ffffff;
+  --ok: #17845a;   --ok-tint: rgb(23 132 90 / .10);
+  --warn: #9a6700; --warn-tint: rgb(154 103 0 / .10);
+  --err: #c0362c;  --err-tint: rgb(192 54 44 / .10);
+  --focus: rgb(90 66 178 / .45);
+  --shadow-float: 0 1px 4px -1px rgb(30 18 70 / .10), 0 6px 20px rgb(30 18 70 / .10);
+  --shadow-card: 0 1px 2px rgb(40 25 90 / .06), 0 4px 14px rgb(40 25 90 / .07);
+  --glass-bg: rgb(223 221 239 / .96);
+  --wash: none;
+}
+/* the dark roles again for .night inside the light theme */
+[data-theme="light"] .night {
+  color-scheme: dark;
+  --bg-0: #07060b; --bg-1: #100f16; --bg-2: #17161f; --bg-3: #1f1e29;
+  --line-1: rgb(255 255 255 / .07); --line-2: rgb(255 255 255 / .11); --line-3: rgb(255 255 255 / .16); --edge-hi: rgb(255 255 255 / .16);
+  --fg-1: #f5f4fa; --fg-2: #c9c8d4; --fg-3: #9896a8; --fg-4: #6a6879;
+  --accent: #8b7cff; --accent-solid: #6e56cf; --accent-tint: rgb(139 124 255 / .14);
+  --shadow-card: 0 10px 28px -12px rgb(30 18 70 / .45);
+}
+
+:root {
+  /* type: Geist with Cyrillic; one family, three weights */
+  --font-sans: "Geist", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --w-regular: 400; --w-medium: 500; --w-semibold: 600;
+  --t-display: 600 32px/1.15 var(--font-sans);   --ls-display: -0.025em;  /* screen title; landing h1 48-64px */
+  --t-title: 600 22px/1.25 var(--font-sans);     --ls-title: -0.018em;
+  --t-headline: 600 17px/1.35 var(--font-sans);  --ls-headline: -0.012em;
+  --t-body: 400 15px/1.5 var(--font-sans);       --ls-body: -0.006em;
+  --t-body-lg: 400 16px/1.5 var(--font-sans);
+  --t-small: 400 13px/1.45 var(--font-sans);
+  --t-label: 500 15px/1.3 var(--font-sans);
+  /* space: 4px grid */
+  --s-1: 4px; --s-2: 8px; --s-3: 12px; --s-4: 16px; --s-5: 20px; --s-6: 24px; --s-8: 32px; --s-12: 48px; --s-16: 64px; --s-24: 96px;
+  --pad-screen: 20px;
+  /* radii: pill for chips, 12 for fields and buttons, 16 to 20 for cards */
+  --r-sm: 8px; --r-md: 12px; --r-lg: 16px; --r-xl: 20px; --r-pill: 999px;
+  /* touch */
+  --tap: 44px; --field-h: 48px; --btn-h: 50px;
+  /* motion: state changes only, transform and opacity */
+  --dur-1: 100ms; --dur-2: 160ms; --dur-3: 240ms;
+  --ease: cubic-bezier(.2, .8, .2, 1);
+}
+
+/* glass levels: CSS default is solid; frame.js sets data-fx; in production set it by device capability */
+[data-fx="full"] { --glass-bg: rgb(7 6 11 / .72); --glass-fx: blur(20px) saturate(140%); }
+[data-fx="lite"] { --glass-bg: rgb(7 6 11 / .85); --glass-fx: blur(12px); }
+[data-theme="light"][data-fx="full"], [data-theme="light"][data-fx="lite"] { --glass-bg: rgb(223 221 239 / .94); --glass-fx: blur(8px); }
+
+/* Cyrillic headings need air above the dots of Ї and Й */
+:lang(uk) :is(h1, h2, h3), :lang(ru) :is(h1, h2, h3) { line-height: max(1.15, var(--lh, 1.15)); }
+
+@media (prefers-reduced-motion: reduce) {
+  :root { --dur-1: 0ms; --dur-2: 0ms; --dur-3: 0ms; }
+}

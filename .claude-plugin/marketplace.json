@@ -1,0 +1,17 @@
+{
+  "name": "nucifera",
+  "owner": {
+    "name": "cheliknagite"
+  },
+  "metadata": {
+    "description": "nucifera: a precise dark design style for Claude Code with screen verification."
+  },
+  "plugins": [
+    {
+      "name": "nucifera",
+      "source": "./plugins/nucifera",
+      "description": "Design skill: precise dark Linear-grade style, light 'Dusk' theme, Cyrillic-ready typography, signature moves from the subject, verification before hand-over.",
+      "version": "0.1.0"
+    }
+  ]
+}

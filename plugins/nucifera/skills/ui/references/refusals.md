@@ -1,0 +1,37 @@
+# Refusals: AI tells and what to do instead
+
+A list of patterns that make interfaces read as generated, each with a replacement. Dated, because yesterday's fix becomes tomorrow's tell; review once a year with the same measurements. Basis: measurements of 19 reference and copy sites (October 2026), blind reviews, and the tell catalogues of Anthropic's frontend-design, taste-skill, better-frontend, avoid-ai-design and design-slop-cop.
+
+The brief wins: if the user asks for one of these, do it well instead of refusing.
+
+| # | Never | Instead | Basis | Since |
+|---|---|---|---|---|
+| 1 | colour, font, radius, shadow outside the tokens | the role from tokens.css; brand via `--brand-*` | precise specs are followed; raw values drift | 2026-10 |
+| 2 | coloured glow, halo, coloured `box-shadow` (blur 15px+, alpha 0.1+, saturated) on 2+ elements | lightness step or dark `--shadow-float` | 0 of 8 originals, 2 to 5 in copies | 2026-10 |
+| 3 | gradient, shine or coloured shadow on the main button | solid `--cta-bg` | measured on all copies, none of the originals | 2026-10 |
+| 4 | gradient text, especially multicolour | `--fg-1`; on a landing one monochrome fade of white at most | detector tells | 2026-10 |
+| 5 | background light brighter than alpha 0.08, a new hue, a coloured cloud; light on list or form screens | one light in the background tone behind the landing hero; none in app screens | AI sketches vs originals | 2026-10 |
+| 6 | accent in more than three places or on more than ~2% of the screen | selection by lightness; one text accent | originals use 0 to 3 | 2026-10 |
+| 7 | glass on cards, more than two glass details, blur without a solid fallback | sticky header or filter bar, one badge over a photo; solid on weak devices | detectors exclude only full-width bars | 2026-10 |
+| 8 | decorative coloured dots before labels, in badges, in rows | a dot only for live status | user review, taste-skill, better-frontend | 2026-10 |
+| 9 | pills over photos used as decoration ("Plate · 02") | at most one informative badge, opaque | better-frontend | 2026-10 |
+| 10 | card inside a card, grids of identical cards, feature lists in icon tiles | flat rows with hairlines, one hero card | Claude's fingerprint in 6 of 6 layouts; template frame | 2026-10 |
+| 11 | eyebrow labels over every heading, 01/02/03 when not a real sequence | plain headings | Anthropic tell cluster | 2026-10 |
+| 12 | data glued with "·" ("2022 · 39,000 km · petrol") | commas | Anthropic tell cluster | 2026-10 |
+| 13 | one word of a heading in another colour or weight | hierarchy through size and weight | Anthropic tell | 2026-10 |
+| 14 | headings in 700 to 900 weight, tracking 0 at display sizes | 500 to 600, -0.02 to -0.03em | 6 of 11 copies vs 0 originals | 2026-10 |
+| 15 | untuned default font (Latin subset, no optical size, default features) | Geist with Cyrillic subset, house weights; Inter only with `opsz` | the untuned font is the tell, not the family | 2026-10 |
+| 16 | line-height 1.0 or tracking tighter than -0.03em on Cyrillic headings | 1.15 and -0.03em at most | collisions of Ї with ц, щ, у; merged "її" | 2026-10 |
+| 17 | `tabular-nums` on the whole screen | only prices, counters, timers | headings get wide 1 and slashed zero | 2026-10 |
+| 18 | text under 4.5:1, secondary grey you have to squint at | `--fg-3` (6:1) for meta, `--fg-2` for secondary | WCAG 2.2 AA | 2026-10 |
+| 19 | an airy screen with two items where the user came for data | dense real content, all key items visible | blind comparison | 2026-10 |
+| 20 | photos dimmed, tinted or faded into the background until they wash out | photos at full clarity; in light theme no fade into white | user review | 2026-10 |
+| 21 | warm cream background with a high-contrast serif and a terracotta or sage accent | if warmth is wanted: a muted stone ground, an accent from another hue family, a sans display | the 2026 "tasteful default" | 2026-10 |
+| 22 | near-black with one acid accent as the only idea | the signature move from the subject | Anthropic tell cluster | 2026-10 |
+| 23 | re-drawn host chrome (header, bottom button, payment sheet, fake status bar) inside an embedded web app | the host platform's native controls; mockups may emulate, labelled | duplicates of the native frame | 2026-10 |
+| 24 | light theme made by inverting the dark one | roles per theme ("Dusk"), hero stays a night window | inversion gives invisible cards and 1.8:1 links | 2026-10 |
+| 25 | blocks sliding in on scroll, lift on hover everywhere, `transition: all` | motion for state changes only, transform and opacity | generated-looking motion | 2026-10 |
+| 26 | generic headline that fits any product ("Revolutionize your workflow", "10x faster") | the subject's job in 3 to 5 words with real nouns | template copy | 2026-10 |
+| 27 | em dashes as decoration in UI copy | commas, colons, separate sentences; en dash only in ranges like 10:00–12:00 | copy tell | 2026-10 |
+
+Grow the list from tests: after a test round, note which new default replaced a banned one, and add a row only when it repeats in two or more tasks and can be checked. A pattern that keeps coming back after being banned needs a component, not another rule.

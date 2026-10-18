@@ -1,0 +1,18 @@
+/* .design/brand.css: the project's brand layer over tokens.css.
+   Created by /nucifera:init. Only --brand-* values and role overrides that the brand really needs.
+   Brand colours are exempt from the "violet accent" default: if the brand is green, the accent is green.
+   Keep the rest of the system (surfaces, text steps, type scale, radii) unchanged. */
+
+:root {
+  /* --brand-name: "Project"; */
+  /* --brand-accent: #6e56cf; */          /* the brand's main colour; then map it below */
+  /* --brand-logo: url("logo.svg"); */
+  /* --brand-font-display: "Geist"; */    /* only with a Cyrillic subset, test "її" */
+}
+
+/* Map the brand onto roles (uncomment what applies). Check contrast after changes:
+   --accent on --bg-0 at least 4.5:1, white on --accent-solid at least 4.5:1. */
+/*
+:root, .night { --accent: var(--brand-accent); --accent-solid: var(--brand-accent); --accent-tint: color-mix(in oklab, var(--brand-accent) 14%, transparent); }
+[data-theme="light"] { --accent: ...; --accent-solid: ...; }
+*/

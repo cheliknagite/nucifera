@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "startup|clear|compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo nucifera design style is installed. For screens and pages and mockups use the nucifera:ui skill and check rendered screens with its verify script before hand-over."
+          }
+        ]
+      }
+    ]
+  }
+}
