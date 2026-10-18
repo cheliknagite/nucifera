@@ -4,7 +4,7 @@ Read when you build or restyle anything. The values live in `assets/tokens.css`;
 
 ## The idea in one paragraph
 
-Precise, dark, product-grade. Depth comes from lightness steps and 1px hairlines, not from shadows or glow. One accent hue appears only where it means something. Screens are dense and readable: the user sees the real content at once. Character comes from one signature element taken from the subject, plus precise typography; effects are what make a dark page look generated. Reference products: Linear (precision, hairlines, ladder of surfaces), Raycast (one bold object, calm UI), Reflect (violet night, used sparingly).
+Precise, dark, product-grade. Depth comes from lightness steps and 1px hairlines, not from shadows or glow. The dark theme has no hue: white ink, a near-white main button, colour only for status; the light theme carries the violet. Screens are dense and read without effort: large text, one grey, plain lists, the real content at once. Character comes from one signature element taken from the subject, plus precise typography; effects are what make a dark page look generated. Reference products: Linear (precision, hairlines, ladder of surfaces), Raycast (one bold object, calm UI), Reflect (violet night, used sparingly).
 
 ## Surfaces and lines
 
@@ -20,15 +20,16 @@ Rules: at most three surface steps on a screen; each step is lighter; a raised p
 
 ## Text
 
-`--fg-1` 17:1 for primary text and headings, `--fg-2` 11:1 for secondary, `--fg-3` about 6:1 for meta and captions, `--fg-4` only for decoration. Never put information the user must read in `--fg-4`, and never key data (price, date, status) in 13px `--fg-3`.
+`--fg-1` for primary text and headings; `--fg-2` is the one secondary grey for everything else (9:1 on the dark canvas, 8.5:1 on the light one, 7:1 or more on every surface); `--fg-3` is the same grey, kept as an alias; `--fg-4` only for decoration, never for text. Sizes: body 16px, secondary 14px, 13px only for timestamps. Never key data (price, date, status) in small grey. Several shades of grey at 12 to 13px are what makes a screen tiring to read.
 
 ## Accent and main action
 
-- `--accent` #8b7cff (dark) / #5a42b2 (light): text accents, links, current state, the match score. At most three places on a screen.
-- `--accent-solid` #6e56cf: filled elements; white label 5.4:1.
-- `--cta-bg`: the main action. Dark: the violet `--accent-solid`. Light: #1d1545, a dark violet "night window" button with a white label. When a host platform draws the main button natively, give it these colours.
+- Dark has no hue. `--accent` is the ink white (#f5f4fa): the current item, the newest mark of a chart. Links are white and underlined (`--link-line`).
+- `--cta-bg`: the main action. Dark: #ececee, a near-white button with a #111113 label (16:1). Light: #1d1545, a dark violet "night window" button with a white label. When a host platform draws the main button natively, give it these colours.
+- Light: `--accent` #5a42b2 (5.5:1 on the canvas): links, current state, the match score. At most three places on a screen. Night windows inside the light theme keep the violet #8b7cff.
+- A brand colour replaces the accent roles in `.design/brand.css` for both themes; check the label on the button and accent text on the canvas at 4.5:1.
 - Selected chips and tabs are lighter (`--bg-3`), not more colourful.
-- Status colours (`--ok`, `--warn`, `--err`) go as text plus their own tint behind; never a second accent for decoration.
+- Status colours (`--ok`, `--warn`, `--err`) go as text plus their own tint behind; the light values are dark enough for 4.5:1 on their tint on every surface. Never a second accent for decoration.
 
 ## Light theme "Dusk"
 
@@ -44,7 +45,7 @@ At most two glass details on a screen: a sticky header or filter bar, or one bad
 
 ## Type
 
-Geist for everything (text, numbers, headings), Geist Mono only for codes and IDs. Load it with the Cyrillic subset. Weights: 400 text, 500 labels and buttons, 600 titles. Scale: display 32 (landing h1 48 to 64), title 22, headline 17, body 15 to 16, small 13. Tracking: -0.025em on display, -0.012em on 17 to 24px, about 0 on body; never tighter than -0.03em. Line-height: body 1.5, headings 1.15 for Cyrillic (1.1 is the minimum). Tabular digits only for prices, counters and timers. Details for Cyrillic in `typography-cyrillic.md`.
+Geist for everything (text, numbers, headings), Geist Mono only for codes and IDs. Load it with the Cyrillic subset. Weights: 400 text, 500 labels and buttons, 600 titles. Scale: display 32 (landing h1 48 to 64), title 22, headline 18, body 16, secondary 14, timestamps 13. Tracking: -0.025em on display, -0.012em on 17 to 24px, about 0 on body; never tighter than -0.03em. Line-height: body 1.5, headings 1.15 for Cyrillic (1.1 is the minimum). Tabular digits only for prices, counters and timers. Details for Cyrillic in `typography-cyrillic.md`.
 
 ## Space and shape
 
@@ -52,7 +53,7 @@ Geist for everything (text, numbers, headings), Geist Mono only for codes and ID
 
 ## Density
 
-The user came for content. On list screens show as many real items as fit above the main button; on a detail or checkout screen everything needed to decide is visible without scrolling. Prefer flat rows with hairlines over stacks of cards. A screen with two items and lots of air is a failure unless it is an empty state or a moment (success, onboarding).
+The user came for content. On list screens show as many real items as fit above the main button; on a detail or checkout screen everything needed to decide is visible without scrolling. Prefer flat rows with hairlines over stacks of cards, and label-value lists over grids of cells. Dense is not small: keep body 16px and secondary 14px, and win space by removing boxes, legends and repeated labels, not by shrinking text. A screen with two items and lots of air is a failure unless it is an empty state or a moment (success, onboarding).
 
 ## Motion
 

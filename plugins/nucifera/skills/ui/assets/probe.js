@@ -26,7 +26,8 @@
     }
     let base = { r: 0, g: 0, b: 0, a: 1 }; for (let i = stack.length - 1; i >= 0; i--) base = blend(stack[i], base); return base;
   };
-  const accentOf = el => { const d = document.createElement('i'); d.style.color = 'var(--accent)'; el.appendChild(d); const c = getComputedStyle(d).color; d.remove(); return c; };
+  const roleOf = (el, v) => { const d = document.createElement('i'); d.style.color = `var(${v})`; el.appendChild(d); const c = getComputedStyle(d).color; d.remove(); return c; };
+  const accentOf = el => roleOf(el, '--accent');
 
   const scopes = [...document.querySelectorAll('.phone')];
   if (!scopes.length) scopes.push(document.body);
@@ -39,6 +40,9 @@
     const F = m => res.fail.push(m), W = m => res.warn.push(m);
     const acc = accentOf(ph);
     let accentPlaces = 0, glass = 0, minContrast = 99, small = 0;
+    // one secondary grey per colour context (the screen, each .night window): low-saturation text that is not --fg-1
+    const inkOf = new Map(), greys = new Map();
+    const ink = el => { const c = el.closest('.night') || ph; if (!inkOf.has(c)) inkOf.set(c, roleOf(c, '--fg-1')); return [c, inkOf.get(c)]; };
     const lang = (ph.closest('[lang]') || document.documentElement).lang || '';
     ph.querySelectorAll('*').forEach(el => {
       if (el.closest('.tg, .chrome')) return;
@@ -60,7 +64,7 @@
       const own = [...el.childNodes].some(n => n.nodeType === 3 && n.textContent.trim());
       if (own) {
         const px = parseFloat(cs.fontSize), w = +cs.fontWeight;
-        if (px < 12.5) { small++; W(`text ${px}px is below 13px: ${sel(el)} «${txt(el)}»`); }
+        if (px < 12.95) { small++; W(`text ${px}px is below 13px: ${sel(el)} «${txt(el)}»`); }
         if (el.matches('h1, h2, h3') && w > 650) W(`heading weight ${w} > 600: ${sel(el)}`);
         if (el.matches('h1, h2, h3') && /^(uk|ru|be|bg)/.test(lang)) { const lh = parseFloat(cs.lineHeight) / px; if (lh < 1.12) F(`Cyrillic heading line-height ${lh.toFixed(2)} < 1.15: ${sel(el)}`); }
         const bg = effBg(el);
@@ -70,12 +74,17 @@
           minContrast = Math.min(minContrast, +k.toFixed(2));
           if (k < need) F(`contrast ${k.toFixed(2)} < ${need}: ${sel(el)} «${txt(el)}»`);
         }
-        if (cs.color === acc) accentPlaces++;
+        const [ctx, fg1] = ink(el);
+        if (cs.color === acc && acc !== fg1) accentPlaces++;   // in a monochrome theme the accent is the ink: not a place
+        const tc = parse(cs.color);
+        if (tc && cs.color !== fg1 && cs.color !== acc && hsl(tc).s < .25) { if (!greys.has(ctx)) greys.set(ctx, new Set()); greys.get(ctx).add(cs.color); }
       }
       if (cs.backgroundColor === acc) accentPlaces++;
     });
     if (glass > 2) F(`glass on ${glass} elements, at most 2`);
     if (accentPlaces > 3) W(`accent colour in ${accentPlaces} places, aim for at most 3`);
+    let greyMax = 0;
+    for (const [ctx, set] of greys) { greyMax = Math.max(greyMax, set.size); if (set.size > 1) W(`${set.size} secondary greys in ${ctx === ph ? 'the screen' : sel(ctx)} (${[...set].join(', ')}): use one, --fg-2`); }
     const fams = new Set([...ph.querySelectorAll('h1, h2, h3, p, span, a, button')].filter(e => !e.closest('.tg, .chrome')).map(e => getComputedStyle(e).fontFamily.split(',')[0].replace(/["']/g, '').trim()));
     // document.fonts.check() says "yes" for fonts that were never declared, so compare rendered widths instead
     const ctx = document.createElement('canvas').getContext('2d');
@@ -83,7 +92,7 @@
     const missing = [...fams].filter(f => f && !/^(system-ui|-apple-system|sans-serif|serif|monospace)$/i.test(f)
       && width(`16px "${f}", monospace`) === width('16px monospace') && width(`16px "${f}", serif`) === width('16px serif'));
     if (missing.length) F(`font not loaded: ${missing.join(', ')}`);
-    res.stats = { minContrast, accentPlaces, glass, fonts: [...fams] };
+    res.stats = { minContrast, accentPlaces, glass, greys: greyMax, fonts: [...fams] };
     out.screens.push(res);
   }
   const pre = document.createElement('pre'); pre.id = 'ui-probe'; pre.hidden = true; pre.textContent = JSON.stringify(out);

@@ -23,7 +23,7 @@ The brief wins: if the user asks for one of these, do it well instead of refusin
 | 15 | untuned default font (Latin subset, no optical size, default features) | Geist with Cyrillic subset, house weights; Inter only with `opsz` | the untuned font is the tell, not the family | 2026-10 |
 | 16 | line-height 1.0 or tracking tighter than -0.03em on Cyrillic headings | 1.15 and -0.03em at most | collisions of Ї with ц, щ, у; merged "її" | 2026-10 |
 | 17 | `tabular-nums` on the whole screen | only prices, counters, timers | headings get wide 1 and slashed zero | 2026-10 |
-| 18 | text under 4.5:1, secondary grey you have to squint at | `--fg-3` (6:1) for meta, `--fg-2` for secondary | WCAG 2.2 AA | 2026-10 |
+| 18 | text under 4.5:1, secondary grey you have to squint at | `--fg-2`, one secondary grey at 7:1 or more | WCAG 2.2 AA | 2026-10 |
 | 19 | an airy screen with two items where the user came for data | dense real content, all key items visible | blind comparison | 2026-10 |
 | 20 | photos dimmed, tinted or faded into the background until they wash out | photos at full clarity; in light theme no fade into white | user review | 2026-10 |
 | 21 | warm cream background with a high-contrast serif and a terracotta or sage accent | if warmth is wanted: a muted stone ground, an accent from another hue family, a sans display | the 2026 "tasteful default" | 2026-10 |
@@ -33,5 +33,9 @@ The brief wins: if the user asks for one of these, do it well instead of refusin
 | 25 | blocks sliding in on scroll, lift on hover everywhere, `transition: all` | motion for state changes only, transform and opacity | generated-looking motion | 2026-10 |
 | 26 | generic headline that fits any product ("Revolutionize your workflow", "10x faster") | the subject's job in 3 to 5 words with real nouns | template copy | 2026-10 |
 | 27 | em dashes as decoration in UI copy | commas, colons, separate sentences; en dash only in ranges like 10:00–12:00 | copy tell | 2026-10 |
+| 28 | secondary text in two or three greys at 12 to 13px | body 16px, secondary 14px in one grey (`--fg-2`, 7:1 or more), 13px only for timestamps | blind review of a two-model test: "hard to read" | 2026-10 |
+| 29 | data cut into boxes: grids of hairline cells, a card with rows inside, several raised panels on one screen | a plain label-value list on the canvas; one raised surface per screen, for the signature | same test, both models | 2026-10 |
+| 30 | a drawing that needs a legend or labels to decode; the same status on every row | dots or a simple shape plus one plain sentence; show only the exception ("paused") | same test, both models | 2026-10 |
+| 31 | a filled violet main button on a near-black screen | monochrome dark: a near-white main button, colour only for status; the violet stays in the light theme | same test: "the dark violet looks generated" | 2026-10 |
 
 Grow the list from tests: after a test round, note which new default replaced a banned one, and add a row only when it repeats in two or more tasks and can be checked. A pattern that keeps coming back after being banned needs a component, not another rule.

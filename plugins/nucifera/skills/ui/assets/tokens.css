@@ -1,6 +1,7 @@
 /* nucifera tokens: the closed vocabulary of the house style.
-   Dark is the default (:root). Light "Dusk" is [data-theme="light"].
-   .night re-applies the dark roles to one element (the hero object in the light theme).
+   Dark is the default (:root): monochrome, white ink and a near-white main button, colour only for status.
+   Light "Dusk" is [data-theme="light"]: lilac mist with a violet accent.
+   .night re-applies the dark roles to one element (the hero object in the light theme); there it keeps the violet.
    Use roles in code (var(--accent)), never the raw values. Brand overrides go to .design/brand.css. */
 
 @import url("https://fonts.googleapis.com/css2?family=Geist:wght@400..700&family=Geist+Mono:wght@400..600&display=swap");
@@ -17,16 +18,18 @@
   --line-2: rgb(255 255 255 / .11);
   --line-3: rgb(255 255 255 / .16);
   --edge-hi: rgb(255 255 255 / .16);   /* top-edge highlight of raised panels */
-  /* text */
-  --fg-1: #f5f4fa;      /* 17:1 primary */
-  --fg-2: #c9c8d4;      /* 11:1 secondary */
-  --fg-3: #9896a8;      /* 6:1 meta, captions */
-  --fg-4: #6a6879;      /* 3.5:1 decoration only, never text you must read */
-  /* accent: one hue, three uses */
-  --accent: #8b7cff;            /* text, links, state on dark */
-  --accent-solid: #6e56cf;      /* fills; white label 5.4:1 */
-  --accent-tint: rgb(139 124 255 / .14);
-  --on-accent: #ffffff;
+  /* text: primary and ONE secondary grey; --fg-3 is the same grey, kept as an alias */
+  --fg-1: #f5f4fa;      /* 18:1 primary */
+  --fg-2: #adacbd;      /* all secondary text: 9:1 on --bg-0, 7.4:1 on --bg-3 */
+  --fg-3: #adacbd;
+  --fg-4: #6a6879;      /* 3.7:1 decoration only, never text */
+  /* accent: no hue in dark. The accent is the ink white: the current item, the newest mark; links are underlined */
+  --accent: #f5f4fa;
+  --accent-solid: #ececee;      /* the main button fill; label #111113 at 16:1 */
+  --accent-tint: rgb(255 255 255 / .10);
+  --on-accent: #111113;
+  --link: var(--accent);
+  --link-line: underline;
   /* main action */
   --cta-bg: var(--accent-solid);
   --cta-fg: var(--on-accent);
@@ -34,7 +37,7 @@
   --ok: #4fd18f;   --ok-tint: rgb(79 209 143 / .12);
   --warn: #f2b84b; --warn-tint: rgb(242 184 75 / .12);
   --err: #ff6b6b;  --err-tint: rgb(255 107 107 / .12);
-  --focus: rgb(139 124 255 / .55);
+  --focus: rgb(255 255 255 / .5);
   /* depth */
   --shadow-float: 0 4px 24px rgb(0 0 0 / .45), 0 8px 32px rgb(0 0 0 / .35);
   --shadow-card: none;
@@ -42,7 +45,7 @@
   --glass-bg: rgb(7 6 11 / .96);
   --glass-fx: none;
   /* one soft light, landing pages only, behind the hero object */
-  --wash: radial-gradient(70% 55% at 50% 0%, rgb(147 130 255 / .08), transparent 75%);
+  --wash: radial-gradient(70% 55% at 50% 0%, rgb(255 255 255 / .06), transparent 75%);
   /* photos keep their clarity */
   --photo-fx: none;
 }
@@ -58,31 +61,35 @@
   --line-3: rgb(40 25 90 / .22);
   --edge-hi: rgb(40 25 90 / .14);
   --fg-1: #221a46;      /* violet ink, 12:1 */
-  --fg-2: #3c3657;
-  --fg-3: #59566c;      /* 5.3:1 */
-  --fg-4: #85829a;
-  --accent: #5a42b2;
+  --fg-2: #3c3657;      /* the one secondary grey: 8.5:1 on --bg-0, 7.1:1 on --bg-3 */
+  --fg-3: #3c3657;
+  --fg-4: #85829a;      /* decoration only */
+  --accent: #5a42b2;    /* 5.5:1 on the canvas */
   --accent-solid: #5a42b2;
   --accent-tint: rgb(90 66 178 / .10);
   --on-accent: #ffffff;
   --cta-bg: #1d1545;    /* the night window: dark violet button */
   --cta-fg: #ffffff;
-  --ok: #17845a;   --ok-tint: rgb(23 132 90 / .10);
-  --warn: #9a6700; --warn-tint: rgb(154 103 0 / .10);
-  --err: #c0362c;  --err-tint: rgb(192 54 44 / .10);
+  --link-line: none;
+  /* status: dark enough for 4.5:1 on their own tint on every light surface */
+  --ok: #0b5e3f;   --ok-tint: rgb(11 94 63 / .10);
+  --warn: #6f4700; --warn-tint: rgb(111 71 0 / .10);
+  --err: #9c2820;  --err-tint: rgb(156 40 32 / .10);
   --focus: rgb(90 66 178 / .45);
   --shadow-float: 0 1px 4px -1px rgb(30 18 70 / .10), 0 6px 20px rgb(30 18 70 / .10);
   --shadow-card: 0 1px 2px rgb(40 25 90 / .06), 0 4px 14px rgb(40 25 90 / .07);
   --glass-bg: rgb(223 221 239 / .96);
   --wash: none;
 }
-/* the dark roles again for .night inside the light theme */
+/* the dark roles again for .night inside the light theme; the light theme's violet stays (violet #8b7cff, 6.2:1) */
 [data-theme="light"] .night {
   color-scheme: dark;
   --bg-0: #07060b; --bg-1: #100f16; --bg-2: #17161f; --bg-3: #1f1e29;
   --line-1: rgb(255 255 255 / .07); --line-2: rgb(255 255 255 / .11); --line-3: rgb(255 255 255 / .16); --edge-hi: rgb(255 255 255 / .16);
-  --fg-1: #f5f4fa; --fg-2: #c9c8d4; --fg-3: #9896a8; --fg-4: #6a6879;
-  --accent: #8b7cff; --accent-solid: #6e56cf; --accent-tint: rgb(139 124 255 / .14);
+  --fg-1: #f5f4fa; --fg-2: #adacbd; --fg-3: #adacbd; --fg-4: #6a6879;
+  --accent: #8b7cff; --accent-solid: #6e56cf; --accent-tint: rgb(139 124 255 / .14); --on-accent: #ffffff;
+  --link-line: none; --focus: rgb(139 124 255 / .55);
+  --ok: #4fd18f; --ok-tint: rgb(79 209 143 / .12); --warn: #f2b84b; --warn-tint: rgb(242 184 75 / .12); --err: #ff6b6b; --err-tint: rgb(255 107 107 / .12);
   --shadow-card: 0 10px 28px -12px rgb(30 18 70 / .45);
 }
 
@@ -93,11 +100,12 @@
   --w-regular: 400; --w-medium: 500; --w-semibold: 600;
   --t-display: 600 32px/1.15 var(--font-sans);   --ls-display: -0.025em;  /* screen title; landing h1 48-64px */
   --t-title: 600 22px/1.25 var(--font-sans);     --ls-title: -0.018em;
-  --t-headline: 600 17px/1.35 var(--font-sans);  --ls-headline: -0.012em;
-  --t-body: 400 15px/1.5 var(--font-sans);       --ls-body: -0.006em;
+  --t-headline: 600 18px/1.3 var(--font-sans);   --ls-headline: -0.012em;
+  --t-body: 400 16px/1.5 var(--font-sans);       --ls-body: -0.006em;   /* body is 16px: read on the go */
   --t-body-lg: 400 16px/1.5 var(--font-sans);
-  --t-small: 400 13px/1.45 var(--font-sans);
-  --t-label: 500 15px/1.3 var(--font-sans);
+  --t-small: 400 14px/1.45 var(--font-sans);     /* all secondary text */
+  --t-time: 400 13px/1.4 var(--font-sans);       /* timestamps only */
+  --t-label: 500 16px/1.35 var(--font-sans);
   /* space: 4px grid */
   --s-1: 4px; --s-2: 8px; --s-3: 12px; --s-4: 16px; --s-5: 20px; --s-6: 24px; --s-8: 32px; --s-12: 48px; --s-16: 64px; --s-24: 96px;
   --pad-screen: 20px;

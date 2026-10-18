@@ -1,16 +1,17 @@
 # nucifera
 
-A design skill for Claude Code. It makes Claude design interfaces in one precise dark style, in the line of Linear, Raycast and Reflect, with a light "Dusk" theme, and it checks the rendered screens before handing them over.
+A design skill for Claude Code. It makes Claude design interfaces in one precise style, in the line of Linear, Raycast and Reflect: a monochrome dark theme and a light "Dusk" theme with a violet accent, and it checks the rendered screens before handing them over.
 
-> Named after *Cocos nucifera*, the coconut palm: a dark shell with a light inside, like the two themes. Status: 0.1.0, early. See "What it does not promise".
+> Named after *Cocos nucifera*, the coconut palm: a dark shell with a light inside, like the two themes. Status: 0.2.0, early. See "What it does not promise".
 
 ## What it does
 
 - **Starts with a scene, not a template.** Before any code Claude writes five lines to `.design/DESIGN.md`: who looks at the screen and where, the direction, the accent, one signature element taken from the subject's own world (a paint-thickness map for a car inspection, an appointment book for a barbershop), and what must be visible on the first screen.
 - **Builds from a closed set of tokens and components.** `tokens.css` defines both themes by role (surfaces, lines, text, accent, main action); `kit.css` has about fifteen components (rows, hero card, stat, chips, fields, key-value, states). No raw colours in screens.
-- **Names the AI tells and what to do instead.** Eleven rules in the core and a dated list of 27 in the references: no coloured glows, no gradient buttons, no decorative dots, no eyebrow labels on every heading, no washed-out photos, no airy screens where users came for data, and more. A vague "avoid the AI look" only swaps one default for another; named patterns with replacements hold.
-- **Checks pixels with code.** `scripts/verify.mjs` renders every mockup screen at 360, 390 and 430px in the dark theme and at 390px in the light one, and reports overflow, contrast, touch targets, fonts that did not load, coloured glows, glass count, accent use and Cyrillic line-height. No npm packages: it uses your installed Chrome, Edge or Chromium.
-- **Asks a fresh critic.** The `design-critic` agent sees only the screenshots, the brief and DESIGN.md, and returns at most five rule-backed findings, or none.
+- **Reads without effort.** Body text 16px, secondary text 14px in one grey, data as plain label-value lists instead of boxes and grids, a status shown only when it is the exception, drawings that need no legend.
+- **Names the AI tells and what to do instead.** Thirteen rules in the core and a dated list of 31 in the references: no coloured glows, no gradient buttons, no decorative dots, no small grey text in several shades, no data cut into boxes, no eyebrow labels on every heading, no washed-out photos, no airy screens where users came for data, and more. A vague "avoid the AI look" only swaps one default for another; named patterns with replacements hold.
+- **Checks pixels with code.** `scripts/verify.mjs` renders every mockup screen at 360, 390 and 430px in the dark theme and at 390px in the light one, and reports overflow, contrast, touch targets, fonts that did not load, small text, extra shades of grey, coloured glows, glass count, accent use and Cyrillic line-height. No npm packages: it uses your installed Chrome, Edge or Chromium.
+- **Asks a fresh critic.** The `design-critic` agent sees only the screenshots, the brief and DESIGN.md, and returns at most five rule-backed findings, or none. Claude waits for it before handing over.
 - **Handles Cyrillic properly**: subsets, line-height and tracking limits, the "її" test.
 
 ## Install
