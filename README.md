@@ -76,4 +76,4 @@ The rules were informed by public research and by ideas from other design skills
 - Leonxlnx/taste-skill, funboy322/avoid-ai-design, AdrianKrebs/design-slop-cop: catalogues and thresholds of AI tells.
 - VoltAgent/awesome-design-md: the Linear DESIGN.md as a reference for precision.
 
-With love, kokosik.
+With love, kokos.
