@@ -41,7 +41,7 @@ Your brand goes into `.design/brand.css` (colours through `--brand-*`, logo, dis
 
 ## What it does not promise
 
-- It removes measurable AI tells and keeps a consistent, precise style. Nobody has yet shown, for this skill or any other design skill, that people prefer the result in a fair blind test; that test is planned and its result will be published here, including "not proven" if that is the outcome.
+- It removes measurable AI tells and keeps a consistent, precise style. Whether people prefer its screens to ones made without it has not been measured in a fair blind test, for this skill or any other design skill. Treat it as one well-checked opinion, not a proven improvement.
 - The style is one look by design. If you want something else entirely, this is not your skill.
 - Code checks see geometry and colour, not taste. The critic helps with hierarchy; the final choice is yours.
 - Hooks, the critic agent and the verify script work in Claude Code. In claude.ai only the core text of the skill applies.
