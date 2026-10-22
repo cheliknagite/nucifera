@@ -41,6 +41,7 @@
   /* depth */
   --shadow-float: 0 4px 24px rgb(0 0 0 / .45), 0 8px 32px rgb(0 0 0 / .35);
   --shadow-card: none;
+  --scrim: rgb(0 0 0 / .55);   /* behind dialogs and sheets */
   /* glass: full on capable devices, solid fallback is the default in CSS */
   --glass-bg: rgb(7 6 11 / .96);
   --glass-fx: none;
@@ -78,6 +79,7 @@
   --focus: rgb(90 66 178 / .45);
   --shadow-float: 0 1px 4px -1px rgb(30 18 70 / .10), 0 6px 20px rgb(30 18 70 / .10);
   --shadow-card: 0 1px 2px rgb(40 25 90 / .06), 0 4px 14px rgb(40 25 90 / .07);
+  --scrim: rgb(20 12 50 / .32);
   --glass-bg: rgb(223 221 239 / .96);
   --wash: none;
 }
@@ -113,9 +115,29 @@
   --r-sm: 8px; --r-md: 12px; --r-lg: 16px; --r-xl: 20px; --r-pill: 999px;
   /* touch */
   --tap: 44px; --field-h: 48px; --btn-h: 50px;
-  /* motion: state changes only, transform and opacity */
-  --dur-1: 100ms; --dur-2: 160ms; --dur-3: 240ms;
-  --ease: cubic-bezier(.2, .8, .2, 1);
+  /* motion: a calm tempo, about 1.75x the common product norms, so people can follow what moved; never sluggish.
+     Pick the role that matches what the motion does, not the nearest number. Rules and recipes: references/motion.md */
+  --dur-0: 0ms;          /* hover highlight in; keyboard-driven actions and actions used 100+ times a day */
+  --dur-press: 100ms;    /* press feedback: stays fast at any tempo */
+  --dur-fast: 175ms;     /* tooltip out */
+  --dur-exit: 280ms;     /* leaving (menu, dialog, toast), hover highlight out, colour and state changes, crossfades */
+  --dur-enter: 420ms;    /* arriving or moving: menu, dialog, selection indicator, accordion, number roll, screen change, list rows */
+  --dur-sheet: 700ms;    /* bottom sheet in (spring), toast in, success check */
+  --dur-hero: 840ms;     /* landing hero and scroll reveal: rare moments only */
+  --stagger: 70ms;       /* between list rows on first show, at most five rows */
+  --stagger-hero: 105ms; /* between hero lines */
+  --ease-out: cubic-bezier(.23, 1, .32, 1);     /* enter and exit */
+  --ease-move: cubic-bezier(.77, 0, .175, 1);   /* moving within the screen */
+  --ease-color: ease;                           /* hover and colour */
+  --ease-spring: var(--ease-out);               /* sheets and the selection pill; a 2% spring below where linear() works */
+  --move-sm: 6px; --move-md: 12px;              /* how far arriving content travels */
+  --travel: 1;                                  /* 0 under reduced motion: off-screen entries become fades */
+  --press-scale: .97; --scale-menu: .95; --scale-dialog: .96; --scale-tip: .97;
+  --ease: var(--ease-out);                                                        /* older names */
+  --dur-1: var(--dur-press); --dur-2: var(--dur-exit); --dur-3: var(--dur-enter);
+}
+@supports (animation-timing-function: linear(0, 1)) {
+  :root { --ease-spring: linear(0, .05, .165, .309, .456, .591, .708, .802, .875, .929, .967, .993, 1.008, 1.016, 1.02, 1.02, 1.018, 1.015, 1.012, 1.01, 1.007, 1.005, 1.003, 1.002, 1); }
 }
 
 /* glass levels: CSS default is solid; frame.js sets data-fx; in production set it by device capability */
@@ -126,6 +148,12 @@
 /* Cyrillic headings need air above the dots of Ї and Й */
 :lang(uk) :is(h1, h2, h3), :lang(ru) :is(h1, h2, h3) { line-height: max(1.15, var(--lh, 1.15)); }
 
+/* reduced motion keeps the meaning: no travel and no scaling, short fades; colour, focus rings and loaders stay */
 @media (prefers-reduced-motion: reduce) {
-  :root { --dur-1: 0ms; --dur-2: 0ms; --dur-3: 0ms; }
+  :root { --dur-fast: 120ms; --dur-exit: 160ms; --dur-enter: 200ms; --dur-sheet: 200ms; --dur-hero: 200ms;
+    --stagger: 0ms; --stagger-hero: 0ms; --move-sm: 0px; --move-md: 0px; --travel: 0;
+    --press-scale: 1; --scale-menu: 1; --scale-dialog: 1; --scale-tip: 1;
+    --ease-spring: var(--ease-out); --ease-move: var(--ease-out); }
 }
+/* weak devices (a platform adapter sets data-perf="low"): no stagger, no spring */
+[data-perf="low"] { --stagger: 0ms; --stagger-hero: 0ms; --ease-spring: var(--ease-out); }

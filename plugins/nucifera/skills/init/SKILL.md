@@ -8,7 +8,7 @@ disable-model-invocation: true
 
 Do these steps in the current project and report what changed.
 
-1. Create `.design/` with copies of `../ui/assets/tokens.css`, `kit.css` and `brand.template.css` (renamed to `brand.css`). Ask the user for the brand only if they want one now: name, logo file, main colour, display font. Without answers leave `brand.css` as the template; the violet stays the accent.
+1. Create `.design/` with copies of `../ui/assets/tokens.css`, `kit.css`, `motion.js` and `brand.template.css` (renamed to `brand.css`). If `.design/` already exists, do not overwrite files the project has changed: compare them with the skill's copies, show the user what differs and replace only after a yes; never touch `brand.css` or `DESIGN.md`. Ask the user for the brand only if they want one now: name, logo file, main colour, display font. Without answers leave `brand.css` as the template; the defaults stay (a monochrome dark theme, violet in the light theme).
 2. Append this block to the project's `CLAUDE.md` (create the file if missing; do not duplicate the block if it is already there):
 
    ```

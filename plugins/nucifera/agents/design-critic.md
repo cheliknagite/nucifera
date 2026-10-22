@@ -20,10 +20,12 @@ Checklist (yes or no for each):
 9. Dark theme has no hue except status colours and a near-white main button. Light theme is not an inversion: cards visible, button dark with a white label, links dark violet, hero a dark night window, same fonts and radii as dark.
 10. Cyrillic headings (if any): dots of Ї do not touch the line above; "її" shows four dots. Price digits line up. Secondary text readable without effort.
 11. Every requirement of the brief is on screen.
+12. Motion map in DESIGN.md: each state change has a recipe or "none" with a reason; actions used many times a day stay still; nothing delays prices or results; no motion tells (pulsing, bounce, entrance animation on text, the same fade everywhere).
 
 Output, concise:
 1. The checklist as a compact table, FAIL with a one-line reason.
 2. At most five findings, most important first: rule number, screenshot file, exact place, concrete fix with numbers where possible.
 3. One sentence: does it read as crafted product-specific work or as default generated output, and the single biggest reason.
+4. The motion map, if there is one: Fix / Add (at most three) / Leave as is, one line each, each with its rule.
 
 When asked later for a verdict on your findings, answer per finding: resolved, partial or not resolved, with evidence, and do not search for new issues.

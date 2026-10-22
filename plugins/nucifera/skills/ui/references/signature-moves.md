@@ -12,6 +12,14 @@ A clean dark screen with one accent is now what generators produce by default; r
 
 One signature per screen. Two bold elements fight; if the user asks for two, show two variants of the screen and let them choose.
 
+## Three kinds
+
+- **Object**: a thing from the subject's world drawn with data: a paint-thickness map, a route strip, an appointment book.
+- **Typographic**: one statement set large and exact, when the screen is about a single number or sentence: the match score, the price, "paid".
+- **Functional**: the way the real data is shown or the main action works: a market ruler under the price, a list that ranks itself by value.
+
+Pick the simplest kind that answers the user's question. A signature that needs a legend to read is the wrong kind: switch to typographic or functional. Simple screens (sign-in, a settings list) need none. The signature may move once when it first appears (a dot sliding into place on the ruler); never in a loop.
+
 ## Examples
 
 | Subject | Signature | Why it works |

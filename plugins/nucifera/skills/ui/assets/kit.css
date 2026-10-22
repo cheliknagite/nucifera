@@ -24,8 +24,8 @@
 /* buttons: filled main action, quiet secondary, text-only ghost */
 .btn { display: inline-flex; align-items: center; justify-content: center; gap: var(--s-2); min-height: var(--tap);
   padding: 0 var(--s-5); border-radius: var(--r-md); border: 0; font: var(--t-label); cursor: pointer;
-  transition: transform var(--dur-1) var(--ease), background-color var(--dur-2) var(--ease); }
-.btn:active { transform: scale(.97); }
+  transition: transform var(--dur-exit) var(--ease-out), background-color var(--dur-exit) var(--ease-color); }
+.btn:active { transform: scale(var(--press-scale)); transition-duration: var(--dur-press); }
 .btn:focus-visible, .chip:focus-visible, .row:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 .btn--primary { background: var(--cta-bg); color: var(--cta-fg); min-height: var(--btn-h); width: 100%; }
 .btn--secondary { background: var(--bg-2); color: var(--fg-1); box-shadow: inset 0 0 0 1px var(--line-2); }
@@ -39,6 +39,8 @@
   position: relative; }
 .chip::after { content: ""; position: absolute; inset: -4px 0; } /* 44px touch area */
 .chip[aria-pressed="true"] { background: var(--bg-3); color: var(--fg-1); box-shadow: inset 0 0 0 1px var(--line-3); }
+.chip { transition: background-color var(--dur-exit) var(--ease-color), color var(--dur-exit) var(--ease-color), transform var(--dur-exit) var(--ease-out); }
+.chip:active { transform: scale(var(--press-scale)); transition-duration: var(--dur-press); }
 /* action and status chips: wrap onto a second row instead of being cut at the edge; full 44px */
 .chips--wrap { flex-wrap: wrap; overflow: visible; padding-inline: 0; }
 .chips--wrap .chip { height: var(--tap); color: var(--fg-1); font-size: 15px; }
@@ -135,4 +137,126 @@
 /* landing only: one soft light behind the hero */
 .wash { position: absolute; inset: 0 0 auto; height: 520px; background: var(--wash); pointer-events: none; }
 
-@media (prefers-reduced-motion: reduce) { .skeleton { animation: none; } .btn:active { transform: none; } }
+/* ============================ motion recipes ============================
+   Durations and curves are roles from tokens.css; behaviour that needs a script is in assets/motion.js.
+   When and why to use each one: references/motion.md. */
+
+/* the theme switches without transitions: add .nu-no-tx to <html> for two frames (motion.js setTheme does it) */
+.nu-no-tx *, .nu-no-tx *::before, .nu-no-tx *::after { transition: none !important; }
+
+/* press and highlight: the highlight appears at once and fades out; hover only where a real pointer exists */
+.tap, .menu__item { transition: background-color var(--dur-exit) var(--ease-color); -webkit-tap-highlight-color: transparent; }
+.tap:active, .menu__item:active { background: var(--bg-3); transition-duration: 0s; }
+@media (hover: hover) and (pointer: fine) {
+  .tap:hover, .menu__item:hover { background: var(--bg-2); transition-duration: 0s; }
+  .btn--secondary:hover { background: var(--bg-3); transition-duration: 0s; }
+}
+
+/* menu and popover: grow from the trigger (set --origin to the trigger's side), leave faster */
+.pop { position: absolute; z-index: 20; transform-origin: var(--origin, top left);
+  opacity: 0; transform: scale(var(--scale-menu)); visibility: hidden; pointer-events: none;
+  transition: opacity var(--dur-exit) var(--ease-out), transform var(--dur-exit) var(--ease-out), visibility 0s linear var(--dur-exit); }
+.pop.open { opacity: 1; transform: none; visibility: visible; pointer-events: auto;
+  transition: opacity var(--dur-enter) var(--ease-out), transform var(--dur-enter) var(--ease-out), visibility 0s; }
+.menu { min-width: 220px; padding: var(--s-1); border-radius: var(--r-md); background: var(--bg-2); box-shadow: inset 0 0 0 1px var(--line-2), var(--shadow-float); }
+[data-theme="light"] .menu { background: var(--bg-1); }
+.menu__item { display: flex; align-items: center; justify-content: space-between; gap: var(--s-3); width: 100%; min-height: var(--tap);
+  padding: 0 var(--s-3); border: 0; border-radius: var(--r-sm); background: none; color: var(--fg-1); font: var(--t-body); text-align: left; cursor: pointer; }
+
+/* tooltip: put .tip inside a trigger with [data-tip]; the first one waits, neighbours open at once (motion.js) */
+[data-tip] { position: relative; }
+.tip { position: absolute; bottom: calc(100% + 6px); left: 50%; translate: -50% 0; z-index: 30; padding: 6px 10px; border-radius: var(--r-sm);
+  background: var(--fg-1); color: var(--bg-0); font: var(--t-small); font-weight: 500; white-space: nowrap; pointer-events: none;
+  transform-origin: bottom center; opacity: 0; transform: scale(var(--scale-tip));
+  transition: opacity var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out); }
+.tip.open { opacity: 1; transform: none; transition-duration: var(--dur-exit); }
+.tip.instant { transition: none; }
+
+/* dialog from the centre with a scrim; bottom sheet from below (motion.js moves it with a spring and lets it be dragged down) */
+.scrim { position: fixed; inset: 0; z-index: 40; background: var(--scrim); opacity: 0; visibility: hidden;
+  transition: opacity var(--dur-exit) var(--ease-out), visibility 0s linear var(--dur-exit); }
+.scrim.open { opacity: 1; visibility: visible; transition: opacity var(--dur-enter) var(--ease-out), visibility 0s; }
+.dialog { position: fixed; left: 50%; top: 50%; translate: -50% -50%; z-index: 50; width: min(360px, calc(100% - 32px)); padding: var(--s-5);
+  border-radius: var(--r-lg); background: var(--bg-1); box-shadow: inset 0 0 0 1px var(--line-2), var(--shadow-float);
+  opacity: 0; transform: scale(var(--scale-dialog)); visibility: hidden;
+  transition: opacity var(--dur-exit) var(--ease-out), transform var(--dur-exit) var(--ease-out), visibility 0s linear var(--dur-exit); }
+.dialog.open { opacity: 1; transform: none; visibility: visible;
+  transition: opacity var(--dur-enter) var(--ease-out), transform var(--dur-enter) var(--ease-out), visibility 0s; }
+.sheet { position: fixed; left: 0; right: 0; bottom: 0; z-index: 50; max-height: 85svh; overflow: auto; overscroll-behavior: contain;
+  border-radius: var(--r-xl) var(--r-xl) 0 0; background: var(--bg-1); box-shadow: inset 0 1px 0 var(--line-2), var(--shadow-float);
+  transform: translateY(105%); visibility: hidden; }
+.sheet.open { visibility: visible; }
+.sheet__grab { padding: var(--s-3) var(--pad-screen) var(--s-2); touch-action: none; cursor: grab; }
+.sheet__grab::before { content: ""; display: block; width: 40px; height: 5px; margin: 0 auto var(--s-3); border-radius: 3px; background: var(--line-3); }
+
+/* selection: one pill or underline slides to the chosen option (set --i, the index, and --n, the count) */
+.seg { position: relative; display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; padding: 2px; border-radius: var(--r-md);
+  background: var(--bg-1); box-shadow: inset 0 0 0 1px var(--line-2); --i: 0; --n: 2; }
+[data-theme="light"] .seg { background: var(--bg-2); }
+.seg__pill { position: absolute; top: 2px; bottom: 2px; left: 2px; width: calc((100% - 4px) / var(--n)); border-radius: calc(var(--r-md) - 2px);
+  background: var(--bg-3); box-shadow: inset 0 0 0 1px var(--line-3); transform: translateX(calc(var(--i) * 100%));
+  transition: transform var(--dur-enter) var(--ease-spring); }
+[data-theme="light"] .seg__pill { background: var(--bg-1); box-shadow: var(--shadow-card), inset 0 0 0 1px var(--line-2); }
+.seg__opt { position: relative; z-index: 1; min-height: var(--tap); padding: 0 var(--s-3); border: 0; background: none; color: var(--fg-2);
+  font: var(--t-label); font-size: 15px; white-space: nowrap; cursor: pointer; transition: color var(--dur-exit) var(--ease-color); }
+.seg__opt[aria-checked="true"] { color: var(--fg-1); }
+.tabs { position: relative; display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; border-bottom: 1px solid var(--line-2); --i: 0; --n: 3; }
+.tabs__tab { min-height: var(--tap); border: 0; background: none; color: var(--fg-2); font: var(--t-label); cursor: pointer;
+  transition: color var(--dur-exit) var(--ease-color); }
+.tabs__tab[aria-selected="true"] { color: var(--fg-1); }
+.tabs__ink { position: absolute; left: 0; bottom: -1px; width: calc(100% / var(--n)); height: 2px; border-radius: 1px; background: var(--accent);
+  transform: translateX(calc(var(--i) * 100%)); transition: transform var(--dur-enter) var(--ease-spring); }
+
+/* toasts: newest in front, older ones behind and smaller (motion.js keeps --i); at the top, clear of a bottom main button */
+.toasts { position: fixed; top: calc(var(--s-3) + env(safe-area-inset-top, 0px)); left: 50%; translate: -50% 0; z-index: 60;
+  width: min(420px, calc(100% - 24px)); height: 0; }
+.toast { position: absolute; top: 0; left: 0; right: 0; display: flex; align-items: center; gap: var(--s-3); min-height: 52px;
+  padding: var(--s-3) var(--s-4); border-radius: var(--r-md); background: var(--bg-2); box-shadow: inset 0 0 0 1px var(--line-2), var(--shadow-float);
+  font: var(--t-label); transform-origin: top center; z-index: calc(10 - var(--i, 0));
+  transform: translateY(calc(var(--i, 0) * 10px)) scale(calc(1 - var(--i, 0) * .05)); opacity: calc(1 - var(--i, 0) * .3);
+  transition: transform var(--dur-sheet) var(--ease-out), opacity var(--dur-enter) var(--ease-out); }
+[data-theme="light"] .toast { background: var(--bg-1); }
+.toast.in { transform: translateY(calc(-120% * var(--travel))); opacity: 0; }
+.toast.out { transform: translateY(calc(var(--i, 0) * 10px - var(--move-md))); opacity: 0; transition-duration: var(--dur-exit); }
+
+/* new content: wrap a row as .grow > .grow__in; it grows in and collapses out, the rows around it follow smoothly */
+.grow { display: grid; grid-template-rows: 1fr; transition: grid-template-rows var(--dur-enter) var(--ease-out), opacity var(--dur-exit) var(--ease-out); }
+.grow.gone { grid-template-rows: 0fr; opacity: 0; }
+.grow__in { min-height: 0; overflow: hidden; }
+
+/* accordion: height through grid rows, no script */
+.fold + .fold { border-top: 1px solid var(--line-1); }
+.fold__head { display: flex; align-items: center; gap: var(--s-3); width: 100%; min-height: 52px; padding: 0; border: 0; background: none;
+  color: var(--fg-1); font: var(--t-label); text-align: left; cursor: pointer; }
+.fold__chev { flex: none; color: var(--fg-2); transition: transform var(--dur-enter) var(--ease-out); }
+.fold.open .fold__chev { transform: rotate(90deg); }
+.fold__body { display: grid; grid-template-rows: 0fr; transition: grid-template-rows var(--dur-enter) var(--ease-out); }
+.fold.open .fold__body { grid-template-rows: 1fr; }
+.fold__in { min-height: 0; overflow: hidden; }
+.fold__content { padding-bottom: var(--s-3); opacity: 0; transition: opacity var(--dur-exit) var(--ease-color); }
+.fold.open .fold__content { opacity: 1; transition-duration: var(--dur-enter); }
+
+/* number roll (motion.js roll): changed digits move in the direction of the change */
+.roll { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.roll .digit { position: relative; display: inline-block; }
+.roll .ghost { position: absolute; left: 0; top: 0; }
+
+/* success: draw the check (pathLength="1" on the circle and the path); inline loader inside a button */
+.check-draw circle, .check-draw path { fill: none; stroke: var(--ok); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+  stroke-dasharray: 1; stroke-dashoffset: 1; animation: nu-draw var(--dur-sheet) var(--ease-out) forwards; }
+.check-draw path { stroke-width: 2.6; animation-duration: calc(var(--dur-sheet) * .7); animation-delay: calc(var(--dur-sheet) * .35); }
+@keyframes nu-draw { to { stroke-dashoffset: 0; } }
+.spin { width: 18px; height: 18px; border-radius: 50%; border: 2px solid currentColor; border-right-color: transparent; animation: nu-spin .7s linear infinite; }
+@keyframes nu-spin { to { transform: rotate(360deg); } }
+
+/* landing pages only: hero lines rise once on load (set --i per line); the header hairline appears on scroll (motion.js hairline) */
+.rise { animation: nu-rise var(--dur-hero) var(--ease-out) both; animation-delay: calc(var(--i, 0) * var(--stagger-hero)); }
+@keyframes nu-rise { from { opacity: 0; transform: translateY(var(--move-md)); } }
+.glassbar--quiet { border-bottom-color: transparent; transition: border-color var(--dur-exit) var(--ease-color); }
+.glassbar--quiet.scrolled { border-bottom-color: var(--line-1); }
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton { animation: none; }
+  .grow, .fold__body { transition-property: opacity; }
+  .seg__pill, .tabs__ink { transition-duration: 0s; }
+}

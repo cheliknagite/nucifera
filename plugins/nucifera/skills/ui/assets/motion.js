@@ -1,0 +1,292 @@
+/* nucifera motion helpers: a plain script, no dependencies. Load it after the page (or with defer).
+   Durations and curves are read from tokens.css, so reduced motion and a brand's tempo apply on their own.
+   Every helper can be interrupted: a new call cancels the one still running. Rules: references/motion.md.
+
+   window.nuMotion = { setTheme, menu, tooltips, dialog, sheet, toast, crossfade, swap, stagger, grow, collapse,
+                       roll, shake, loading, reveal, hairline, haptic, onHaptic, ms } */
+(function () {
+  const root = document.documentElement;
+  const css = name => getComputedStyle(root).getPropertyValue(name).trim();
+  const ms = name => { const v = css(name), n = parseFloat(v) || 0; return /ms$/.test(v) ? n : /s$/.test(v) ? n * 1000 : n; };
+  const px = name => parseFloat(css(name)) || 0;
+  const ease = name => css(name) || 'ease';
+  const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const stop = el => el.getAnimations().forEach(a => a.cancel());
+  const nextFrame = () => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+
+  /* theme: switch without every element fading its colours */
+  function setTheme(theme) {
+    root.classList.add('nu-no-tx');
+    root.dataset.theme = theme;
+    nextFrame().then(() => root.classList.remove('nu-no-tx'));
+  }
+
+  /* haptics with fixed meanings: 'selection' (a choice changed), 'light' (a sheet or toggle settled),
+     'success' | 'error' | 'warning' (the result of an action). Never on scroll, typing or every tap.
+     The host platform plugs in through nuMotion.onHaptic = kind => { ... }. */
+  function haptic(kind) {
+    if (typeof api.onHaptic === 'function') { try { api.onHaptic(kind); } catch (e) { /* host without haptics */ } }
+  }
+
+  /* menu or popover (.pop): opens from its trigger, closes on outside tap, Escape, or choosing an item */
+  function menu(trigger, pop) {
+    const set = open => { pop.classList.toggle('open', open); trigger.setAttribute('aria-expanded', String(open)); };
+    trigger.setAttribute('aria-expanded', 'false');
+    trigger.addEventListener('click', e => { e.stopPropagation(); set(!pop.classList.contains('open')); });
+    document.addEventListener('click', e => { if (!pop.contains(e.target)) set(false); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') set(false); });
+    pop.addEventListener('click', e => { if (e.target.closest('.menu__item')) set(false); });
+    return { open: () => set(true), close: () => set(false) };
+  }
+
+  /* tooltips: [data-tip] triggers with a .tip inside. The first waits 400 ms; for 300 ms after one closes
+     its neighbours open at once, without animation. Mouse and keyboard only. */
+  let warmUntil = 0;
+  function tooltips(scope) {
+    (scope || document).querySelectorAll('[data-tip]').forEach(trigger => {
+      const tip = trigger.querySelector('.tip'); if (!tip) return;
+      let timer;
+      const show = instant => { tip.classList.toggle('instant', instant); tip.classList.add('open'); };
+      const hide = () => {
+        clearTimeout(timer);
+        if (tip.classList.contains('open')) warmUntil = performance.now() + 300;
+        tip.classList.remove('open', 'instant');
+      };
+      trigger.addEventListener('pointerenter', e => {
+        if (e.pointerType !== 'mouse') return;
+        clearTimeout(timer);
+        if (performance.now() < warmUntil) show(true); else timer = setTimeout(() => show(false), 400);
+      });
+      trigger.addEventListener('pointerleave', hide);
+      trigger.addEventListener('focus', () => { if (trigger.matches(':focus-visible')) show(false); });
+      trigger.addEventListener('blur', hide);
+      trigger.addEventListener('click', hide);
+    });
+  }
+
+  /* dialog (.dialog) with its .scrim: open, close, and a short nudge when an action is blocked */
+  function dialog(el, scrim) {
+    let opener = null;
+    const close = () => {
+      el.classList.remove('open'); if (scrim) scrim.classList.remove('open');
+      if (opener) opener.focus({ preventScroll: true });
+    };
+    const open = () => {
+      opener = document.activeElement;
+      el.classList.add('open'); if (scrim) scrim.classList.add('open');
+      const first = el.querySelector('button, [href], input, select, textarea');
+      if (first) setTimeout(() => first.focus({ preventScroll: true }), 0);
+    };
+    const nudge = () => {
+      if (reduced()) return;
+      el.animate([{ transform: 'scale(1)' }, { transform: 'scale(.98)' }, { transform: 'scale(1)' }], { duration: ms('--dur-exit'), easing: ease('--ease-out') });
+    };
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && el.classList.contains('open')) close(); });
+    if (scrim) scrim.addEventListener('click', () => { if (el.classList.contains('open')) close(); });
+    return { open, close, nudge };
+  }
+
+  /* bottom sheet (.sheet with a .sheet__grab): rises with the spring; drag it down, and a fast or long drag closes it */
+  function sheet(el, scrim, onClose) {
+    const grab = el.querySelector('.sheet__grab') || el;
+    let isOpen = false, h = 0;
+    const place = (y, dur, curve) => {
+      el.style.transition = dur ? `transform ${dur}ms ${curve}` : 'none';
+      el.style.transform = `translateY(${y}px)`;
+      if (scrim) {
+        scrim.style.transition = dur ? `opacity ${dur}ms ${ease('--ease-out')}` : 'none';
+        scrim.style.opacity = String(Math.max(0, Math.min(1, 1 - y / h)));
+      }
+    };
+    const open = () => {
+      stop(el); isOpen = true; el.classList.add('open'); if (scrim) scrim.classList.add('open');
+      h = el.offsetHeight;
+      if (reduced()) {
+        el.style.transition = 'none'; el.style.transform = 'translateY(0)';
+        el.animate([{ opacity: 0 }, { opacity: 1 }], { duration: ms('--dur-sheet'), easing: ease('--ease-out') });
+        if (scrim) scrim.style.opacity = '1';
+        return;
+      }
+      place(h, 0); el.getBoundingClientRect();
+      place(0, ms('--dur-sheet'), ease('--ease-spring'));
+    };
+    const finish = () => {
+      if (isOpen) return;
+      el.classList.remove('open');
+      if (scrim) { scrim.classList.remove('open'); scrim.style.opacity = ''; scrim.style.transition = ''; }
+      if (onClose) onClose();
+    };
+    const close = () => {
+      if (!isOpen) return;
+      isOpen = false;
+      if (reduced()) {
+        el.animate([{ opacity: 1 }, { opacity: 0 }], { duration: ms('--dur-exit'), easing: ease('--ease-out'), fill: 'forwards' }).finished
+          .then(() => { if (!isOpen) { el.style.transform = 'translateY(105%)'; stop(el); } finish(); }, () => {});
+        if (scrim) { scrim.style.transition = `opacity ${ms('--dur-exit')}ms`; scrim.style.opacity = '0'; }
+        return;
+      }
+      place(h * 1.05, ms('--dur-enter'), ease('--ease-out'));
+      setTimeout(finish, ms('--dur-enter') + 20);
+    };
+    let y0 = 0, dy = 0, lastY = 0, lastT = 0, v = 0, dragging = false;
+    grab.addEventListener('pointerdown', e => {
+      if (!isOpen) return;
+      dragging = true; y0 = lastY = e.clientY; lastT = e.timeStamp; dy = 0; v = 0;
+      grab.setPointerCapture(e.pointerId);
+    });
+    grab.addEventListener('pointermove', e => {
+      if (!dragging) return;
+      dy = e.clientY - y0; if (dy < 0) dy *= 0.2;
+      const dt = e.timeStamp - lastT; if (dt > 0) v = (e.clientY - lastY) / dt;
+      lastY = e.clientY; lastT = e.timeStamp;
+      place(dy, 0);
+    });
+    const release = () => {
+      if (!dragging) return;
+      dragging = false;
+      if (v > 0.11 || dy > h * 0.35) close();
+      else { place(0, ms('--dur-sheet'), ease('--ease-spring')); if (Math.abs(dy) > 6) haptic('light'); }
+    };
+    grab.addEventListener('pointerup', release);
+    grab.addEventListener('pointercancel', release);
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
+    if (scrim) scrim.addEventListener('click', close);
+    return { open, close };
+  }
+
+  /* toasts in a .toasts container: newest in front, at most three, each leaves after 4 s (waits while hovered) */
+  const stacks = new WeakMap();
+  function toast(container, html, timeout) {
+    timeout = timeout || 4000;
+    let list = stacks.get(container);
+    if (!list) {
+      list = [];
+      stacks.set(container, list);
+      container.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') list.forEach(t => clearTimeout(t.timer)); });
+      container.addEventListener('pointerleave', e => { if (e.pointerType === 'mouse') list.forEach((t, i) => arm(t, 2000 + i * 300)); });
+    }
+    const layout = () => list.forEach((t, i) => t.el.style.setProperty('--i', i));
+    function dismiss(t) {
+      if (t.gone) return; t.gone = true; clearTimeout(t.timer);
+      t.el.classList.add('out');
+      setTimeout(() => { t.el.remove(); const k = list.indexOf(t); if (k >= 0) list.splice(k, 1); layout(); }, ms('--dur-exit') + 30);
+    }
+    function arm(t, wait) { clearTimeout(t.timer); t.timer = setTimeout(() => dismiss(t), wait); }
+    const el = document.createElement('div');
+    el.className = 'toast in'; el.setAttribute('role', 'status'); el.innerHTML = html;
+    el.style.setProperty('--i', 0);
+    const t = { el };
+    list.unshift(t); container.append(el); layout();
+    list.slice(3).forEach(dismiss);
+    el.getBoundingClientRect(); el.classList.remove('in');
+    arm(t, timeout);
+    return { dismiss: () => dismiss(t) };
+  }
+
+  /* swap content in place (a tab panel): change it, then fade it in */
+  function crossfade(panel, update) {
+    stop(panel); update();
+    panel.animate([{ opacity: 0 }, { opacity: 1 }], { duration: ms('--dur-exit'), easing: ease('--ease-out') });
+  }
+
+  /* screen change with direction: dir 1 deeper (comes from the right), -1 back, 0 a sibling view (crossfade).
+     Both screens are stacked in one positioned parent. A late finish never hides the screen now on top. */
+  const onTop = new WeakMap();
+  function swap(from, to, dir) {
+    dir = dir || 0;
+    const parent = to.parentNode; onTop.set(parent, to);
+    stop(from); stop(to);
+    to.hidden = false; to.style.zIndex = 2; from.style.zIndex = 1;
+    from.animate([{ opacity: 1 }, { opacity: 0 }], { duration: ms('--dur-exit') * 0.75, easing: ease('--ease-out'), fill: 'forwards' }).finished
+      .then(a => { if (onTop.get(parent) !== from) from.hidden = true; a.cancel(); }, () => {});
+    to.animate([{ opacity: 0, transform: `translateX(${dir * px('--move-md')}px)` }, { opacity: 1, transform: 'none' }],
+      { duration: ms('--dur-enter'), easing: ease('--ease-out') });
+  }
+
+  /* first show of a list: up to five rows rise one after another; the rest are there at once */
+  function stagger(items) {
+    Array.from(items).slice(0, 5).forEach((el, i) => el.animate(
+      [{ opacity: 0, transform: `translateY(${px('--move-sm')}px)` }, { opacity: 1, transform: 'none' }],
+      { duration: ms('--dur-enter'), delay: i * ms('--stagger'), easing: ease('--ease-out'), fill: 'backwards' }));
+  }
+
+  /* a new row (.grow > .grow__in) grows in; collapse removes one, and the rows around it follow */
+  function grow(item) { item.classList.add('gone'); item.getBoundingClientRect(); item.classList.remove('gone'); }
+  function collapse(item, done) {
+    item.classList.add('gone');
+    setTimeout(() => { item.remove(); if (done) done(); }, ms('--dur-enter') + 30);
+  }
+
+  /* number roll on a .roll element: only the changed characters move, up when the value grows, down when it falls */
+  function roll(el, text, dir) {
+    const from = el.dataset.v || el.textContent.trim();
+    el.dataset.v = text; el.textContent = '';
+    el.setAttribute('aria-label', text);
+    if (!from || from.length !== text.length) {
+      const s = document.createElement('span'); s.setAttribute('aria-hidden', 'true'); s.textContent = text; el.append(s);
+      if (from) s.animate([{ opacity: 0 }, { opacity: 1 }], { duration: ms('--dur-exit'), easing: ease('--ease-out') });
+      return;
+    }
+    const y = 40 * (parseFloat(css('--travel')) || 0);
+    for (let i = 0; i < text.length; i++) {
+      const slot = document.createElement('span'); slot.className = 'digit'; slot.setAttribute('aria-hidden', 'true');
+      const cur = document.createElement('span'); cur.textContent = text[i]; slot.append(cur);
+      if (from[i] !== text[i]) {
+        const ghost = document.createElement('span'); ghost.className = 'ghost'; ghost.textContent = from[i]; slot.append(ghost);
+        cur.animate([{ transform: `translateY(${dir * y}%)`, opacity: 0 }, { transform: 'none', opacity: 1 }], { duration: ms('--dur-enter'), easing: ease('--ease-out') });
+        ghost.animate([{ transform: 'none', opacity: 1 }, { transform: `translateY(${-dir * y}%)`, opacity: 0 }], { duration: ms('--dur-exit'), easing: ease('--ease-out'), fill: 'forwards' })
+          .finished.then(() => ghost.remove(), () => {});
+      }
+      el.append(slot);
+    }
+  }
+
+  /* error: a short shake, 4 px three times; skipped under reduced motion (the message and haptic still come) */
+  function shake(el) {
+    if (reduced()) return;
+    stop(el);
+    el.animate([{ transform: 'none' }, { transform: 'translateX(-4px)' }, { transform: 'translateX(4px)' }, { transform: 'translateX(-4px)' },
+      { transform: 'translateX(4px)' }, { transform: 'translateX(-2px)' }, { transform: 'none' }], { duration: ms('--dur-exit') * 2, easing: 'ease-out' });
+  }
+
+  /* waiting: nothing for the first 200 ms; then show() (a skeleton) for at least 400 ms, so nothing flickers.
+     hide(wasShown) runs when the work is done; crossfade the result in when wasShown is true. */
+  function loading(work, show, hide) {
+    let shownAt = 0;
+    const timer = setTimeout(() => { shownAt = performance.now(); show(); }, 200);
+    const done = () => {
+      clearTimeout(timer);
+      if (!shownAt) { hide(false); return; }
+      setTimeout(() => hide(true), Math.max(0, 400 - (performance.now() - shownAt)));
+    };
+    return Promise.resolve(work).then(r => { done(); return r; }, e => { done(); throw e; });
+  }
+
+  /* landing pages only: blocks below the first screen fade up once as they enter. Content stays visible without
+     this script, and blocks already on screen are never hidden. Never use it on app screens. */
+  function reveal(selector, scroller) {
+    if (reduced() || !('IntersectionObserver' in window)) return;
+    const box = scroller ? scroller.getBoundingClientRect() : { bottom: innerHeight };
+    const blocks = Array.from(document.querySelectorAll(selector || '.reveal'))
+      .filter(b => b.getBoundingClientRect().top > box.bottom - 20);
+    blocks.forEach(b => { b.style.opacity = '0'; });
+    const io = new IntersectionObserver(entries => entries.forEach(en => {
+      if (!en.isIntersecting) return;
+      const b = en.target; io.unobserve(b); b.style.opacity = '';
+      b.animate([{ opacity: 0, transform: `translateY(${px('--move-md')}px)` }, { opacity: 1, transform: 'none' }], { duration: ms('--dur-hero'), easing: ease('--ease-out') });
+    }), { root: scroller || null, threshold: 0.2 });
+    blocks.forEach(b => io.observe(b));
+  }
+
+  /* a sticky header (.glassbar--quiet) gets its hairline once the page has scrolled */
+  function hairline(bar, scroller) {
+    const target = scroller || window;
+    const top = () => (scroller ? scroller.scrollTop : scrollY);
+    const on = () => bar.classList.toggle('scrolled', top() > 4);
+    target.addEventListener('scroll', on, { passive: true }); on();
+  }
+
+  const api = { setTheme, menu, tooltips, dialog, sheet, toast, crossfade, swap, stagger, grow, collapse,
+    roll, shake, loading, reveal, hairline, haptic, onHaptic: null, ms };
+  window.nuMotion = api;
+})();

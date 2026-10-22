@@ -13,7 +13,7 @@ node <skill-dir>/scripts/verify.mjs .design/<file>.html [--widths 360,390,430] [
 - Output: `.design/verify/report.md`, `report.json`, PNGs. Exit code 1 if anything FAILs.
 
 FAIL (fix before hand-over): overflow past the screen edge, contrast below 4.5:1 (3:1 for large text), touch targets under 44px, input text under 16px, coloured glow, gradient on a control, more than two glass elements, a font that did not load, Cyrillic heading line-height under 1.12.
-WARN (look, fix unless intended): clipped text, text under 13px, more than one secondary grey, accent in more than three places, tabular digits outside prices and counters, heading weight over 600, small chips.
+WARN (look, fix unless intended): clipped text, text under 13px, more than one secondary grey, accent in more than three places, tabular digits outside prices and counters, heading weight over 600, small chips, and from the page's CSS: `transition: all`, ease-in, endless animations outside loaders.
 
 Rounds: fix all FAILs, run again; at most three rounds. If the same FAIL survives a fix, stop and report it with the screenshot. Change one thing at a time and undo a change that adds failures.
 
@@ -29,12 +29,13 @@ Rounds: fix all FAILs, run again; at most three rounds. If the same FAIL survive
 8. Main action under the thumb; where the host platform has native controls, they are used; no fake platform UI in a real page.
 9. Dark theme has no hue except status colours, the main button near-white. Light theme is not an inversion: cards visible, button dark with a white label, links dark violet, hero a night window, same fonts and radii.
 10. Every requirement of the brief is on screen.
+11. Motion: the motion map is in DESIGN.md. Triggered in a browser, menus grow from their trigger, exits are faster, nothing waits for an animation, prices and results are there at once; with reduced motion emulated nothing travels and all content is visible.
 
 Screenshot checks: in Cyrillic headings the dots of Ї do not touch descenders above and "її" shows four dots; price digits line up; photos are clear; the light (landing only) has no banding and no seam under the header.
 
 ## 3. Fresh critic (agent `design-critic`)
 
-Run it for a new kind of screen and before a release, not for every small change. Give it only: the screenshot paths, the brief, `.design/DESIGN.md`. Do not explain your choices to it. It returns at most five findings, each with the rule it breaks, the screenshot, the place and a concrete fix; zero findings is a valid answer. Apply findings that cite a rule; ignore taste claims. Then ask it for a verdict per finding (resolved / partial / not resolved) without a new search. Wait for its answer before you hand over; if it cannot run or does not answer, write "CRITIC NOT RUN" in the hand-over instead of skipping it silently.
+Run it for a new kind of screen and before a release, not for every small change. Give it only: the screenshot paths, the brief, `.design/DESIGN.md`. Do not explain your choices to it. It returns at most five findings, each with the rule it breaks, the screenshot, the place and a concrete fix; zero findings is a valid answer. Apply findings that cite a rule; ignore taste claims. Then ask it for a verdict per finding (resolved / partial / not resolved) without a new search. It sees still images, so for motion it reviews the motion map (fix, add at most three, leave as is), not the motion itself. Wait for its answer before you hand over; if it cannot run or does not answer, write "CRITIC NOT RUN" in the hand-over instead of skipping it silently.
 
 ## 4. The user's blind choice
 

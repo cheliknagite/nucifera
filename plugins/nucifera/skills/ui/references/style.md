@@ -57,7 +57,19 @@ The user came for content. On list screens show as many real items as fit above 
 
 ## Motion
 
-Only for state changes and feedback: press `scale(.97)`, 100 to 240ms, ease-out, transform and opacity only, never `transition: all`. Items opened many times a session (rows, chips, menus) appear without animation. Respect `prefers-reduced-motion`.
+The tempo, curves, rules and recipes live in `references/motion.md`; the tokens (`--dur-*`, `--ease-*`, `--move-*`, `--scale-*`) in `tokens.css`. In short: every press answers, menus grow from their trigger, exits are faster than entries, only transform and opacity move, nothing delays the content, reduced motion keeps the meaning.
+
+## App screens and landing pages: one style, two modes
+
+| | App screen | Landing page |
+|---|---|---|
+| Main thing | the data and the action | the product and its message |
+| Density | high: everything needed is visible | air around the hero |
+| Type | functional; display 32 at most | display 48 to 64 on desktop |
+| Images | the subject's real photos, as content | may carry the composition |
+| Light and effects | none | one soft light behind the hero (`--wash`) |
+| Motion | recipes on state changes; no load choreography, no scroll reveals | the hero once on load; one fade-up per block on scroll |
+| Main action | in the flow of the task | next to the value it promises |
 
 ## Tailwind and frameworks
 

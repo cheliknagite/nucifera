@@ -22,10 +22,23 @@ Compose screens from these. When a screen needs something new, add a component t
 | Glass bar | `.glassbar` | sticky header or filter bar | counts toward the two-glass limit |
 | Time | `.t-time` | timestamps only | 13px; all other secondary text is 14px |
 | States | `.skeleton`, `.empty`, `.status--ok/warn/err` | loading, empty, status | skeleton mirrors the final layout; empty states explain and offer the way out |
+| Tap surface | `.tap` | a tappable row or tile | highlight in at once, out in `--dur-exit`; hover only with a real pointer |
+| Menu | `.pop.menu` > `.menu__item` | sort, actions, pickers | grows from its trigger (`--origin`); `nuMotion.menu` |
+| Tooltip | `[data-tip]` > `.tip` | icon buttons with a mouse or keyboard | `nuMotion.tooltips()`; the first waits, neighbours open at once |
+| Dialog | `.dialog` + `.scrim` | confirmations | from the centre; `nuMotion.dialog` with `nudge()` for a blocked action |
+| Bottom sheet | `.sheet` > `.sheet__grab` | filters and pickers on phones | spring in, drag down to close; `nuMotion.sheet` |
+| Segmented, tabs | `.seg` > `.seg__pill` + `.seg__opt`; `.tabs` > `.tabs__tab` + `.tabs__ink` | choices and sibling views | set `--i` and `--n`; the indicator slides; swap the panel with `nuMotion.crossfade` |
+| Toasts | `.toasts` > `.toast` | confirmations | at the top; stack of three; `nuMotion.toast` |
+| Growing row | `.grow` > `.grow__in` | rows added or removed | `nuMotion.grow`, `nuMotion.collapse`; `nuMotion.stagger` on a list's first show |
+| Accordion | `.fold` > `.fold__head` (`.fold__chev`) + `.fold__body` > `.fold__in` > `.fold__content` | details, analysis sections | toggle `.open`; height by grid rows, no script |
+| Number | `.roll` | prices and counters that change | `nuMotion.roll(el, text, dir)` |
+| Success, loader | `.check-draw`, `.spin` | a result; waiting inside a button | the check draws once; on a platform with a native button progress, use that |
+| Landing motion | `.rise`, `.reveal`, `.glassbar--quiet` | landing pages only | hero lines with `--i`; `nuMotion.reveal`, `nuMotion.hairline` |
 | Light (landing) | `.wash` | the single soft light behind a landing hero | never on app screens |
 
 ## Patterns
 
+- Motion: every change in the motion map uses one of the recipes above; `assets/motion.js` adds the behaviour (`references/motion.md`).
 - Results screen: title with count, query block, one hero (best match) with its photo and the reason it fits, then dense rows. Main action in the bottom action.
 - Detail or checkout screen: title, the object summary (thumb + name + key facts), what the user gets (rows or the signature element), when and where (key-value), total, main action.
 - Empty state: what happened, why, one action to get out (for example "Reset filters"); shown only after the first server answer.

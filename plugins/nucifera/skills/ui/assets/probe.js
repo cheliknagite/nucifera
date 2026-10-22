@@ -29,6 +29,18 @@
   const roleOf = (el, v) => { const d = document.createElement('i'); d.style.color = `var(${v})`; el.appendChild(d); const c = getComputedStyle(d).color; d.remove(); return c; };
   const accentOf = el => roleOf(el, '--accent');
 
+  // motion lint from the author's CSS (computed styles are frozen above): transition: all, ease-in, endless loops outside loaders
+  const motionWarn = new Set();
+  const lint = list => { for (const r of list) {
+    if (r.type === CSSRule.KEYFRAMES_RULE) continue;
+    if (r.cssRules && !r.selectorText) { lint(r.cssRules); continue; }
+    if (!r.style || !r.selectorText) continue;
+    const s = r.style, t = (s.transition || '') + ' ' + (s.transitionProperty || ''), anim = (s.animation || '') + ' ' + (s.animationIterationCount || '');
+    if ((/(^|,)\s*all\s*(,|$)/.test(s.transitionProperty || '') || /(^|,)\s*all\s/.test(s.transition || '')) && !/^\s*0m?s\s*$/.test(s.transitionDuration || '')) motionWarn.add(`transition: all on ${r.selectorText}: name the properties (transform, opacity, colours)`);
+    if (/ease-in(?!-out)/.test(t + ' ' + (s.transitionTimingFunction || '') + ' ' + anim + ' ' + (s.animationTimingFunction || ''))) motionWarn.add(`ease-in on ${r.selectorText}: interface motion uses --ease-out`);
+    if (/\binfinite\b/.test(anim) && !/skeleton|spin|loader|progress/i.test(r.selectorText)) motionWarn.add(`endless animation on ${r.selectorText}: only loaders may loop`);
+  } };
+  for (const sheet of document.styleSheets) { try { lint(sheet.cssRules); } catch (e) { /* cross-origin sheet */ } }
   const scopes = [...document.querySelectorAll('.phone')];
   if (!scopes.length) scopes.push(document.body);
   const out = { theme: document.documentElement.dataset.theme || 'dark', screens: [] };
@@ -95,6 +107,7 @@
     res.stats = { minContrast, accentPlaces, glass, greys: greyMax, fonts: [...fams] };
     out.screens.push(res);
   }
+  if (out.screens[0]) out.screens[0].warn.push(...motionWarn);
   const pre = document.createElement('pre'); pre.id = 'ui-probe'; pre.hidden = true; pre.textContent = JSON.stringify(out);
   document.body.append(pre); document.title = 'UI_PROBE_DONE';
 })();

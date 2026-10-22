@@ -19,19 +19,20 @@ Priority: the user's brief > the project's `.design/brand.css` > this style > de
 
 ## 1. Scene and direction, before any code
 
-Write five short lines to `.design/DESIGN.md` (create the folder; on later tasks update this file instead of starting a new one):
+Write these to `.design/DESIGN.md` (create the folder; on later tasks update this file instead of starting a new one):
 
 - **Scene**: who looks at the screen, where, in what light and mood. One sentence concrete enough to decide light vs dark.
 - **Direction**: this style plus what is specific to the subject.
 - **Accent**: the default (no hue in dark: white ink and a near-white main button; violet in the light theme), or the brand colour; name its roles (at most 3: main action, current selection, state).
-- **Signature**: one element the screen is remembered by, taken from the subject's own world: its documents, instruments, artifacts or data. A car inspection gives a top-view paint-thickness map; delivery gives the route strip. One per screen; everything around it stays quiet. Read `references/signature-moves.md`.
+- **Signature**: one element the screen is remembered by, taken from the subject's own world: its documents, instruments, artifacts or data. A car inspection gives a top-view paint-thickness map; delivery gives the route strip. It can be an object, a typographic statement or the way the data itself is shown; simple screens need none. One per screen; everything around it stays quiet. Read `references/signature-moves.md`.
 - **Density**: what must be visible on the first screen without scrolling.
+- **Motion**: the motion map, a short table of every state change with its recipe; actions used many times a day stay still. Read `references/motion.md`.
 
 Decide yourself unless the user wants to choose; state the choice in one line of your reply.
 
 ## 2. Build from the system
 
-Copy `assets/tokens.css` and `assets/kit.css` into `.design/` (for mockups also `assets/frame.html`, `frame.js`, `probe.js`). Use roles, never raw values: `var(--accent)`, not a hex. The tokens are the closed vocabulary; when something is missing, add a role to the project's brand file instead of inlining a value. For React or Tailwind map the same roles (`references/style.md`).
+Copy `assets/tokens.css`, `assets/kit.css` and `assets/motion.js` into `.design/` (for mockups also `assets/frame.html`, `frame.js`, `probe.js`). Use roles, never raw values: `var(--accent)`, not a hex. The tokens are the closed vocabulary; when something is missing, add a role to the project's brand file instead of inlining a value. For React or Tailwind map the same roles (`references/style.md`).
 
 Compose screens from the kit (`references/components.md`): list rows, hero card, stat, chips, fields, key-value rows, section heads, states. When the kit lacks a piece, add a component rather than one-off styles.
 
@@ -43,6 +44,7 @@ The floor, in numbers:
 - Surfaces: canvas, then raised steps that are lighter (about +0.02 to +0.03 OKLCH L) with a 1px hairline. On dark, no shadows except under floating layers.
 - Touch targets at least 44px; text inputs at least 16px font.
 - One accent. The main action is a filled `--cta-bg` button.
+- Motion at the house tempo from the tokens (`--dur-*`, `--ease-*`), built from the kit's recipes and `assets/motion.js`: every press answers, menus grow from their trigger, exits are faster than entries, only transform and opacity move, prices and results never wait for an animation, stagger only on a list's first show. Reduced motion keeps the meaning.
 
 Readable beats compact: people read on the go, and anything they have to decode is a failure.
 
@@ -68,6 +70,8 @@ The light theme "Dusk" is `[data-theme="light"]`: same fonts, sizes, radii and l
 | Card inside a card, grids of identical icon cards, feature lists in icon tiles | flat rows with hairlines; one hero card per screen |
 | Small grey text in several shades; data in grids of hairline cells or in a card with rows inside | 16px body, 14px secondary in one grey; a plain label-value list on the canvas |
 | A drawing that needs a legend; the same status repeated on every row | dots or a simple shape plus one plain sentence; show only the exception |
+| Motion everywhere: pulsing indicators, the same fade on every block, hover scale on many elements, entrance animation on headings and text in app screens | motion only where something changes, from the recipes and the motion map |
+| Bounce or a spring on simple actions, ease-in, entrances from `scale(0)`, `transition: all`, scroll reveals in app screens | `--ease-out`; the spring only on sheets and the selection pill; scroll reveals only on landing pages |
 | Eyebrow labels over every heading, 01/02/03, data glued with "·" | plain headings; data separated by commas |
 | One heading word in another colour, headings heavier than 600 | hierarchy through size and weight |
 | Untuned font defaults (wrong subset, line-height 1.0 on Cyrillic headings) | the right subset, house weights, line-height 1.15, tracking from -0.03em |
@@ -79,13 +83,13 @@ Why these and not "avoid an AI look": a vague ban swaps one default for the next
 ## 4. Platform
 
 - App screens: quiet mode. No light effects on lists, forms and checkouts; character comes from the signature element, type and density. Mockups use `assets/frame.html` (a phone frame with an optional top bar and bottom action).
-- Website or landing: the same tokens. One hero object per page. A single soft light is allowed behind the hero, in the background's tone and at most alpha 0.08 (`--wash`).
+- Website or landing: the same tokens. One hero object per page. A single soft light is allowed behind the hero, in the background's tone and at most alpha 0.08 (`--wash`). The hero rises once on load, and blocks may fade up once as they scroll in (`nuMotion.reveal`); app screens get neither.
 - Payment methods and business rules are not this skill's concern: a checkout screen is an ordinary screen.
 
 ## 5. Check before hand-over
 
-1. For HTML mockups and pages run `node <this-skill-dir>/scripts/verify.mjs .design/<file>.html`. It renders every screen at 360, 390 and 430px in the dark theme and at 390px in the light one, and writes `.design/verify/report.md` with FAIL and WARN lines: overflow, clipped text, contrast, touch size, fonts, small text, more than one secondary grey, coloured glows, glass count, accent places, tabular digits. Fix every FAIL. At most three rounds; if the same FAIL comes back, stop and report it.
-2. Look at the screenshots yourself against the checklist in `references/verify.md`: one main element and action, three text levels, no cramped areas or empty thirds, the signature present, nothing from section 3.
+1. For HTML mockups and pages run `node <this-skill-dir>/scripts/verify.mjs .design/<file>.html`. It renders every screen at 360, 390 and 430px in the dark theme and at 390px in the light one, and writes `.design/verify/report.md` with FAIL and WARN lines: overflow, clipped text, contrast, touch size, fonts, small text, more than one secondary grey, coloured glows, glass count, accent places, tabular digits, and motion lint (`transition: all`, ease-in, endless loops). Fix every FAIL. At most three rounds; if the same FAIL comes back, stop and report it.
+2. Look at the screenshots yourself against the checklist in `references/verify.md`: one main element and action, three text levels, no cramped areas or empty thirds, the signature present, nothing from section 3. Open the page in a browser and trigger every change from the motion map.
 3. For a new type of screen, or before a release, run the `design-critic` agent with only the screenshots, the brief and `.design/DESIGN.md`. Apply findings that cite a rule; ignore taste claims. Wait for its report before you hand over: never hand over while it runs. If it cannot run or does not answer, write "CRITIC NOT RUN" in the hand-over.
 4. Without a browser (claude.ai, the API) build anyway and write "PIXELS UNVERIFIED" in the hand-over.
 
@@ -93,7 +97,8 @@ Hand over: file paths, the screenshots, what was checked, what remains open.
 
 ## Reference files
 
-- `references/style.md`: token roles for both themes, light, glass and motion values, Tailwind mapping.
+- `references/style.md`: token roles for both themes, light, glass, app screens vs landing pages, Tailwind mapping.
+- `references/motion.md`: the tempo, curves, rules, recipes and haptics for motion.
 - `references/components.md`: the kit and when to use each component.
 - `references/typography-cyrillic.md`: Cyrillic typography, numbers and prices.
 - `references/signature-moves.md`: how to find the one memorable element in the subject.
