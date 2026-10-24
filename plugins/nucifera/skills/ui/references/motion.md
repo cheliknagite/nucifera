@@ -111,7 +111,7 @@ CSS in `assets/kit.css`, behaviour in `assets/motion.js` (load it after the page
 
 ## 5. Moments
 
-A moment is a rare, expressive motion that makes a screen memorable: the eye follows one object instead of watching things blink. Six are ready in the kit and `motion.js`.
+A moment is a rare, expressive motion that makes a screen memorable: the eye follows one object instead of watching things blink. Seven are ready in the kit and `motion.js`. The window genie (the seventh, websites only) was picked in a blind review over a scale into the icon and a quick fade.
 
 Rules:
 
@@ -129,6 +129,7 @@ Rules:
 | Number after an action | a count or total that changes because of the user's action (results after a budget slider) | `.roll` and `nuMotion.roll` on `change`, not `input`; the label by the control updates at once | 600; only the changed digits move; never counts up by itself |
 | Success | a payment, a sent request, a saved brief, once the server confirmed | a `.check-draw` SVG in the result, then `nuMotion.success(block)`: the block settles from 96 % and the success haptic fires | circle 450, the mark 315 after 180; settle 300; no confetti |
 | Main button sheen | the main button just became available (a plan chosen, a form now valid) | `.btn--sheen` on the button, `nuMotion.sheen(btn)` | one pass, 1100, white light |
+| Window into the dock (websites only) | the user minimizes a window or panel on a desktop website (a draft, a comparison, a pinned card) and brings it back | a `.dock` with a `.dock__slot`; `nuMotion.genie(win, slot, true)` to minimize, `false` to restore: the window pours through a funnel into its slot like the Mac genie and comes back out; below 641px, in a mini app, under reduced motion or on a weak device it fades. Only on an explicit minimize, never on close or delete | 620 down, 470 back; the slot appears at 80 % |
 | Live product window | a landing hero: the real product plays a few steps by itself | heading lines with `.rise`; the window `.tempo-calm` with `nuMotion.demo(win, steps)`: it fades in after the heading, then each step runs 600 apart (a row grows in, a price rolls, a note fades in), then everything stays still; on a phone keep only the steps that let the key data land inside the first screen | window after about 1.2 s, fade 840; three steps |
 
 Materiality, still: the one raised surface gets a 1 px light top edge (`.lit`), and a large dark gradient gets a fixed grain (`.grain`) so it does not band. Nothing moves. One surface per screen, not every row (refusal 29).

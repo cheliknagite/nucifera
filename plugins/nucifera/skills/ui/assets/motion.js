@@ -4,7 +4,7 @@
 
    window.nuMotion = { setTheme, menu, tooltips, dialog, sheet, toast, crossfade, swap, stagger, grow, collapse,
                        roll, shake, loading, reveal, hairline, ctaBar, haptic, onHaptic, ms,
-                       moments: calm, once, morph, arrive, draw, success, sheen, demo } */
+                       moments: calm, once, morph, arrive, draw, success, sheen, demo, genie } */
 (function () {
   const root = document.documentElement;
   const css = name => getComputedStyle(root).getPropertyValue(name).trim();
@@ -400,8 +400,63 @@
     st.io.observe(win);
   }
 
+  /* websites only: a window the user minimizes pours into its place in the dock like the Mac genie, and comes back out.
+     The window stays one body: it is cut into thin strips that all travel the same distance, and each strip's width and
+     offset come from where it is in the funnel at that moment; first the funnel bends, then the body slides in.
+     minimize true hides the window (visibility, inert) and shows the slot (.on) as it lands; false brings it back.
+     Below 641px, inside a mini app, under reduced motion or on a weak device it fades instead.
+     The window and the dock should share a parent without a transform in between (the clones copy its styles there). */
+  const genies = new WeakMap();
+  function genie(win, slot, minimize) {
+    if (genies.has(win)) return genies.get(win);
+    const show = on => { win.style.visibility = on ? '' : 'hidden'; win.toggleAttribute('inert', !on); };
+    const wait = (anims, t) => Promise.race([Promise.all(anims.map(x => x.finished.catch(() => {}))), new Promise(r => setTimeout(r, t + 250))]);
+    const run = async () => {
+      if (!calm() || api.miniApp || innerWidth < 641) {
+        if (minimize) { await wait([win.animate([{ opacity: 1 }, { opacity: 0 }], { duration: ms('--dur-exit'), easing: ease('--ease-out') })], ms('--dur-exit')); show(false); slot.classList.add('on'); }
+        else { slot.classList.remove('on'); show(true); await wait([win.animate([{ opacity: 0 }, { opacity: 1 }], { duration: ms('--dur-enter'), easing: ease('--ease-out') })], ms('--dur-enter')); }
+        return;
+      }
+      const a = win.getBoundingClientRect(), b = slot.getBoundingClientRect();
+      const W = a.width, H = a.height, N = 48, K = 30, d = ms('--dur-genie') * (minimize ? 1 : .76);
+      const xt = (b.left + b.width / 2) - (a.left + W / 2), wd = b.width, yd = b.top - a.top;
+      const smooth = u => u <= 0 ? 0 : u >= 1 ? 1 : u * u * (3 - 2 * u);
+      const layer = document.createElement('div'); layer.className = 'nu-genie'; layer.setAttribute('aria-hidden', 'true');
+      layer.style.cssText = `left:${a.left}px;top:${a.top}px;width:${W}px;height:${H}px`;
+      const anims = [];
+      for (let i = 0; i < N; i++) {
+        const c = win.cloneNode(true); c.removeAttribute('id'); c.removeAttribute('inert'); c.querySelectorAll('[id]').forEach(x => x.removeAttribute('id'));
+        c.style.cssText += `;position:absolute;left:0;top:0;right:auto;bottom:auto;width:${W}px;height:${H}px;margin:0;translate:none;visibility:visible`;
+        const top = i * H / N, yi = top + H / N / 2;
+        c.style.clipPath = `inset(${Math.max(0, top - .5)}px 0 ${Math.max(0, H - top - H / N - .5)}px 0)`;
+        c.style.transformOrigin = `50% ${yi}px`;
+        const frames = [];
+        for (let k = 0; k <= K; k++) {
+          const t = k / K, bend = smooth(Math.min(1, t / .38));
+          const D = t <= .3 ? 0 : Math.pow((t - .3) / .7, 1.7) * (yd + H);   /* every strip slides the same distance, faster near the dock */
+          const y = yi + D, f = smooth(y / yd), inside = y > yd;
+          const w = inside ? wd : W - bend * (W - wd) * f, cx = inside ? xt : bend * xt * f;
+          frames.push({ offset: t, opacity: inside ? 0 : 1, transform: `translate(${cx}px, ${inside ? yd - yi : D}px) scale(${w / W}, ${inside ? .05 : 1})` });
+        }
+        layer.append(c);
+        anims.push([c, frames]);
+      }
+      win.parentNode.append(layer); show(false);
+      const opts = { duration: d, easing: 'linear', direction: minimize ? 'normal' : 'reverse', fill: 'both' };
+      const played = anims.map(([c, f]) => c.animate(f, opts));
+      if (minimize) {
+        const land = setTimeout(() => { slot.classList.add('on'); slot.animate([{ opacity: 0, transform: 'scale(.9)' }, { opacity: 1, transform: 'none' }], { duration: ms('--dur-exit'), easing: ease('--ease-out') }); }, d * .8);
+        await wait(played, d); clearTimeout(land); slot.classList.add('on');
+      } else { slot.classList.remove('on'); await wait(played, d); show(true); }
+      layer.remove();
+    };
+    const p = run().finally(() => genies.delete(win));
+    genies.set(win, p);
+    return p;
+  }
+
   const api = { setTheme, menu, tooltips, dialog, sheet, toast, crossfade, swap, stagger, grow, collapse,
     roll, shake, loading, reveal, hairline, ctaBar, haptic, onHaptic: null, ms,
-    calm, once, morph, arrive, draw, success, sheen, demo };
+    calm, once, morph, arrive, draw, success, sheen, demo, genie, miniApp: false };
   window.nuMotion = api;
 })();

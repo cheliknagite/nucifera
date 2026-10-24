@@ -135,6 +135,7 @@
   --dur-draw: 800ms;     /* a line or chart drawing itself once */
   --dur-hero: 840ms;     /* landing hero, scroll reveal, the product window */
   --dur-sheen: 1100ms;   /* one pass of light over the main button */
+  --dur-genie: 620ms;    /* websites only: a window pouring into its place in the dock (back at 76 %) */
   --stagger-hero: 105ms; /* between hero lines */
   --ease-out: cubic-bezier(.23, 1, .32, 1);     /* enter and exit */
   --ease-move: cubic-bezier(.77, 0, .175, 1);   /* moving within the screen */
