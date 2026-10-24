@@ -54,6 +54,7 @@ Readable beats compact: people read on the go, and anything they have to decode 
 - Data as a plain list on the canvas: label left, value right, a hairline between rows (`.kv`). No grids of hairline cells, no card with rows inside.
 - At most one raised surface per screen, and it holds the signature.
 - Say it once: show a status only when it is not the usual one (show "paused", hide "active"); no legend or labels that only explain a drawing.
+- Copy in the product's own words: read its interface texts (strings, bot replies, docs) and reuse their terms; never coin a new name for a feature. An offer or a price reads the same wherever it appears.
 - A drawing reads without a legend. If it needs one, simplify it and put one plain sentence under it saying what it shows.
 - Action and status chips wrap onto a second row (`.chips--wrap`, 44px), never cut at the screen edge.
 
@@ -73,11 +74,12 @@ The light theme "Dusk" is `[data-theme="light"]`: same fonts, sizes, radii and l
 | Card inside a card, grids of identical icon cards, feature lists in icon tiles | flat rows with hairlines; one hero card per screen |
 | Small grey text in several shades; data in grids of hairline cells or in a card with rows inside | 16px body, 14px secondary in one grey; a plain label-value list on the canvas |
 | A drawing that needs a legend; the same status repeated on every row | dots or a simple shape plus one plain sentence; show only the exception |
-| Motion everywhere: pulsing indicators, the same fade on every block, hover scale on many elements, entrance animation on headings and text in app screens | motion only where something changes, from the recipes and the motion map |
+| Motion everywhere: pulsing indicators, the same fade on every element of an app screen, hover scale on many elements, entrance animation on headings and text in app screens | motion only where something changes, from the recipes and the motion map; on landings the scroll reveal (one fade-up per block, once) is a recipe, not this tell |
 | Bounce or a spring on simple actions, ease-in, entrances from `scale(0)`, `transition: all`, scroll reveals in app screens | `--ease-out`; the spring only on sheets and the selection pill; scroll reveals only on landing pages |
 | Eyebrow labels over every heading, 01/02/03, data glued with "·" | plain headings; data separated by commas |
 | One heading word in another colour, headings heavier than 600 | hierarchy through size and weight |
 | Untuned font defaults (wrong subset, line-height 1.0 on Cyrillic headings) | the right subset, house weights, line-height 1.15, tracking from -0.03em |
+| Pictures of the product's own controls (a chat's keys, a screenshot's buttons) drawn like page buttons | depicted controls flat and inert: no border, default cursor, not focusable; only page actions are buttons |
 | An airy screen with two items where the user came for data; washed-out photos | dense real content; photos at full clarity |
 | Re-drawing a host platform's own chrome (headers, bottom buttons, payment sheets) inside an embedded web app | the platform's native controls; mockups may show them, labelled approximate |
 
@@ -86,7 +88,7 @@ Why these and not "avoid an AI look": a vague ban swaps one default for the next
 ## 4. Platform
 
 - App screens: quiet mode. No light effects on lists, forms and checkouts; character comes from the signature element, type and density. Mockups use `assets/frame.html` (a phone frame with an optional top bar and bottom action).
-- Website or landing: the same tokens. One hero object per page. A single soft light is allowed behind the hero, in the background's tone and at most alpha 0.08 (`--wash`). The hero rises once on load, and blocks may fade up once as they scroll in (`nuMotion.reveal`); app screens get neither.
+- Website or landing: the same tokens. One hero object per page. A single soft light is allowed behind the hero, in the background's tone and at most alpha 0.08 (`--wash`). The hero rises once on load, and blocks may fade up once as they scroll in (`nuMotion.reveal`); app screens get neither. On a phone the hero object crosses into the first screen with its key data. The main action sits in the hero and at the end; on phones a bottom bar repeats it once the hero button has scrolled away (`.cta-bar`, `nuMotion.ctaBar`), and the header holds no action. A landing longer than two screens needs images beyond the product window (the subject's object, a real photo, at most one illustration per section, one look): text and UI alone read as empty (`references/image-direction.md`). Landing pages read `?theme=light|dark` in a one-line head script, so `verify.mjs` can shoot both themes.
 - Payment methods and business rules are not this skill's concern: a checkout screen is an ordinary screen.
 
 ## 5. Check before hand-over

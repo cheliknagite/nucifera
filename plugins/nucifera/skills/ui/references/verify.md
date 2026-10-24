@@ -9,7 +9,7 @@ node <skill-dir>/scripts/verify.mjs .design/<file>.html [--widths 360,390,430] [
 ```
 
 - Needs Chrome, Edge or Chromium installed (no npm packages). Without a browser: hand over with "PIXELS UNVERIFIED".
-- Mockups built from `assets/frame.html` (with `frame.js` and `probe.js` next to them) get screenshots of every screen at each width in the dark theme and at the light widths in "Dusk", plus measurements per screen. Other pages and URLs get screenshots only.
+- Mockups built from `assets/frame.html` (with `frame.js` and `probe.js` next to them) get screenshots of every screen at each width in the dark theme and at the light widths in "Dusk", plus measurements per screen. Other pages (landings) and URLs get screenshots only: the first screen and a 5000px-tall long view at 360, 390, 430 and 1440, each local page inside a frame of exactly that width (headless browsers do not lay out narrower than about 500px), and the light theme when the page reads `?theme=light`. Nothing is measured there, so look at every shot.
 - Output: `.design/verify/report.md`, `report.json`, PNGs. Exit code 1 if anything FAILs.
 
 FAIL (fix before hand-over): overflow past the screen edge, contrast below 4.5:1 (3:1 for large text), touch targets under 44px, input text under 16px, coloured glow, gradient on a control, more than two glass elements, a font that did not load, Cyrillic heading line-height under 1.12.

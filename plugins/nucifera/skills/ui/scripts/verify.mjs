@@ -5,11 +5,12 @@
 //   node verify.mjs <page.html | http://url> [--out <dir>] [--widths 360,390,430] [--light 390] [--browser <path>]
 //
 // Pages built from assets/frame.html: every screen is shot at each width in the dark theme and at --light widths
-// in the light theme, and probe.js measures each screen. Other pages and URLs: screenshots only.
+// in the light theme, and probe.js measures each screen. Other pages (landings) and URLs: screenshots only, each
+// width as the first screen and as a long view, plus the light theme through ?theme=light; no measurements.
 // Writes <out>/report.md and <out>/report.json. Exit code 1 when anything FAILs.
 
 import { execFileSync } from 'node:child_process';
-import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir, platform } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
@@ -23,8 +24,10 @@ const isUrl = /^https?:\/\//.test(target);
 const base = isUrl ? target : pathToFileURL(resolve(target)).href;
 const out = resolve(opt('out', isUrl ? 'verify' : join(dirname(resolve(target)), 'verify')));
 const widths = opt('widths', '360,390,430').split(',').map(Number);
+const pageWidths = opt('widths', '360,390,430,1440').split(',').map(Number);   /* plain pages also get a desktop view */
 const lightWidths = opt('light', '390').split(',').filter(Boolean).map(Number);
-const HEIGHT = { 360: 780, 390: 844, 430: 932 };
+const HEIGHT = { 360: 780, 390: 844, 430: 932, 1440: 900 };
+const LONG = 5000;
 mkdirSync(out, { recursive: true });
 
 function findBrowser() {
@@ -49,6 +52,16 @@ const url = q => base + (base.includes('?') ? '&' : '?') + new URLSearchParams(q
 const run = extra => execFileSync(browser, [...common, ...extra], { encoding: 'utf8', maxBuffer: 256 * 1024 * 1024, timeout: 90000, stdio: ['ignore', 'pipe', 'ignore'] });
 const dump = q => run(['--window-size=1400,1000', '--dump-dom', url(q)]);
 const shot = (q, w, h, file) => { run([`--window-size=${w},${h}`, `--screenshot=${file}`, url(q)]); return file; };
+/* headless browsers do not lay a page out narrower than about 500px, so a local plain page is shot inside an iframe
+   of exactly the asked width (frame.js pages size their own phone and need no wrapper) */
+const frameShot = (q, w, h, file) => {
+  if (isUrl) return shot(q, w, h, file);
+  const wrap = join(out, `.wrap-${w}-${h}.html`);
+  writeFileSync(wrap, `<!doctype html><meta charset="utf-8"><style>html,body{margin:0;overflow:hidden;background:#000}` +
+    `iframe{display:block;width:${w}px;height:${h}px;border:0}</style><iframe src="${url(q)}"></iframe>`, 'utf8');
+  try { run([`--window-size=${w},${h}`, `--screenshot=${file}`, pathToFileURL(wrap).href]); } finally { rmSync(wrap, { force: true }); }
+  return file;
+};
 const pre = (html, id) => { const m = html.match(new RegExp(`<pre id="${id}"[^>]*>([\\s\\S]*?)</pre>`)); return m ? m[1].replace(/&quot;/g, '"').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&') : null; };
 
 const report = { target, browser, when: new Date().toISOString(), shots: [], probe: [], fail: 0, warn: 0, mode: 'frame' };
@@ -57,8 +70,17 @@ if (!isUrl) { try { screens = JSON.parse(pre(dump({ list: 1 }), 'ui-screens') ||
 
 if (!screens.length) {
   report.mode = 'page';
-  for (const w of widths) report.shots.push(shot({}, w, HEIGHT[w] || 900, join(out, `page-${w}.png`)));
-  report.note = 'No frame.js screens found: screenshots only, no measurements. Build mockups from assets/frame.html to get measurements.';
+  for (const w of pageWidths) {
+    report.shots.push(frameShot({}, w, HEIGHT[w] || 900, join(out, `page-${w}.png`)));
+    report.shots.push(frameShot({}, w, LONG, join(out, `page-${w}-long.png`)));
+  }
+  for (const w of lightWidths) {
+    report.shots.push(frameShot({ theme: 'light' }, w, HEIGHT[w] || 900, join(out, `page-${w}-light.png`)));
+    report.shots.push(frameShot({ theme: 'light' }, w, LONG, join(out, `page-${w}-light-long.png`)));
+  }
+  report.note = 'No frame.js screens found: screenshots only, no measurements. page-<width>.png is the first screen; ' +
+    '-long.png is the page in a 5000px-tall view (sections sized in vh look stretched there, blank space after the footer is outside the page). ' +
+    'The light shots need the page to read ?theme=light. Build app mockups from assets/frame.html to get measurements.';
 } else {
   for (const id of screens) {
     for (const w of widths) report.shots.push(shot({ shot: id, w, theme: 'dark' }, w, HEIGHT[w] || 844, join(out, `${id}-${w}-dark.png`)));

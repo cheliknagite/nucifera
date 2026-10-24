@@ -3,7 +3,7 @@
    Every helper can be interrupted: a new call cancels the one still running. Rules: references/motion.md.
 
    window.nuMotion = { setTheme, menu, tooltips, dialog, sheet, toast, crossfade, swap, stagger, grow, collapse,
-                       roll, shake, loading, reveal, hairline, haptic, onHaptic, ms,
+                       roll, shake, loading, reveal, hairline, ctaBar, haptic, onHaptic, ms,
                        moments: calm, once, morph, arrive, draw, success, sheen, demo } */
 (function () {
   const root = document.documentElement;
@@ -290,6 +290,18 @@
     target.addEventListener('scroll', on, { passive: true }); on();
   }
 
+  /* landing pages on phones: show the .cta-bar while neither the hero's main button nor the final call is on screen */
+  function ctaBar(bar, heroAction, finalBlock) {
+    if (!('IntersectionObserver' in window)) return;
+    const seen = new Map();
+    const io = new IntersectionObserver(entries => {
+      entries.forEach(en => seen.set(en.target, en.isIntersecting));
+      bar.classList.toggle('show', !seen.get(heroAction) && !(finalBlock && seen.get(finalBlock)));
+    });
+    io.observe(heroAction); if (finalBlock) io.observe(finalBlock);
+    return { stop: () => io.disconnect() };
+  }
+
   /* ---- moments (references/motion.md, section 5): rare, once, on an event, at most one per screen.
      Under reduced motion or on a weak device each shows its end state. ---- */
 
@@ -389,7 +401,7 @@
   }
 
   const api = { setTheme, menu, tooltips, dialog, sheet, toast, crossfade, swap, stagger, grow, collapse,
-    roll, shake, loading, reveal, hairline, haptic, onHaptic: null, ms,
+    roll, shake, loading, reveal, hairline, ctaBar, haptic, onHaptic: null, ms,
     calm, once, morph, arrive, draw, success, sheen, demo };
   window.nuMotion = api;
 })();

@@ -107,6 +107,7 @@ CSS in `assets/kit.css`, behaviour in `assets/motion.js` (load it after the page
 | Waiting | loading data | `.skeleton`, `nuMotion.loading(work, show, hide)` | thresholds 200 / 400 ms; progress after 2 s |
 | Success, error | results of actions | `.check-draw` (SVG with `pathLength="1"`) and `nuMotion.success(block)` (section 5); `nuMotion.shake(el)` plus the message | check 450; shake 4 px three times, 360 |
 | Landing hero and scroll | landing pages only | `.rise` with `--i` per line; `nuMotion.reveal('.reveal')`; `.glassbar--quiet` + `nuMotion.hairline(bar)` | hero 840, 105 between lines; reveal 840, once |
+| Phone action bar | landing pages on phones | `.cta-bar` + `nuMotion.ctaBar(bar, heroButton, finalBlock)` | fades in and out in 180, no slide |
 
 ## 5. Moments
 
@@ -128,7 +129,7 @@ Rules:
 | Number after an action | a count or total that changes because of the user's action (results after a budget slider) | `.roll` and `nuMotion.roll` on `change`, not `input`; the label by the control updates at once | 600; only the changed digits move; never counts up by itself |
 | Success | a payment, a sent request, a saved brief, once the server confirmed | a `.check-draw` SVG in the result, then `nuMotion.success(block)`: the block settles from 96 % and the success haptic fires | circle 450, the mark 315 after 180; settle 300; no confetti |
 | Main button sheen | the main button just became available (a plan chosen, a form now valid) | `.btn--sheen` on the button, `nuMotion.sheen(btn)` | one pass, 1100, white light |
-| Live product window | a landing hero: the real product plays a few steps by itself | heading lines with `.rise`; the window `.tempo-calm` with `nuMotion.demo(win, steps)`: it fades in after the heading, then each step runs 600 apart (a row grows in, a price rolls, a note fades in), then everything stays still | window after about 1.2 s, fade 840; three steps |
+| Live product window | a landing hero: the real product plays a few steps by itself | heading lines with `.rise`; the window `.tempo-calm` with `nuMotion.demo(win, steps)`: it fades in after the heading, then each step runs 600 apart (a row grows in, a price rolls, a note fades in), then everything stays still; on a phone keep only the steps that let the key data land inside the first screen | window after about 1.2 s, fade 840; three steps |
 
 Materiality, still: the one raised surface gets a 1 px light top edge (`.lit`), and a large dark gradient gets a fixed grain (`.grain`) so it does not band. Nothing moves. One surface per screen, not every row (refusal 29).
 

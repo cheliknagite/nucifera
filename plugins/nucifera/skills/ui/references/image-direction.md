@@ -6,6 +6,8 @@ Use when a screen needs imagery the project does not have (a landing hero object
 
 Almost no stock or generated photos. The hero is the real product working, plus at most one object from the brand's or subject's world, lit (a logo turned into an object, a product on a seamless stage). Car brands show CGI of the exact configuration from fixed angles; marketplaces show only real photos in a fixed order. The wow comes from precision, real data and one object, not from many images. Avoided everywhere: purple blobs, people pointing at screens, 3D mascots, fake dashboards.
 
+Still, a landing needs images: in review, a page of text and one product window read as empty. Plan them with the page: the hero object, and at most one image per major section (a real photo of the subject, a crafted object, a schematic illustration), all in one look; propose them with the cost before generating.
+
 ## Trust first
 
 A product that sells, inspects or compares real things lives on trust. In January 2026 a car auction site pulled a listing whose photos were AI-altered (garbled plate, mismatched lights and emblems); commenters caught it by comparing photos. The EU AI Act (Art. 50, from August 2026) requires disclosing realistic fakes of existing objects, not only people.

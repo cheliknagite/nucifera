@@ -16,11 +16,11 @@ Checklist (yes or no for each):
 5. The signature from DESIGN.md is present and carries the screen; elements around it are standard. A grey screen with one accent and no signature fails.
 6. None of: gradient, shine or coloured shadow on the main button; coloured glow or halo; background light that reads as a coloured cloud or appears on list or form screens; accent in more than three places; gradient text; decorative coloured dots; decorative pills over photos; identical card grids; eyebrows over every heading; 01/02/03; data glued with "·"; one heading word in another colour; headings heavier than semibold; washed-out or heavily tinted photos.
 7. Real data in the right language, one price format; states distinguishable where relevant.
-8. Main action under the thumb; where a host platform has native controls, they are used, not redrawn.
+8. Main action under the thumb (on a long landing: in the hero, at the end, and a bottom bar on phones); where a host platform has native controls, they are used, not redrawn.
 9. Dark theme has no hue except status colours and a near-white main button. Light theme is not an inversion: cards visible, button dark with a white label, links dark violet, hero a dark night window, same fonts and radii as dark.
 10. Cyrillic headings (if any): dots of Ї do not touch the line above; "її" shows four dots. Price digits line up. Secondary text readable without effort.
 11. Every requirement of the brief is on screen.
-12. Motion map in DESIGN.md: each state change has a recipe or "none" with a reason; actions used many times a day stay still; nothing delays prices or results; no motion tells (pulsing, bounce, entrance animation on text, the same fade everywhere).
+12. Motion map in DESIGN.md: each state change has a recipe or "none" with a reason; actions used many times a day stay still; nothing delays prices or results; no motion tells (pulsing, bounce, entrance animation on text, the same fade on every element of an app screen). Durations and curves come from the tokens (two tempos, set in review): never propose other numbers. On landings the scroll reveal (one fade-up per block, once) and one live product window are allowed recipes.
 
 Level pass, after the checklist:
 - Compare the render with the two exemplar cards and the twin. Ask twice, in both orders: is this screen closer to the exemplars or to the twin? If the two answers differ, the verdict is "unclear".

@@ -34,6 +34,7 @@ Compose screens from these. When a screen needs something new, add a component t
 | Number | `.roll` | prices and counters that change | `nuMotion.roll(el, text, dir)` when the action ends |
 | Success, loader | `.check-draw`, `.spin` | a result; waiting inside a button | the check draws once; on a platform with a native button progress, use that |
 | Landing motion | `.rise`, `.reveal`, `.glassbar--quiet` | landing pages only | hero lines with `--i`; `nuMotion.reveal`, `nuMotion.hairline` |
+| Bottom action bar | `.cta-bar` > `.btn--primary` | landing pages on phones | shows once the hero's main button has scrolled away, hides at the final call; `nuMotion.ctaBar(bar, heroButton, finalBlock)` |
 | Moments | `.check-draw`, `.btn--sheen`, `.tempo-calm` | at most one per screen, on its event | `nuMotion.morph`, `once`, `arrive`, `draw`, `success`, `sheen`, `demo` (`references/motion.md`, section 5) |
 | Light (landing) | `.wash` | the single soft light behind a landing hero | never on app screens |
 
