@@ -3,7 +3,8 @@
    Every helper can be interrupted: a new call cancels the one still running. Rules: references/motion.md.
 
    window.nuMotion = { setTheme, menu, tooltips, dialog, sheet, toast, crossfade, swap, stagger, grow, collapse,
-                       roll, shake, loading, reveal, hairline, haptic, onHaptic, ms } */
+                       roll, shake, loading, reveal, hairline, haptic, onHaptic, ms,
+                       moments: calm, once, morph, arrive, draw, success, sheen, demo } */
 (function () {
   const root = document.documentElement;
   const css = name => getComputedStyle(root).getPropertyValue(name).trim();
@@ -11,6 +12,8 @@
   const px = name => parseFloat(css(name)) || 0;
   const ease = name => css(name) || 'ease';
   const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+  /* moments play only with full motion on a capable device; otherwise they show their end state */
+  const calm = () => !reduced() && root.dataset.perf !== 'low';
   const stop = el => el.getAnimations().forEach(a => a.cancel());
   const nextFrame = () => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
 
@@ -217,7 +220,8 @@
     setTimeout(() => { item.remove(); if (done) done(); }, ms('--dur-enter') + 30);
   }
 
-  /* number roll on a .roll element: only the changed characters move, up when the value grows, down when it falls */
+  /* number roll on a .roll element: only the changed characters move, up when the value grows, down when it falls.
+     Call it when the action ends (a slider's change, not its input), never while the user is still dragging. */
   function roll(el, text, dir) {
     const from = el.dataset.v || el.textContent.trim();
     el.dataset.v = text; el.textContent = '';
@@ -233,8 +237,8 @@
       const cur = document.createElement('span'); cur.textContent = text[i]; slot.append(cur);
       if (from[i] !== text[i]) {
         const ghost = document.createElement('span'); ghost.className = 'ghost'; ghost.textContent = from[i]; slot.append(ghost);
-        cur.animate([{ transform: `translateY(${dir * y}%)`, opacity: 0 }, { transform: 'none', opacity: 1 }], { duration: ms('--dur-enter'), easing: ease('--ease-out') });
-        ghost.animate([{ transform: 'none', opacity: 1 }, { transform: `translateY(${-dir * y}%)`, opacity: 0 }], { duration: ms('--dur-exit'), easing: ease('--ease-out'), fill: 'forwards' })
+        cur.animate([{ transform: `translateY(${dir * y}%)`, opacity: 0 }, { transform: 'none', opacity: 1 }], { duration: ms('--dur-roll'), easing: ease('--ease-out') });
+        ghost.animate([{ transform: 'none', opacity: 1 }, { transform: `translateY(${-dir * y}%)`, opacity: 0 }], { duration: ms('--dur-roll') * 0.6, easing: ease('--ease-out'), fill: 'forwards' })
           .finished.then(() => ghost.remove(), () => {});
       }
       el.append(slot);
@@ -286,7 +290,106 @@
     target.addEventListener('scroll', on, { passive: true }); on();
   }
 
+  /* ---- moments (references/motion.md, section 5): rare, once, on an event, at most one per screen.
+     Under reduced motion or on a weak device each shows its end state. ---- */
+
+  /* run play() once per session for this key (the signature's first show); later calls do nothing */
+  const played = new Set();
+  function once(key, play) {
+    const k = 'nu-once:' + key;
+    try { if (sessionStorage.getItem(k)) return false; sessionStorage.setItem(k, '1'); }
+    catch (e) { if (played.has(k)) return false; played.add(k); }
+    play(); return true;
+  }
+
+  /* shared element: `from` (a thumbnail on screen now) travels into `to` (the detail's hero) while update() changes the screen.
+     opts.back for the way back (a quarter faster); opts.screen fades in where View Transitions are missing (default: to).
+     Only the latest call may change the screen, so fast taps never leave two screens or none. */
+  let morphGen = 0, morphPair = null;
+  function morph(from, to, update, opts) {
+    opts = opts || {};
+    const my = ++morphGen; let done = false, vt = null;
+    if (morphPair) morphPair.forEach(el => { el.style.viewTransitionName = ''; });
+    morphPair = [from, to];
+    const run = () => {
+      if (done || my !== morphGen) return;
+      done = true; update();
+      if (vt) { from.style.viewTransitionName = ''; to.style.viewTransitionName = 'nu-morph'; }
+    };
+    if (!document.startViewTransition || !calm() || document.visibilityState !== 'visible') {
+      run();
+      (opts.screen || to).animate([{ opacity: 0 }, { opacity: 1 }], { duration: ms('--dur-exit'), easing: ease('--ease-out') });
+      return;
+    }
+    root.classList.toggle('nu-back', !!opts.back);
+    from.style.viewTransitionName = 'nu-morph'; to.style.viewTransitionName = '';
+    vt = document.startViewTransition(run);
+    const settle = () => {
+      run();
+      if (my === morphGen) { from.style.viewTransitionName = ''; to.style.viewTransitionName = ''; root.classList.remove('nu-back'); }
+    };
+    vt.ready.catch(run);   /* the browser skipped it: the screen still changes */
+    vt.finished.catch(() => {}).finally(settle);
+    setTimeout(settle, ms('--dur-moment') + 250);   /* never leave the user on the old screen, even when no frame is drawn */
+  }
+
+  /* the signature element slides into its place on its first show; dx, dy: where it starts, in px from its place.
+     Position the element with left/margin or the translate property, not transform. */
+  function arrive(el, dx, dy) {
+    stop(el); if (!calm()) return;
+    el.animate([{ transform: `translate(${dx || 0}px, ${dy || 0}px)`, opacity: 0 }, { transform: 'none', opacity: 1 }],
+      { duration: ms('--dur-signature'), easing: ease('--ease-out') });
+  }
+
+  /* a line drawing itself once: an SVG path or polyline with pathLength="1" */
+  function draw(path, delay) {
+    stop(path); if (!calm()) return;
+    path.style.strokeDasharray = '1';
+    path.animate([{ strokeDashoffset: 1 }, { strokeDashoffset: 0 }], { duration: ms('--dur-draw'), delay: delay || 0, easing: ease('--ease-out'), fill: 'backwards' })
+      .finished.then(() => { path.style.strokeDasharray = ''; }, () => {});
+  }
+
+  /* success, after the server confirmed: show the result with a .check-draw SVG in it, then call this:
+     the block settles from 96 % and the success haptic fires. Once per flow, no confetti. */
+  function success(block) {
+    if (calm()) { stop(block); block.animate([{ transform: 'scale(.96)' }, { transform: 'none' }], { duration: ms('--dur-moment') * 2 / 3, easing: ease('--ease-out') }); }
+    haptic('success');
+  }
+
+  /* the main button (.btn--sheen) just became available: one pass of light */
+  function sheen(btn) {
+    btn.classList.remove('shine');
+    if (!calm()) return;
+    void btn.offsetWidth; btn.classList.add('shine');
+  }
+
+  /* landing pages only: the live product window (.tempo-calm). Call it before the first paint. On screen at load (the hero),
+     it fades in after the hero lines; lower on the page, when a quarter of it comes into view. Then it runs steps (functions:
+     a row grows in, a price rolls, a note fades in) 600 ms apart, once, and all stays still.
+     Under reduced motion or on a weak device the steps run at once. Calling it again replays it. */
+  const demos = new WeakMap();
+  function demo(win, steps, delay) {
+    const prev = demos.get(win);
+    if (prev) { prev.timers.forEach(clearTimeout); if (prev.io) prev.io.disconnect(); }
+    const st = { timers: [], io: null }; demos.set(win, st);
+    if (!calm() || !('IntersectionObserver' in window)) { win.style.opacity = ''; steps.forEach(s => s()); return; }
+    const start = wait => {
+      win.style.opacity = '';
+      win.animate([{ opacity: 0 }, { opacity: 1 }], { duration: ms('--dur-hero'), delay: wait, easing: ease('--ease-out'), fill: 'backwards' });
+      steps.forEach((s, i) => st.timers.push(setTimeout(s, wait + ms('--dur-hero') + i * 600)));
+    };
+    const box = win.getBoundingClientRect();
+    if (box.top < innerHeight && box.bottom > 0) { start(delay == null ? ms('--dur-hero') + 3 * ms('--stagger-hero') : delay); return; }
+    win.style.opacity = '0';   /* below the fold: nobody sees it hidden */
+    st.io = new IntersectionObserver(entries => {
+      if (!entries[0].isIntersecting) return;
+      st.io.disconnect(); start(delay || 0);
+    }, { threshold: 0.25 });
+    st.io.observe(win);
+  }
+
   const api = { setTheme, menu, tooltips, dialog, sheet, toast, crossfade, swap, stagger, grow, collapse,
-    roll, shake, loading, reveal, hairline, haptic, onHaptic: null, ms };
+    roll, shake, loading, reveal, hairline, haptic, onHaptic: null, ms,
+    calm, once, morph, arrive, draw, success, sheen, demo };
   window.nuMotion = api;
 })();

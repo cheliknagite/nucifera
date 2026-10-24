@@ -29,13 +29,13 @@ Rounds: fix all FAILs, run again; at most three rounds. If the same FAIL survive
 8. Main action under the thumb; where the host platform has native controls, they are used; no fake platform UI in a real page.
 9. Dark theme has no hue except status colours, the main button near-white. Light theme is not an inversion: cards visible, button dark with a white label, links dark violet, hero a night window, same fonts and radii.
 10. Every requirement of the brief is on screen.
-11. Motion: the motion map is in DESIGN.md. Triggered in a browser, menus grow from their trigger, exits are faster, nothing waits for an animation, prices and results are there at once; with reduced motion emulated nothing travels and all content is visible.
+11. Motion: the motion map is in DESIGN.md. Triggered in a browser, menus grow from their trigger, exits are faster, nothing waits for an animation, prices and results are there at once; a moment plays once on its event, at most one per screen; with reduced motion emulated nothing travels and all content is visible.
 
 Screenshot checks: in Cyrillic headings the dots of Ї do not touch descenders above and "її" shows four dots; price digits line up; photos are clear; the light (landing only) has no banding and no seam under the header.
 
 ## 3. Fresh critic (agent `design-critic`)
 
-Run it for a new kind of screen and before a release, not for every small change. Give it only: the screenshot paths, the brief, `.design/DESIGN.md`. Do not explain your choices to it. It returns at most five findings, each with the rule it breaks, the screenshot, the place and a concrete fix; zero findings is a valid answer. Apply findings that cite a rule; ignore taste claims. Then ask it for a verdict per finding (resolved / partial / not resolved) without a new search. It sees still images, so for motion it reviews the motion map (fix, add at most three, leave as is), not the motion itself. Wait for its answer before you hand over; if it cannot run or does not answer, write "CRITIC NOT RUN" in the hand-over instead of skipping it silently.
+Run it for a new kind of screen and before a release, not for every small change. Give it only: the screenshot paths, the brief, `.design/DESIGN.md`, and the two exemplar cards with the twin used for the screen. Do not explain your choices to it. It returns at most five rule findings (rule, screenshot, place, concrete fix) and a level verdict with at most two level findings, each naming an element of an exemplar; zero findings is a valid answer. Apply rule findings and level findings; ignore bare taste claims. On "closer to the twin", make one pivot, not polish. Then ask it for a verdict per finding (resolved / partial / not resolved) without a new search. It sees still images, so for motion it reviews the motion map (fix, add at most three, leave as is), not the motion itself. Wait for its answer before you hand over; if it cannot run or does not answer, write "CRITIC NOT RUN" in the hand-over instead of skipping it silently.
 
 ## 4. The user's blind choice
 

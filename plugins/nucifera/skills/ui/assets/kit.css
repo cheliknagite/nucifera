@@ -243,8 +243,8 @@
 
 /* success: draw the check (pathLength="1" on the circle and the path); inline loader inside a button */
 .check-draw circle, .check-draw path { fill: none; stroke: var(--ok); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
-  stroke-dasharray: 1; stroke-dashoffset: 1; animation: nu-draw var(--dur-sheet) var(--ease-out) forwards; }
-.check-draw path { stroke-width: 2.6; animation-duration: calc(var(--dur-sheet) * .7); animation-delay: calc(var(--dur-sheet) * .35); }
+  stroke-dasharray: 1; stroke-dashoffset: 1; animation: nu-draw var(--dur-moment) var(--ease-out) forwards; }
+.check-draw path { stroke-width: 2.6; animation-duration: calc(var(--dur-moment) * .7); animation-delay: calc(var(--dur-moment) * .4); }
 @keyframes nu-draw { to { stroke-dashoffset: 0; } }
 .spin { width: 18px; height: 18px; border-radius: 50%; border: 2px solid currentColor; border-right-color: transparent; animation: nu-spin .7s linear infinite; }
 @keyframes nu-spin { to { transform: rotate(360deg); } }
@@ -254,6 +254,27 @@
 @keyframes nu-rise { from { opacity: 0; transform: translateY(var(--move-md)); } }
 .glassbar--quiet { border-bottom-color: transparent; transition: border-color var(--dur-exit) var(--ease-color); }
 .glassbar--quiet.scrolled { border-bottom-color: var(--line-1); }
+
+/* moments (references/motion.md, section 5): rare, once, on an event; motion.js plays them and shows the end state on weak devices */
+/* shared element: one named pair travels from the list into the detail (nuMotion.morph); the rest changes plainly */
+::view-transition-group(nu-morph) { animation-duration: var(--dur-moment); animation-timing-function: var(--ease-out); }
+:root.nu-back::view-transition-group(nu-morph) { animation-duration: calc(var(--dur-moment) * .75); }
+::view-transition-old(nu-morph), ::view-transition-new(nu-morph) { animation: none; mix-blend-mode: normal; height: 100%; object-fit: cover; overflow: clip; }
+::view-transition-old(root), ::view-transition-new(root) { animation-duration: var(--dur-exit); }
+/* main button sheen: one pass of light when the button becomes available (nuMotion.sheen); never a loop, never a look */
+.btn--sheen { position: relative; overflow: hidden; }
+.btn--sheen::after { content: ""; position: absolute; inset: 0; pointer-events: none; transform: translateX(-120%);
+  background: linear-gradient(100deg, transparent 30%, var(--sheen) 50%, transparent 70%); }
+.btn--sheen.shine::after { animation: nu-sheen var(--dur-sheen) var(--ease-out) 1; }
+@keyframes nu-sheen { to { transform: translateX(120%); } }
+/* a calm scope: recipes inside it (a landing's live product window) take the moment tempo */
+.tempo-calm { --dur-enter: var(--dur-moment); }
+
+/* materiality, still: .lit gives the one raised surface a 1px light top edge; .grain lays a fixed grain over a large dark gradient so it does not band */
+.lit { box-shadow: inset 0 1px 0 var(--edge-top), inset 0 0 0 1px var(--line-1), var(--shadow-card); }
+.grain { position: relative; isolation: isolate; }
+.grain::before { content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; pointer-events: none; opacity: var(--grain-alpha);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
 
 @media (prefers-reduced-motion: reduce) {
   .skeleton { animation: none; }

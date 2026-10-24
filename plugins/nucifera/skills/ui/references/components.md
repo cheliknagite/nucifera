@@ -12,7 +12,7 @@ Compose screens from these. When a screen needs something new, add a component t
 | Chips | `.chips` > `.chip[aria-pressed]` | filters, quick choices | selected is lighter; 36px visual with a 44px touch area; action and status chips use `.chips--wrap` (wrap, 44px) |
 | Field | `.field` > `input` | text input | 48px high, 16px text; `.field--error` + `.field-msg` for errors next to the field |
 | Query block | `.query` | the user's request on a results screen | main line + secondary line + `.btn--ghost` "Edit"; replaces a long chip row |
-| Card | `.card`, `.card--edge` | raised panel | at most one per screen, for the signature; hairline outline; edge highlight |
+| Card | `.card`, `.card--edge`, `.lit`, `.grain` | raised panel | at most one per screen, for the signature; hairline outline; corner light or top edge; grain over a large dark gradient |
 | Hero | `.hero` > `.hero__media` + `.hero__body` | the one main object of a screen (best result, product, article) | photo full-bleed, kept clear; in light theme add `.night` |
 | Badge | `.badge` | one short label over media or next to a title | opaque, no dot |
 | Rows | `.rows` > `.row` | lists of results, settings, history | thumb, title (2 lines max), meta, aside value; hairline separators; a status only when it is not the usual one |
@@ -31,9 +31,10 @@ Compose screens from these. When a screen needs something new, add a component t
 | Toasts | `.toasts` > `.toast` | confirmations | at the top; stack of three; `nuMotion.toast` |
 | Growing row | `.grow` > `.grow__in` | rows added or removed | `nuMotion.grow`, `nuMotion.collapse`; `nuMotion.stagger` on a list's first show |
 | Accordion | `.fold` > `.fold__head` (`.fold__chev`) + `.fold__body` > `.fold__in` > `.fold__content` | details, analysis sections | toggle `.open`; height by grid rows, no script |
-| Number | `.roll` | prices and counters that change | `nuMotion.roll(el, text, dir)` |
+| Number | `.roll` | prices and counters that change | `nuMotion.roll(el, text, dir)` when the action ends |
 | Success, loader | `.check-draw`, `.spin` | a result; waiting inside a button | the check draws once; on a platform with a native button progress, use that |
 | Landing motion | `.rise`, `.reveal`, `.glassbar--quiet` | landing pages only | hero lines with `--i`; `nuMotion.reveal`, `nuMotion.hairline` |
+| Moments | `.check-draw`, `.btn--sheen`, `.tempo-calm` | at most one per screen, on its event | `nuMotion.morph`, `once`, `arrive`, `draw`, `success`, `sheen`, `demo` (`references/motion.md`, section 5) |
 | Light (landing) | `.wash` | the single soft light behind a landing hero | never on app screens |
 
 ## Patterns

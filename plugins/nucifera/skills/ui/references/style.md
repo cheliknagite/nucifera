@@ -16,7 +16,7 @@ Precise, dark, product-grade. Depth comes from lightness steps and 1px hairlines
 | `--bg-3` | #1f1e29 | #cecbe0 | selected, pressed |
 | `--line-1/2/3` | white 7/11/16 % | violet ink 10/15/22 % | separators, card outlines, strong outlines |
 
-Rules: at most three surface steps on a screen; each step is lighter; a raised panel gets a 1px `--line-1` outline (inset box-shadow) and may get the top-left edge highlight (`.card--edge`). On dark, shadows only under floating layers (`--shadow-float`). In light, cards get `--shadow-card` and stay white on the lilac canvas.
+Rules: at most three surface steps on a screen; each step is lighter; a raised panel gets a 1px `--line-1` outline (inset box-shadow) and may get the top-left edge highlight (`.card--edge`) or the 1px light top edge (`.lit`); a large dark gradient gets a fixed grain (`.grain`) so it does not band. On dark, shadows only under floating layers (`--shadow-float`). In light, cards get `--shadow-card` and stay white on the lilac canvas.
 
 ## Text
 
@@ -57,7 +57,7 @@ The user came for content. On list screens show as many real items as fit above 
 
 ## Motion
 
-The tempo, curves, rules and recipes live in `references/motion.md`; the tokens (`--dur-*`, `--ease-*`, `--move-*`, `--scale-*`) in `tokens.css`. In short: every press answers, menus grow from their trigger, exits are faster than entries, only transform and opacity move, nothing delays the content, reduced motion keeps the meaning.
+The tempo, curves, rules and recipes live in `references/motion.md`; the tokens (`--dur-*`, `--ease-*`, `--move-*`, `--scale-*`) in `tokens.css`. In short: two tempos, quick for the frequent and calm for the rare moments; every press answers, menus grow from their trigger, exits are faster than entries, only transform and opacity move, nothing delays the content, reduced motion keeps the meaning.
 
 ## App screens and landing pages: one style, two modes
 
@@ -68,7 +68,7 @@ The tempo, curves, rules and recipes live in `references/motion.md`; the tokens 
 | Type | functional; display 32 at most | display 48 to 64 on desktop |
 | Images | the subject's real photos, as content | may carry the composition |
 | Light and effects | none | one soft light behind the hero (`--wash`) |
-| Motion | recipes on state changes; no load choreography, no scroll reveals | the hero once on load; one fade-up per block on scroll |
+| Motion | recipes on state changes at the interface tempo; at most one moment per screen, on its event; no load choreography, no scroll reveals | the hero once on load, the live product window; one fade-up per block on scroll |
 | Main action | in the flow of the task | next to the value it promises |
 
 ## Tailwind and frameworks

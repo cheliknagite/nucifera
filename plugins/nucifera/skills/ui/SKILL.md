@@ -13,7 +13,7 @@ license: MIT-0
 
 # UI: precise dark style
 
-You are the design lead. The look is dark, precise and product-grade, in the line of Linear, Raycast and Reflect: a near-black canvas, depth by a lightness ladder instead of shadows, 1px hairlines, a monochrome dark theme (white ink, a near-white main button, colour only for status), content that reads without effort, and a light theme "Dusk" with a violet accent as a full sibling. The style lives in precise execution, not in effects; effects are what make a dark page look AI-generated.
+You are the design lead. The look is dark, precise and product-grade, in the line of Linear, Raycast and Reflect: a near-black canvas, depth by a lightness ladder instead of shadows, 1px hairlines, a monochrome dark theme (white ink, a near-white main button, colour only for status), content that reads without effort, and a light theme "Dusk" with a violet accent as a full sibling. The style lives in precise execution, not in effects; effects are what make a dark page look AI-generated. Near-black with one accent is itself a known AI default, so the style earns its place only through the face of each screen: its signature, its real data and precise type.
 
 Priority: the user's brief > the project's `.design/brand.css` > this style > defaults. If the user pins a look that conflicts with a rule below, follow the user and keep the craft.
 
@@ -25,10 +25,13 @@ Write these to `.design/DESIGN.md` (create the folder; on later tasks update thi
 - **Direction**: this style plus what is specific to the subject.
 - **Accent**: the default (no hue in dark: white ink and a near-white main button; violet in the light theme), or the brand colour; name its roles (at most 3: main action, current selection, state).
 - **Signature**: one element the screen is remembered by, taken from the subject's own world: its documents, instruments, artifacts or data. A car inspection gives a top-view paint-thickness map; delivery gives the route strip. It can be an object, a typographic statement or the way the data itself is shown; simple screens need none. One per screen; everything around it stays quiet. Read `references/signature-moves.md`.
+- **Face**: one sentence on what makes this screen unlike any other product's: the signature, the one thing set larger or bolder than the system's default (a number, a word, a photo), and the real data only this product has. If the sentence fits any app, it is not a face yet.
 - **Density**: what must be visible on the first screen without scrolling.
 - **Motion**: the motion map, a short table of every state change with its recipe; actions used many times a day stay still. Read `references/motion.md`.
 
 Decide yourself unless the user wants to choose; state the choice in one line of your reply.
+
+Then raise the level with references: open `references/exemplars/index.md`, read the two cards closest to this screen type (pick at random among close matches) and the type's generic twin. Under the face, write a transfer note: three principles you take and three things you do not (block order, shapes, copy, the other product's signature). Close the cards and build from the note and the kit. Never build from a single reference and never repeat a reference's block order: copies are recognised at once.
 
 ## 2. Build from the system
 
@@ -44,7 +47,7 @@ The floor, in numbers:
 - Surfaces: canvas, then raised steps that are lighter (about +0.02 to +0.03 OKLCH L) with a 1px hairline. On dark, no shadows except under floating layers.
 - Touch targets at least 44px; text inputs at least 16px font.
 - One accent. The main action is a filled `--cta-bg` button.
-- Motion at the house tempo from the tokens (`--dur-*`, `--ease-*`), built from the kit's recipes and `assets/motion.js`: every press answers, menus grow from their trigger, exits are faster than entries, only transform and opacity move, prices and results never wait for an animation, stagger only on a list's first show. Reduced motion keeps the meaning.
+- Motion in two tempos from the tokens (`--dur-*`, `--ease-*`): quick for the frequent, calm for moments; built from the kit's recipes and `assets/motion.js`: every press answers, menus grow from their trigger, exits are faster than entries, only transform and opacity move, prices and results never wait for an animation, stagger only on a list's first show. At most one moment per screen (a photo growing into its card, the signature arriving once, success), on its event, never in a loop. Reduced motion keeps the meaning.
 
 Readable beats compact: people read on the go, and anything they have to decode is a failure.
 
@@ -90,7 +93,7 @@ Why these and not "avoid an AI look": a vague ban swaps one default for the next
 
 1. For HTML mockups and pages run `node <this-skill-dir>/scripts/verify.mjs .design/<file>.html`. It renders every screen at 360, 390 and 430px in the dark theme and at 390px in the light one, and writes `.design/verify/report.md` with FAIL and WARN lines: overflow, clipped text, contrast, touch size, fonts, small text, more than one secondary grey, coloured glows, glass count, accent places, tabular digits, and motion lint (`transition: all`, ease-in, endless loops). Fix every FAIL. At most three rounds; if the same FAIL comes back, stop and report it.
 2. Look at the screenshots yourself against the checklist in `references/verify.md`: one main element and action, three text levels, no cramped areas or empty thirds, the signature present, nothing from section 3. Open the page in a browser and trigger every change from the motion map.
-3. For a new type of screen, or before a release, run the `design-critic` agent with only the screenshots, the brief and `.design/DESIGN.md`. Apply findings that cite a rule; ignore taste claims. Wait for its report before you hand over: never hand over while it runs. If it cannot run or does not answer, write "CRITIC NOT RUN" in the hand-over.
+3. For a new type of screen, or before a release, run the `design-critic` agent with the screenshots, the brief, `.design/DESIGN.md` and the same two exemplar cards plus the twin. It checks the rules and the level: closer to the exemplars or to the generic twin, and the biggest gap. Apply rule findings and level findings that name a place in an exemplar; ignore bare taste claims. If the verdict is "closer to the twin", make one pivot (change the face, the signature or the density, not polish), check again, then stop. Wait for its report before you hand over: never hand over while it runs. If it cannot run or does not answer, write "CRITIC NOT RUN" in the hand-over.
 4. Without a browser (claude.ai, the API) build anyway and write "PIXELS UNVERIFIED" in the hand-over.
 
 Hand over: file paths, the screenshots, what was checked, what remains open.
@@ -99,6 +102,7 @@ Hand over: file paths, the screenshots, what was checked, what remains open.
 
 - `references/style.md`: token roles for both themes, light, glass, app screens vs landing pages, Tailwind mapping.
 - `references/motion.md`: the tempo, curves, rules, recipes and haptics for motion.
+- `references/exemplars/index.md`: reference cards per screen type with their generic twins: the level to aim at, never a template.
 - `references/components.md`: the kit and when to use each component.
 - `references/typography-cyrillic.md`: Cyrillic typography, numbers and prices.
 - `references/signature-moves.md`: how to find the one memorable element in the subject.

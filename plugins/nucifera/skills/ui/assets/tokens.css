@@ -18,6 +18,9 @@
   --line-2: rgb(255 255 255 / .11);
   --line-3: rgb(255 255 255 / .16);
   --edge-hi: rgb(255 255 255 / .16);   /* top-edge highlight of raised panels */
+  --edge-top: rgb(255 255 255 / .08);  /* the 1px light top edge of the one raised surface (.lit) */
+  --grain-alpha: .045;                 /* fixed grain over a large dark gradient (.grain) */
+  --sheen: rgb(255 255 255 / .55);     /* the one pass of light over the main button */
   /* text: primary and ONE secondary grey; --fg-3 is the same grey, kept as an alias */
   --fg-1: #f5f4fa;      /* 18:1 primary */
   --fg-2: #adacbd;      /* all secondary text: 9:1 on --bg-0, 7.4:1 on --bg-3 */
@@ -40,7 +43,7 @@
   --focus: rgb(255 255 255 / .5);
   /* depth */
   --shadow-float: 0 4px 24px rgb(0 0 0 / .45), 0 8px 32px rgb(0 0 0 / .35);
-  --shadow-card: none;
+  --shadow-card: 0 0 #0000;   /* no card shadow on dark; a valid empty shadow, never "none": it sits in shadow lists with the hairline */
   --scrim: rgb(0 0 0 / .55);   /* behind dialogs and sheets */
   /* glass: full on capable devices, solid fallback is the default in CSS */
   --glass-bg: rgb(7 6 11 / .96);
@@ -61,6 +64,7 @@
   --line-2: rgb(40 25 90 / .15);
   --line-3: rgb(40 25 90 / .22);
   --edge-hi: rgb(40 25 90 / .14);
+  --edge-top: rgb(255 255 255 / .9); --grain-alpha: .05; --sheen: rgb(255 255 255 / .22);
   --fg-1: #221a46;      /* violet ink, 12:1 */
   --fg-2: #3c3657;      /* the one secondary grey: 8.5:1 on --bg-0, 7.1:1 on --bg-3 */
   --fg-3: #3c3657;
@@ -115,16 +119,22 @@
   --r-sm: 8px; --r-md: 12px; --r-lg: 16px; --r-xl: 20px; --r-pill: 999px;
   /* touch */
   --tap: 44px; --field-h: 48px; --btn-h: 50px;
-  /* motion: a calm tempo, about 1.75x the common product norms, so people can follow what moved; never sluggish.
-     Pick the role that matches what the motion does, not the nearest number. Rules and recipes: references/motion.md */
+  /* motion: two tempos. The interface tempo (menus, tabs, sheets, rows) matches measured products, so frequent things feel quick;
+     the moment tempo is calm and kept for rare, first-time motion. Pick the role, not the nearest number. Rules: references/motion.md */
   --dur-0: 0ms;          /* hover highlight in; keyboard-driven actions and actions used 100+ times a day */
-  --dur-press: 100ms;    /* press feedback: stays fast at any tempo */
-  --dur-fast: 175ms;     /* tooltip out */
-  --dur-exit: 280ms;     /* leaving (menu, dialog, toast), hover highlight out, colour and state changes, crossfades */
-  --dur-enter: 420ms;    /* arriving or moving: menu, dialog, selection indicator, accordion, number roll, screen change, list rows */
-  --dur-sheet: 700ms;    /* bottom sheet in (spring), toast in, success check */
-  --dur-hero: 840ms;     /* landing hero and scroll reveal: rare moments only */
-  --stagger: 70ms;       /* between list rows on first show, at most five rows */
+  --dur-press: 100ms;    /* press feedback */
+  --dur-fast: 120ms;     /* tooltip out */
+  --dur-exit: 180ms;     /* leaving (menu, dialog, toast), hover highlight out, colour and state changes, crossfades */
+  --dur-enter: 240ms;    /* arriving or moving: menu, dialog, selection indicator, accordion, screen change, list rows */
+  --dur-sheet: 420ms;    /* bottom sheet in (spring), toast in */
+  --stagger: 50ms;       /* between list rows on first show, at most five rows */
+  /* moments: rare, once, on an event (references/motion.md, section 5) */
+  --dur-moment: 450ms;   /* shared element morph, success check, a block settling */
+  --dur-roll: 600ms;     /* a number rolling to its new value after an action */
+  --dur-signature: 700ms; /* the signature element arriving on its first show */
+  --dur-draw: 800ms;     /* a line or chart drawing itself once */
+  --dur-hero: 840ms;     /* landing hero, scroll reveal, the product window */
+  --dur-sheen: 1100ms;   /* one pass of light over the main button */
   --stagger-hero: 105ms; /* between hero lines */
   --ease-out: cubic-bezier(.23, 1, .32, 1);     /* enter and exit */
   --ease-move: cubic-bezier(.77, 0, .175, 1);   /* moving within the screen */
@@ -148,12 +158,13 @@
 /* Cyrillic headings need air above the dots of Ї and Й */
 :lang(uk) :is(h1, h2, h3), :lang(ru) :is(h1, h2, h3) { line-height: max(1.15, var(--lh, 1.15)); }
 
-/* reduced motion keeps the meaning: no travel and no scaling, short fades; colour, focus rings and loaders stay */
+/* reduced motion keeps the meaning: no travel and no scaling, short fades, moments show their end state; colour, focus rings and loaders stay */
 @media (prefers-reduced-motion: reduce) {
-  :root { --dur-fast: 120ms; --dur-exit: 160ms; --dur-enter: 200ms; --dur-sheet: 200ms; --dur-hero: 200ms;
+  :root { --dur-fast: 100ms; --dur-exit: 150ms; --dur-enter: 180ms; --dur-sheet: 180ms; --dur-hero: 200ms;
+    --dur-moment: 160ms; --dur-roll: 160ms; --dur-signature: 0ms; --dur-draw: 0ms; --dur-sheen: 0ms;
     --stagger: 0ms; --stagger-hero: 0ms; --move-sm: 0px; --move-md: 0px; --travel: 0;
     --press-scale: 1; --scale-menu: 1; --scale-dialog: 1; --scale-tip: 1;
     --ease-spring: var(--ease-out); --ease-move: var(--ease-out); }
 }
-/* weak devices (a platform adapter sets data-perf="low"): no stagger, no spring */
+/* weak devices (a platform adapter sets data-perf="low"): no stagger, no spring; motion.js shows moments in their end state */
 [data-perf="low"] { --stagger: 0ms; --stagger-hero: 0ms; --ease-spring: var(--ease-out); }
