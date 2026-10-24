@@ -35,7 +35,7 @@ Compose screens from these. When a screen needs something new, add a component t
 | Success, loader | `.check-draw`, `.spin` | a result; waiting inside a button | the check draws once; on a platform with a native button progress, use that |
 | Landing motion | `.rise`, `.reveal`, `.glassbar--quiet` | landing pages only | hero lines with `--i`; `nuMotion.reveal`, `nuMotion.hairline` |
 | Bottom action bar | `.cta-bar` > `.btn--primary` | landing pages on phones | shows once the hero's main button has scrolled away, hides at the final call; `nuMotion.ctaBar(bar, heroButton, finalBlock)` |
-| Dock (websites) | `.dock` > `.dock__item`, `.dock__slot` | desktop websites with windows or panels the user minimizes | `nuMotion.genie(win, slot, true|false)`: the window pours into its slot and comes back |
+| Window genie (websites) | any opener: a link, a cover, a row, a card; optional `.dock` > `.dock__item`, `.dock__slot` | windows opened from an element on desktop websites | `nuMotion.genie(win, source, true|false)`: out of the element that was clicked and back into it; a dock only for windows the user minimizes there |
 | Moments | `.check-draw`, `.btn--sheen`, `.tempo-calm` | at most one per screen, on its event | `nuMotion.morph`, `once`, `arrive`, `draw`, `success`, `sheen`, `demo` (`references/motion.md`, section 5) |
 | Light (landing) | `.wash` | the single soft light behind a landing hero | never on app screens |
 

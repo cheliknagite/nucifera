@@ -262,7 +262,8 @@
 .cta-bar.show { opacity: 1; visibility: visible; pointer-events: auto; transition: opacity var(--dur-exit) var(--ease-out), visibility 0s; }
 @media (min-width: 641px) { .cta-bar { display: none; } }
 
-/* websites only: a dock at the bottom and the place where a minimized window lands (nuMotion.genie adds .on) */
+/* websites only, optional: a dock for windows the user minimizes; nuMotion.genie shows the .dock__slot (.on) while it holds
+   the window. Most windows pour back into the element that opened them and need no dock. */
 .dock { position: fixed; left: 50%; bottom: var(--s-4); translate: -50% 0; z-index: 40; display: flex; align-items: center; gap: 6px; padding: 6px;
   border-radius: var(--r-lg); background: var(--bg-1); box-shadow: inset 0 1px 0 var(--edge-top), inset 0 0 0 1px var(--line-2), var(--shadow-float); }
 .dock__item { display: grid; place-items: center; min-width: var(--tap); height: var(--tap); padding: 0 var(--s-3); border: 0; border-radius: var(--r-md);

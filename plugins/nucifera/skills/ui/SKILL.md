@@ -47,7 +47,7 @@ The floor, in numbers:
 - Surfaces: canvas, then raised steps that are lighter (about +0.02 to +0.03 OKLCH L) with a 1px hairline. On dark, no shadows except under floating layers.
 - Touch targets at least 44px; text inputs at least 16px font.
 - One accent. The main action is a filled `--cta-bg` button.
-- Motion in two tempos from the tokens (`--dur-*`, `--ease-*`): quick for the frequent, calm for moments; built from the kit's recipes and `assets/motion.js`: every press answers, menus grow from their trigger, exits are faster than entries, only transform and opacity move, prices and results never wait for an animation, stagger only on a list's first show. At most one moment per screen (a photo growing into its card, the signature arriving once, success, on websites a window pouring into the dock), on its event, never in a loop. Reduced motion keeps the meaning.
+- Motion in two tempos from the tokens (`--dur-*`, `--ease-*`): quick for the frequent, calm for moments; built from the kit's recipes and `assets/motion.js`: every press answers, menus grow from their trigger, exits are faster than entries, only transform and opacity move, prices and results never wait for an animation, stagger only on a list's first show. At most one moment per screen (a photo growing into its card, the signature arriving once, success, on websites a window pouring out of the element that opened it and back), on its event, never in a loop. Reduced motion keeps the meaning.
 
 Readable beats compact: people read on the go, and anything they have to decode is a failure.
 

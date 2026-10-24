@@ -400,57 +400,81 @@
     st.io.observe(win);
   }
 
-  /* websites only: a window the user minimizes pours into its place in the dock like the Mac genie, and comes back out.
-     The window stays one body: it is cut into thin strips that all travel the same distance, and each strip's width and
-     offset come from where it is in the funnel at that moment; first the funnel bends, then the body slides in.
-     minimize true hides the window (visibility, inert) and shows the slot (.on) as it lands; false brings it back.
-     Below 641px, inside a mini app, under reduced motion or on a weak device it fades instead.
-     The window and the dock should share a parent without a transform in between (the clones copy its styles there). */
+  /* websites only: the window genie, like the Mac. A window pours out of the element that opened it and back into it on close:
+     a link, a video cover, a list row, a card, or a .dock__slot for a window the user minimizes into a dock. open true pours it
+     out (the window already stands in its final place and stays hidden during the pour); false pours it in and hides it
+     (visibility, inert). The funnel runs along the axis where the source is farther from the window's centre, mirrored for a
+     source above or to the left; a source that overlaps the window gets its mouth at the window's near edge. The window stays
+     one body: thin strips across the flow all travel the same distance, and each strip's width and offset come from where it is
+     in the funnel at that moment; first the funnel bends, then the body slides. Call it before you lock the page's scroll (a
+     vanishing scrollbar shifts the source). On close, focus that was inside the window returns to the source, and a video keeps
+     the frame it stopped on. Below 641px, inside a mini app, under reduced motion, on a weak device or without a visible source
+     it fades. The window and the source should share a parent without a transform in between (the strips copy its styles). */
   const genies = new WeakMap();
-  function genie(win, slot, minimize) {
+  function genie(win, source, open) {
     if (genies.has(win)) return genies.get(win);
     const show = on => { win.style.visibility = on ? '' : 'hidden'; win.toggleAttribute('inert', !on); };
     const wait = (anims, t) => Promise.race([Promise.all(anims.map(x => x.finished.catch(() => {}))), new Promise(r => setTimeout(r, t + 250))]);
+    const slot = source && source.classList && source.classList.contains('dock__slot') ? source : null;   /* a dock slot shows while it holds the window */
+    const b = source && source.getClientRects().length ? source.getBoundingClientRect() : null;           /* measured now, before any scroll lock */
+    const refocus = !open && win.contains(document.activeElement);
+    if (!open) win.querySelectorAll('video').forEach(v => {   /* the strips are copies: keep the frame the video stopped on */
+      if (v.readyState < 2 || !v.videoWidth) return;
+      try {
+        const c = document.createElement('canvas'), k = Math.min(1, 640 / Math.max(v.videoWidth, v.videoHeight));
+        c.width = Math.round(v.videoWidth * k); c.height = Math.round(v.videoHeight * k);
+        c.getContext('2d').drawImage(v, 0, 0, c.width, c.height); v.poster = c.toDataURL('image/jpeg', .8);
+      } catch (e) { /* a cross-origin video keeps its own poster */ }
+    });
     const run = async () => {
-      if (!calm() || api.miniApp || innerWidth < 641) {
-        if (minimize) { await wait([win.animate([{ opacity: 1 }, { opacity: 0 }], { duration: ms('--dur-exit'), easing: ease('--ease-out') })], ms('--dur-exit')); show(false); slot.classList.add('on'); }
-        else { slot.classList.remove('on'); show(true); await wait([win.animate([{ opacity: 0 }, { opacity: 1 }], { duration: ms('--dur-enter'), easing: ease('--ease-out') })], ms('--dur-enter')); }
+      if (!calm() || api.miniApp || innerWidth < 641 || !b || !b.width || !b.height) {
+        if (open) { if (slot) slot.classList.remove('on'); show(true); await wait([win.animate([{ opacity: 0 }, { opacity: 1 }], { duration: ms('--dur-enter'), easing: ease('--ease-out') })], ms('--dur-enter')); }
+        else { await wait([win.animate([{ opacity: 1 }, { opacity: 0 }], { duration: ms('--dur-exit'), easing: ease('--ease-out') })], ms('--dur-exit')); show(false); if (slot) slot.classList.add('on'); }
         return;
       }
-      const a = win.getBoundingClientRect(), b = slot.getBoundingClientRect();
-      const W = a.width, H = a.height, N = 48, K = 30, d = ms('--dur-genie') * (minimize ? 1 : .76);
-      const xt = (b.left + b.width / 2) - (a.left + W / 2), wd = b.width, yd = b.top - a.top;
+      const a = win.getBoundingClientRect(), W = a.width, H = a.height;
+      const dx = b.left + b.width / 2 - (a.left + W / 2), dy = b.top + b.height / 2 - (a.top + H / 2);
+      const vert = Math.abs(dy) / H >= Math.abs(dx) / W;                 /* which way the funnel runs */
+      const sgn = vert ? (dy >= 0 ? 1 : -1) : (dx >= 0 ? 1 : -1);         /* towards the source */
+      const L = vert ? H : W, C = vert ? W : H;                            /* length along the flow, size across it */
+      const near = vert ? (sgn > 0 ? b.top - a.top : a.bottom - b.bottom) : (sgn > 0 ? b.left - a.left : a.right - b.right);
+      const ud = Math.max(near, L);                                        /* the mouth: at the source, never inside the window */
+      const cs = Math.max(10, Math.min(vert ? b.width : b.height, C / 2)), ct = vert ? dx : dy;
+      const N = 48, K = 30, d = ms('--dur-genie') * (open ? .76 : 1), sl = L / N;
       const smooth = u => u <= 0 ? 0 : u >= 1 ? 1 : u * u * (3 - 2 * u);
       const layer = document.createElement('div'); layer.className = 'nu-genie'; layer.setAttribute('aria-hidden', 'true');
       layer.style.cssText = `left:${a.left}px;top:${a.top}px;width:${W}px;height:${H}px`;
-      const anims = [];
+      const strips = [];
       for (let i = 0; i < N; i++) {
         const c = win.cloneNode(true); c.removeAttribute('id'); c.removeAttribute('inert'); c.querySelectorAll('[id]').forEach(x => x.removeAttribute('id'));
-        c.style.cssText += `;position:absolute;left:0;top:0;right:auto;bottom:auto;width:${W}px;height:${H}px;margin:0;translate:none;visibility:visible`;
-        const top = i * H / N, yi = top + H / N / 2;
-        c.style.clipPath = `inset(${Math.max(0, top - .5)}px 0 ${Math.max(0, H - top - H / N - .5)}px 0)`;
-        c.style.transformOrigin = `50% ${yi}px`;
+        c.style.cssText += `;position:absolute;left:0;top:0;right:auto;bottom:auto;width:${W}px;height:${H}px;margin:0;translate:none;transition:none;visibility:visible`;
+        const ui = i * sl + sl / 2;                                        /* the strip's place, counted from the far edge */
+        const p0 = sgn > 0 ? i * sl : L - (i + 1) * sl;                    /* where it starts inside the window */
+        const lo = Math.max(0, p0 - .5), hi = Math.max(0, L - p0 - sl - .5);
+        c.style.clipPath = vert ? `inset(${lo}px 0 ${hi}px 0)` : `inset(0 ${hi}px 0 ${lo}px)`;
+        c.style.transformOrigin = vert ? `50% ${p0 + sl / 2}px` : `${p0 + sl / 2}px 50%`;
         const frames = [];
         for (let k = 0; k <= K; k++) {
           const t = k / K, bend = smooth(Math.min(1, t / .38));
-          const D = t <= .3 ? 0 : Math.pow((t - .3) / .7, 1.7) * (yd + H);   /* every strip slides the same distance, faster near the dock */
-          const y = yi + D, f = smooth(y / yd), inside = y > yd;
-          const w = inside ? wd : W - bend * (W - wd) * f, cx = inside ? xt : bend * xt * f;
-          frames.push({ offset: t, opacity: inside ? 0 : 1, transform: `translate(${cx}px, ${inside ? yd - yi : D}px) scale(${w / W}, ${inside ? .05 : 1})` });
+          const D = t <= .3 ? 0 : Math.pow((t - .3) / .7, 1.7) * (ud + L);   /* every strip slides the same distance, faster near the source */
+          const u = ui + D, f = smooth(u / ud), inside = u > ud;
+          const w = inside ? cs : C - bend * (C - cs) * f, cross = inside ? ct : bend * ct * f, flow = sgn * (inside ? ud - ui : D);
+          const sa = inside ? .05 : 1, sc = w / C;
+          frames.push({ offset: t, opacity: inside ? 0 : 1,
+            transform: vert ? `translate(${cross}px, ${flow}px) scale(${sc}, ${sa})` : `translate(${flow}px, ${cross}px) scale(${sa}, ${sc})` });
         }
-        layer.append(c);
-        anims.push([c, frames]);
+        layer.append(c); strips.push([c, frames]);
       }
       win.parentNode.append(layer); show(false);
-      const opts = { duration: d, easing: 'linear', direction: minimize ? 'normal' : 'reverse', fill: 'both' };
-      const played = anims.map(([c, f]) => c.animate(f, opts));
-      if (minimize) {
-        const land = setTimeout(() => { slot.classList.add('on'); slot.animate([{ opacity: 0, transform: 'scale(.9)' }, { opacity: 1, transform: 'none' }], { duration: ms('--dur-exit'), easing: ease('--ease-out') }); }, d * .8);
-        await wait(played, d); clearTimeout(land); slot.classList.add('on');
-      } else { slot.classList.remove('on'); await wait(played, d); show(true); }
-      layer.remove();
+      if (open && slot) slot.classList.remove('on');
+      const played = strips.map(([c, f]) => c.animate(f, { duration: d, easing: 'linear', direction: open ? 'reverse' : 'normal', fill: 'both' }));
+      const land = !open && slot ? setTimeout(() => { slot.classList.add('on'); slot.animate([{ opacity: 0, transform: 'scale(.9)' }, { opacity: 1, transform: 'none' }], { duration: ms('--dur-exit'), easing: ease('--ease-out') }); }, d * .8) : 0;
+      await wait(played, d);
+      clearTimeout(land); if (!open && slot) slot.classList.add('on');
+      layer.remove(); if (open) show(true);
     };
-    const p = run().finally(() => genies.delete(win));
+    const p = run().then(() => { if (refocus && source && source.isConnected && source.getClientRects().length) source.focus({ preventScroll: true }); })
+      .finally(() => genies.delete(win));
     genies.set(win, p);
     return p;
   }
