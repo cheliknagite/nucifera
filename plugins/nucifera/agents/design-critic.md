@@ -30,7 +30,8 @@ Level pass, after the checklist:
 - Copy check: the same block order and proportions as an exemplar, or its signature, is a FAIL ("copy").
 Landing pass, for landing pages only (`references/landing.md`):
 - About 700 to 900 words in all; each section one idea that fits about one screen, with clear air between; no two dense sections in a row.
-- One grid per section; every chart headed by its takeaway; the questions open one at a time; one name per thing and one price format.
+- One grid per section; every chart headed by its takeaway; the questions open one at a time; one name per thing, one number format, one example story across the page; plans as one table with the labels once.
+- The product's own signature and real screens carried over from its DESIGN.md; on a desktop the product takes the larger half of the first screen.
 - Each section's background chosen with a reason (plain, local light, grain, a photo with a mask, lines that explain); images fit the story, keep their focal point on a phone, and text over a photo stays readable; no decoration repeated without a reason; a brand character only small.
 Report landing findings like rule findings, citing the section of `references/landing.md`.
 

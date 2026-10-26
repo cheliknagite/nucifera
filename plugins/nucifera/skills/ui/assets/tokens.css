@@ -18,6 +18,8 @@
   --line-2: rgb(255 255 255 / .11);
   --line-3: rgb(255 255 255 / .16);
   --edge-hi: rgb(255 255 255 / .16);   /* top-edge highlight of raised panels */
+  --wash-tint: rgb(255 255 255 / .06); /* local light behind one object (.light-behind) */
+  --island: #000;                      /* the camera island of a phone frame (.device) */
   --edge-top: rgb(255 255 255 / .08);  /* the 1px light top edge of the one raised surface (.lit) */
   --grain-alpha: .045;                 /* fixed grain over a large dark gradient (.grain) */
   --sheen: rgb(255 255 255 / .55);     /* the one pass of light over the main button */
@@ -64,6 +66,7 @@
   --line-2: rgb(40 25 90 / .15);
   --line-3: rgb(40 25 90 / .22);
   --edge-hi: rgb(40 25 90 / .14);
+  --wash-tint: rgb(255 255 255 / .55); --island: #000;
   --edge-top: rgb(255 255 255 / .9); --grain-alpha: .05; --sheen: rgb(255 255 255 / .22);
   --fg-1: #221a46;      /* violet ink, 12:1 */
   --fg-2: #3c3657;      /* the one secondary grey: 8.5:1 on --bg-0, 7.1:1 on --bg-3 */
@@ -115,7 +118,10 @@
   /* space: 4px grid */
   --s-1: 4px; --s-2: 8px; --s-3: 12px; --s-4: 16px; --s-5: 20px; --s-6: 24px; --s-8: 32px; --s-12: 48px; --s-16: 64px; --s-24: 96px;
   --pad-screen: 20px;
-  --sec-y: clamp(80px, 10vw, 160px);   /* landing pages: space above and below each section */
+  --sec-y: clamp(80px, 12vw, 200px);   /* landing pages: the space between two sections */
+  --t-hero: 600 clamp(40px, 5vw, 64px)/1.08 var(--font-sans);    --ls-hero: -0.03em;   /* landing: the page's one headline */
+  --t-section: 600 clamp(28px, 3vw, 40px)/1.15 var(--font-sans); --ls-section: -0.025em; /* landing: section headings */
+  --t-lead: 400 clamp(17px, 1.4vw, 20px)/1.5 var(--font-sans);   /* landing: the sentence under a heading */
   /* radii: pill for chips, 12 for fields and buttons, 16 to 20 for cards */
   --r-sm: 8px; --r-md: 12px; --r-lg: 16px; --r-xl: 20px; --r-pill: 999px;
   /* touch */

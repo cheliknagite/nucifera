@@ -27,7 +27,7 @@ const widths = opt('widths', '360,390,430').split(',').map(Number);
 const pageWidths = opt('widths', '360,390,430,1440').split(',').map(Number);   /* plain pages also get a desktop view */
 const lightWidths = opt('light', '390').split(',').filter(Boolean).map(Number);
 const HEIGHT = { 360: 780, 390: 844, 430: 932, 1440: 900 };
-const LONG = 5000;
+const LONG = Number(opt('long', '9000'));   /* the long view of a plain page; raise it for very long pages */
 mkdirSync(out, { recursive: true });
 
 function findBrowser() {
@@ -47,7 +47,8 @@ if (!browser) { console.error('No Chrome, Edge or Chromium found. Pass --browser
 
 const profile = join(tmpdir(), 'nucifera-verify-profile');
 const common = ['--headless=new', '--disable-gpu', '--hide-scrollbars', '--disable-lcd-text', '--force-device-scale-factor=1',
-  '--no-first-run', '--no-default-browser-check', `--user-data-dir=${profile}`, '--virtual-time-budget=10000'];
+  '--no-first-run', '--no-default-browser-check', `--user-data-dir=${profile}`, '--virtual-time-budget=10000',
+  '--force-prefers-reduced-motion'];   /* shots show every moment in its end state, the way a still review needs it */
 const url = q => base + (base.includes('?') ? '&' : '?') + new URLSearchParams(q).toString();
 const run = extra => execFileSync(browser, [...common, ...extra], { encoding: 'utf8', maxBuffer: 256 * 1024 * 1024, timeout: 90000, stdio: ['ignore', 'pipe', 'ignore'] });
 const dump = q => run(['--window-size=1400,1000', '--dump-dom', url(q)]);
@@ -89,7 +90,7 @@ if (!screens.length) {
     report.warn += report.pageWarn.length;
   }
   report.note = 'No frame.js screens found: screenshots only, no measurements. page-<width>.png is the first screen; ' +
-    '-long.png is the page in a 5000px-tall view (sections sized in vh look stretched there, blank space after the footer is outside the page). ' +
+    '-long.png is the page in a tall view (--long, 9000px by default) (sections sized in vh look stretched there, blank space after the footer is outside the page). ' +
     'The light shots need the page to read ?theme=light. Build app mockups from assets/frame.html to get measurements.';
 } else {
   for (const id of screens) {

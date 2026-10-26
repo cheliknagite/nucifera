@@ -25,17 +25,22 @@ The default order follows the questions a visitor asks:
 
 Merge sections that answer the same question; a ninth section needs a reason in the table.
 
+If the product already has a design (its own `.design/DESIGN.md`: a signature, a face, real screens), the landing carries that signature and those screens over; it never invents a new face for a product that has one. When the product lives in a phone (a bot, a mini app), the hero shows it in a flat phone frame (`.device`): no tilt, no glow, the real interface inside. On a desktop the product takes the larger half of the first screen; the text column is the smaller one.
+
 ## 2. Word budget
 
 - The whole page: about 700 to 900 words, legal text aside. Long pages convert worse: in Unbounce's analysis of about 64,000 lead pages, pages over 800 words had a median conversion about a third lower than pages under 200 (a correlation, not a law).
 - A section: a heading of three to eight words, one or two sentences, one object. A list longer than five items becomes "the three that matter" plus where to find the rest.
 - Details live in the product, the terms or one answer in the questions; the page says each thing once.
 - Copy uses the product's own words, and one thing has one name everywhere: a metric is "average" or "median", never both; one price format on the whole page.
+- One example story across the page: the same client, car and numbers wherever an example appears (a brief that says $19,000 in the hero says $19,000 in the steps). One number format for prices, percents and dates.
 
 ## 3. Rhythm: each section reads as one screen
 
 - One idea per section. On a desktop a section fits about one screen; if it does not, cut it, do not make it scroll in slides.
-- Space between sections: `.section` with `--sec-y` (80px on phones, up to 160 on a desktop). A heading gets more space above it than below.
+- Space between sections: `.section` gives `--sec-y` between two sections (80px on phones, up to 200 on a desktop). A heading gets more space above it than below.
+- On a desktop a section shorter than half a screen merges with its neighbour; the hero, the signature and the final call may each take a screen of their own (`.section--screen`).
+- Headings: `.t-hero` for the page's one headline, `.t-section` for section headings, `.t-lead` for the sentence under them.
 - Alternate dense and calm sections; never two dense ones in a row.
 - No scroll-snap and no slide-by-slide scrolling: a section taller than the screen gets cut, its end is hard to reach, and phones animate the snap slowly. Short sections with clear air between give the "one scroll, one slide" feeling without taking the scroll away.
 - One grid per section: two columns never turn into three halfway; items of another kind get their own heading or their own section.
@@ -55,7 +60,7 @@ Each section gets one background, written in the table with its reason. Not ever
 | Background | When | How |
 |---|---|---|
 | Plain canvas | text and data first: questions, terms, pricing | `--bg-0` |
-| Local light | behind the one main object: hero, final call | `--wash`, the canvas tone, alpha 0.08 at most |
+| Local light | behind the one main object: hero, final call | `.light-behind` on the object: a radial light in the canvas tone that fades out before any edge; never a band with a straight edge |
 | Grain | a large dark gradient that would band | `.grain` |
 | Photo layer | a scene the story needs: the work the product removes | an image briefed by `image-direction.md`, masked toward the text side; contrast checked |
 | Lines | a scale, grid or map that explains something | `--line-1`; never decoration |
@@ -81,7 +86,7 @@ Never the same decoration on every section, and never a coloured gradient to fil
 
 ## 9. Pricing
 
-Plans named by situation ("one client to try", "several clients", "a team"); the differences in three or four aligned lines; the trial and "no automatic renewal" next to the price; the full terms behind a link.
+Plans named by situation ("one client to try", "several clients", "a team"), shown as one table: the row labels once on the left, one column per plan headed by its price and its situation; on a phone the same table, or each plan as one row with two or three values. Never three cards that repeat the same labels. The trial and "no automatic renewal" sit next to the price; the full terms behind a link.
 
 ## 10. A brand character
 
