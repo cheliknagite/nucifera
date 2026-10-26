@@ -64,7 +64,7 @@ The tempo, curves, rules and recipes live in `references/motion.md`; the tokens 
 | | App screen | Landing page |
 |---|---|---|
 | Main thing | the data and the action | the product and its message |
-| Density | high: everything needed is visible | air around the hero |
+| Density | high: everything needed is visible | one idea per section, each about one screen; about 700 to 900 words in all (`references/landing.md`) |
 | Type | functional; display 32 at most | display 48 to 64 on desktop |
 | Images | the subject's real photos, as content | needed beyond the product window: the hero object and at most one per major section, one look |
 | Light and effects | none | one soft light behind the hero (`--wash`) |

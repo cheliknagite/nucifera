@@ -10,7 +10,7 @@
 // Writes <out>/report.md and <out>/report.json. Exit code 1 when anything FAILs.
 
 import { execFileSync } from 'node:child_process';
-import { existsSync, mkdirSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir, platform } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
@@ -64,7 +64,7 @@ const frameShot = (q, w, h, file) => {
 };
 const pre = (html, id) => { const m = html.match(new RegExp(`<pre id="${id}"[^>]*>([\\s\\S]*?)</pre>`)); return m ? m[1].replace(/&quot;/g, '"').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&') : null; };
 
-const report = { target, browser, when: new Date().toISOString(), shots: [], probe: [], fail: 0, warn: 0, mode: 'frame' };
+const report = { target, browser, when: new Date().toISOString(), shots: [], probe: [], pageWarn: [], fail: 0, warn: 0, mode: 'frame' };
 let screens = [];
 if (!isUrl) { try { screens = JSON.parse(pre(dump({ list: 1 }), 'ui-screens') || '[]'); } catch { screens = []; } }
 
@@ -77,6 +77,16 @@ if (!screens.length) {
   for (const w of lightWidths) {
     report.shots.push(frameShot({ theme: 'light' }, w, HEIGHT[w] || 900, join(out, `page-${w}-light.png`)));
     report.shots.push(frameShot({ theme: 'light' }, w, LONG, join(out, `page-${w}-light-long.png`)));
+  }
+  if (!isUrl) {   /* landings: count the visible words and look for questions that can stay open together */
+    const src = readFileSync(resolve(target), 'utf8');
+    const text = src.replace(/<(script|style|svg|template)\b[\s\S]*?<\/\1>/gi, ' ').replace(/<!--[\s\S]*?-->/g, ' ').replace(/<[^>]+>/g, ' ').replace(/&[a-z#0-9]+;/gi, ' ');
+    const words = (text.match(/[\p{L}\p{N}][\p{L}\p{N}'’-]*/gu) || []).length;
+    const details = (src.match(/<details\b/gi) || []).length, named = (src.match(/<details\b[^>]*\bname\s*=/gi) || []).length;
+    report.page = { words, details, namedDetails: named };
+    if (words > 1000) report.pageWarn.push(`${words} words on the page: keep the most valuable, about 700 to 900 (references/landing.md)`);
+    if (details >= 3 && named < details) report.pageWarn.push('the questions can stay open together: give their <details> one shared name, one answer at a time');
+    report.warn += report.pageWarn.length;
   }
   report.note = 'No frame.js screens found: screenshots only, no measurements. page-<width>.png is the first screen; ' +
     '-long.png is the page in a 5000px-tall view (sections sized in vh look stretched there, blank space after the footer is outside the page). ' +
@@ -97,6 +107,7 @@ if (!screens.length) {
 const md = [`# Verify: ${target}`, '', `${report.when} · ${browser}`, ''];
 if (report.note) md.push(report.note, '');
 md.push(`**${report.fail} FAIL · ${report.warn} WARN**`, '');
+if (report.page) md.push(`Page text: ${report.page.words} words`, ...report.pageWarn.map(w => `- WARN ${w}`), '');
 for (const s of report.probe) {
   if (s.error) { md.push(`- FAIL ${s.theme}: ${s.error}`); continue; }
   md.push(`## ${s.id} · ${s.theme} · ${s.size}`, `min contrast ${s.stats.minContrast} · accent places ${s.stats.accentPlaces} · glass ${s.stats.glass} · fonts ${s.stats.fonts.join(', ')}`);

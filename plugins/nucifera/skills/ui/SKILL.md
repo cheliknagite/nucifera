@@ -88,7 +88,7 @@ Why these and not "avoid an AI look": a vague ban swaps one default for the next
 ## 4. Platform
 
 - App screens: quiet mode. No light effects on lists, forms and checkouts; character comes from the signature element, type and density. Mockups use `assets/frame.html` (a phone frame with an optional top bar and bottom action).
-- Website or landing: the same tokens. One hero object per page. A single soft light is allowed behind the hero, in the background's tone and at most alpha 0.08 (`--wash`). The hero rises once on load, and blocks may fade up once as they scroll in (`nuMotion.reveal`); app screens get neither. On a phone the hero object crosses into the first screen with its key data. The main action sits in the hero and at the end; on phones a bottom bar repeats it once the hero button has scrolled away (`.cta-bar`, `nuMotion.ctaBar`), and the header holds no action. A landing longer than two screens needs images beyond the product window (the subject's object, a real photo, at most one illustration per section, one look): text and UI alone read as empty (`references/image-direction.md`). Landing pages read `?theme=light|dark` in a one-line head script, so `verify.mjs` can shoot both themes.
+- Website or landing: the same tokens. One hero object per page. A single soft light is allowed behind the hero, in the background's tone and at most alpha 0.08 (`--wash`). The hero rises once on load, and blocks may fade up once as they scroll in (`nuMotion.reveal`); app screens get neither. On a phone the hero object crosses into the first screen with its key data. The main action sits in the hero and at the end; on phones a bottom bar repeats it once the hero button has scrolled away (`.cta-bar`, `nuMotion.ctaBar`), and the header holds no action. A landing longer than two screens needs images beyond the product window (the subject's object, a real photo, at most one illustration per section, one look): text and UI alone read as empty (`references/image-direction.md`). Landing pages read `?theme=light|dark` in a one-line head script, so `verify.mjs` can shoot both themes. Before building a landing, read `references/landing.md`: the section plan, a budget of about 700 to 900 words, one idea per screen, a background chosen per section, charts headed by their point, questions one at a time.
 - Payment methods and business rules are not this skill's concern: a checkout screen is an ordinary screen.
 
 ## 5. Check before hand-over
@@ -104,6 +104,7 @@ Hand over: file paths, the screenshots, what was checked, what remains open.
 
 - `references/style.md`: token roles for both themes, light, glass, app screens vs landing pages, Tailwind mapping.
 - `references/motion.md`: the tempo, curves, rules, recipes and haptics for motion.
+- `references/landing.md`: landing pages: section plan, word budget, rhythm, backgrounds, charts, questions, pricing.
 - `references/exemplars/index.md`: reference cards per screen type with their generic twins: the level to aim at, never a template.
 - `references/components.md`: the kit and when to use each component.
 - `references/typography-cyrillic.md`: Cyrillic typography, numbers and prices.

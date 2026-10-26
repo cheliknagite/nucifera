@@ -2,7 +2,7 @@
 
 A design skill for Claude Code. It makes Claude design interfaces in one precise style, in the line of Linear, Raycast and Reflect: a monochrome dark theme and a light "Dusk" theme with a violet accent, and it checks the rendered screens before handing them over.
 
-> Named after *Cocos nucifera*, the coconut palm: a dark shell with a light inside, like the two themes. Status: 0.4.3, early. See "What it does not promise".
+> Named after *Cocos nucifera*, the coconut palm: a dark shell with a light inside, like the two themes. Status: 0.5.0, early. See "What it does not promise".
 
 ## What it does
 
@@ -10,8 +10,9 @@ A design skill for Claude Code. It makes Claude design interfaces in one precise
 - **Builds from a closed set of tokens and components.** `tokens.css` defines both themes by role (surfaces, lines, text, accent, main action); `kit.css` has about fifteen components (rows, hero card, stat, chips, fields, key-value, states). No raw colours in screens.
 - **Gives each screen a face.** Before building, Claude names what makes the screen unlike any other product's and reads two reference cards for that screen type next to a "generic twin": how a default generator would build the same content. The cards describe real products (what they measure, what to take, what not to copy) as text only.
 - **Moves with intent, in two tempos.** Frequent things move at the speed of shipped products (menus in 240 ms); rare moments get a calm tempo. Ready recipes in `kit.css` and `motion.js`: presses that answer, menus that grow from their trigger, a sliding selection, sheets you can drag away, toasts, screen changes with direction, a waiting ladder that never flickers. Seven moments, at most one per screen: a photo that grows into its detail, the signature arriving once, a number that settles after an action, a success check, one pass of light over the main button, a landing's live product window, and on websites a window that pours out of the element you clicked and back into it, like the Mac genie. Prices and results never wait for an animation, and reduced motion keeps the meaning.
+- **Builds landings that read.** A section plan before code (the visitor's question, the main object, the background, how expressive), about 700 to 900 words in all, one idea per screen with clear air between, charts headed by their point, questions that open one at a time, and a background chosen per section instead of left by default.
 - **Reads without effort.** Body text 16px, secondary text 14px in one grey, data as plain label-value lists instead of boxes and grids, a status shown only when it is the exception, drawings that need no legend.
-- **Names the AI tells and what to do instead.** Sixteen rules in the core and a dated list of 41 in the references: no coloured glows, no gradient buttons, no decorative dots, no small grey text in several shades, no data cut into boxes, no eyebrow labels on every heading, no washed-out photos, no airy screens where users came for data, and more. A vague "avoid the AI look" only swaps one default for another; named patterns with replacements hold.
+- **Names the AI tells and what to do instead.** Sixteen rules in the core and a dated list of 46 in the references: no coloured glows, no gradient buttons, no decorative dots, no small grey text in several shades, no data cut into boxes, no eyebrow labels on every heading, no washed-out photos, no airy screens where users came for data, and more. A vague "avoid the AI look" only swaps one default for another; named patterns with replacements hold.
 - **Checks pixels with code.** `scripts/verify.mjs` renders every mockup screen at 360, 390 and 430px in the dark theme and at 390px in the light one, and reports overflow, contrast, touch targets, fonts that did not load, small text, extra shades of grey, coloured glows, glass count, accent use and Cyrillic line-height, plus motion lint (`transition: all`, ease-in, endless loops). No npm packages: it uses your installed Chrome, Edge or Chromium.
 - **Asks a fresh critic.** The `design-critic` agent sees only the screenshots, the brief, DESIGN.md and the reference cards. It returns at most five rule-backed findings and a level verdict: is the screen closer to the references or to the generic twin? Asked twice in both orders, with a copy check. On "closer to the twin" Claude changes the face of the screen, not the polish. Claude waits for it before handing over.
 - **Keeps images honest.** Generated images are for heroes, empty states and share images, never for listings, condition or anything next to a price; a brief recipe, one look for the whole set and a checklist of generator tells.
@@ -54,7 +55,7 @@ Your brand goes into `.design/brand.css` (colours through `--brand-*`, logo, dis
 ```
 plugins/nucifera/
   skills/ui/SKILL.md            the core (about 3,400 tokens)
-  skills/ui/references/         style, components, motion, Cyrillic typography, signature moves, refusals, verify, image direction
+  skills/ui/references/         style, components, motion, landing pages, Cyrillic typography, signature moves, refusals, verify, image direction
   skills/ui/references/exemplars/  reference cards per screen type, with a generic twin each (text only)
   skills/ui/assets/             tokens.css, kit.css, motion.js, brand.template.css, frame.html + frame.js (mockups), probe.js
   skills/ui/scripts/verify.mjs  screenshots and measurements

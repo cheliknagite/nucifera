@@ -41,6 +41,25 @@ Natural, true-to-life colour; plain seamless charcoal cove.
 - The light theme "Dusk" gets its pair by editing the same image ("keep everything, change the background to pale lilac-grey, softer shadow"), not by a new generation.
 - Never ask the generator for text or interface; render real UI instead.
 
+## Brief for each image
+
+Before generating or choosing an image, write its brief in the section plan:
+
+| Field | Decide |
+|---|---|
+| Role | the hero object, a scene that gives context, a step of a process, evidence, the final accent |
+| Subject | what exactly is shown |
+| Composition | where the subject sits and where the free area for text is |
+| Aspect and crop | one ratio per role; the focal point that must survive the phone crop (`object-position`) |
+| Light and palette | how it sits in the theme: the canvas tone in the shadows, no foreign hue |
+| Treatment | a mask toward the text side, never a flat darkening of the whole image |
+| Set | how it matches the other images (the style block below) |
+
+- Vary brightness across the set: when every image is equally dark the page turns into one dark mass.
+- Text over a photo only after a contrast check at every width; otherwise put the text beside it.
+- Before generating a new image, try cropping or masking one you already have.
+- If generation fails or is not approved, show the real product UI or a line drawing from the subject; never an empty gradient.
+
 ## One look for the whole set
 
 1. Write one style block (light, lens, stage, palette, grain) in `.design/DESIGN.md` under "Images" and append it word for word to every prompt.

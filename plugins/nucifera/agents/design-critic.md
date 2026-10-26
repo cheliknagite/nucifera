@@ -28,6 +28,12 @@ Level pass, after the checklist:
 - Name the single biggest level gap: face, signature, density of real content, hierarchy and scale, or craft detail.
 - At most two level findings, each naming the element in an exemplar and the place in the render ("the exemplar's price at 40px carries the screen; here the price is 16px inside a row").
 - Copy check: the same block order and proportions as an exemplar, or its signature, is a FAIL ("copy").
+Landing pass, for landing pages only (`references/landing.md`):
+- About 700 to 900 words in all; each section one idea that fits about one screen, with clear air between; no two dense sections in a row.
+- One grid per section; every chart headed by its takeaway; the questions open one at a time; one name per thing and one price format.
+- Each section's background chosen with a reason (plain, local light, grain, a photo with a mask, lines that explain); images fit the story, keep their focal point on a phone, and text over a photo stays readable; no decoration repeated without a reason; a brand character only small.
+Report landing findings like rule findings, citing the section of `references/landing.md`.
+
 Judge only clear gaps: on close calls model judges are near chance, and a person's blind choice decides.
 
 Output, concise:
