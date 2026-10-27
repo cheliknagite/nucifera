@@ -25,7 +25,7 @@ The default order follows the questions a visitor asks:
 
 Merge sections that answer the same question; a ninth section needs a reason in the table.
 
-If the product already has a design (its own `.design/DESIGN.md`: a signature, a face, real screens), the landing carries that signature and those screens over; it never invents a new face for a product that has one. How the product is shown (in a device frame, in a window or bare) is decided per product in its DESIGN.md; there is no default frame. On a desktop the product takes the larger half of the first screen; the text column is the smaller one.
+If the product already has a design (its own `.design/DESIGN.md`: a signature, a face, real screens), the signature question offers it first ("keep the current one"), and the landing carries it and those screens over unless the user picks another; it never silently invents a new face for a product that has one. How the product is shown (in a device frame, in a window or bare) is decided per product in its DESIGN.md; there is no default frame. On a desktop the product takes the larger half of the first screen; the text column is the smaller one.
 
 ## 2. Word budget
 

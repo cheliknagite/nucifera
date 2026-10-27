@@ -24,12 +24,19 @@ Write these to `.design/DESIGN.md` (create the folder; on later tasks update thi
 - **Scene**: who looks at the screen, where, in what light and mood. One sentence concrete enough to decide light vs dark.
 - **Direction**: this style plus what is specific to the subject.
 - **Accent**: the default (no hue in dark: white ink and a near-white main button; violet in the light theme), or the brand colour; name its roles (at most 3: main action, current selection, state).
-- **Signature**: one element the screen is remembered by, taken from the subject's own world: its documents, instruments, artifacts or data. A car inspection gives a top-view paint-thickness map; delivery gives the route strip. It can be an object, a typographic statement or the way the data itself is shown; simple screens need none. One per screen; everything around it stays quiet. Read `references/signature-moves.md`.
+- **Signature**: one element the screen is remembered by, taken from the subject's own world: its documents, instruments, artifacts or data. Delivery gives the route strip; a clinic, the day's appointment book; a course, the lesson map. It can be an object, a typographic statement or the way the data itself is shown; simple screens need none. One per screen; everything around it stays quiet. Never pick it silently: offer it (below). Read `references/signature-moves.md`.
 - **Face**: one sentence on what makes this screen unlike any other product's: the signature, the one thing set larger or bolder than the system's default (a number, a word, a photo), and the real data only this product has. If the sentence fits any app, it is not a face yet.
 - **Density**: what must be visible on the first screen without scrolling.
 - **Motion**: the motion map, a short table of every state change with its recipe; actions used many times a day stay still. Read `references/motion.md`.
 
-Decide yourself unless the user wants to choose; state the choice in one line of your reply.
+Decide the rest yourself unless the user wants to choose; state the choice in one line of your reply.
+
+The signature is the user's call. Before building a new project, a new kind of screen or a landing (not for edits of existing screens, and not when the brief already names it), ask one question, with the question tool when there is one, otherwise in one short message, in the user's language:
+1. If `.design/DESIGN.md` or the product's own design already has a signature: "Keep the current one", with its name.
+2. Your recommendation, found with `references/signature-moves.md`: what it is and why, in one line, marked as recommended; at most one alternative of another kind.
+3. "Your own": the user describes what they want to see (the question tool adds this field by itself).
+
+Wait for the answer, write the chosen signature into `.design/DESIGN.md`, then build.
 
 Then raise the level with references: open `references/exemplars/index.md`, read the two cards closest to this screen type (pick at random among close matches) and the type's generic twin. Under the face, write a transfer note: three principles you take and three things you do not (block order, shapes, copy, the other product's signature). Close the cards and build from the note and the kit. Never build from a single reference and never repeat a reference's block order: copies are recognised at once.
 
