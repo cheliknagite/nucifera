@@ -19,7 +19,6 @@
   --line-3: rgb(255 255 255 / .16);
   --edge-hi: rgb(255 255 255 / .16);   /* top-edge highlight of raised panels */
   --wash-tint: rgb(255 255 255 / .06); /* local light behind one object (.light-behind) */
-  --island: #000;                      /* the camera island of a phone frame (.device) */
   --edge-top: rgb(255 255 255 / .08);  /* the 1px light top edge of the one raised surface (.lit) */
   --grain-alpha: .045;                 /* fixed grain over a large dark gradient (.grain) */
   --sheen: rgb(255 255 255 / .55);     /* the one pass of light over the main button */
@@ -66,7 +65,7 @@
   --line-2: rgb(40 25 90 / .15);
   --line-3: rgb(40 25 90 / .22);
   --edge-hi: rgb(40 25 90 / .14);
-  --wash-tint: rgb(255 255 255 / .55); --island: #000;
+  --wash-tint: rgb(255 255 255 / .55);
   --edge-top: rgb(255 255 255 / .9); --grain-alpha: .05; --sheen: rgb(255 255 255 / .22);
   --fg-1: #221a46;      /* violet ink, 12:1 */
   --fg-2: #3c3657;      /* the one secondary grey: 8.5:1 on --bg-0, 7.1:1 on --bg-3 */

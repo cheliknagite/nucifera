@@ -2,7 +2,7 @@
 
 A design skill for Claude Code. It makes Claude design interfaces in one precise style, in the line of Linear, Raycast and Reflect: a monochrome dark theme and a light "Dusk" theme with a violet accent, and it checks the rendered screens before handing them over.
 
-> Named after *Cocos nucifera*, the coconut palm: a dark shell with a light inside, like the two themes. Status: 0.5.1, early. See "What it does not promise".
+> Named after *Cocos nucifera*, the coconut palm: a dark shell with a light inside, like the two themes. Status: 0.5.2, early. See "What it does not promise".
 
 ## What it does
 
