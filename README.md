@@ -83,4 +83,4 @@ The rules were informed by public research and by ideas from other design skills
 - VoltAgent/awesome-design-md: the Linear DESIGN.md as a reference for precision.
 - emilkowalski/skills, kylezantos/design-motion-principles, jakubkrehel/make-interfaces-feel-better, mthines/agent-skills, bitjaru/styleseed, yetone/native-feel-skill: motion decisions, review and restraint.
 
-With love, kokos.
+kokos.
