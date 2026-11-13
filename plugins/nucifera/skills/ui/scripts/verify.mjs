@@ -2,7 +2,7 @@
 // nucifera verify: screenshots + measurements for HTML mockups, with no npm dependencies.
 // Uses an installed Chrome, Edge or Chromium in headless mode.
 //
-//   node verify.mjs <page.html | http://url> [--out <dir>] [--widths 360,390,430] [--light 390] [--browser <path>]
+//   node verify.mjs <page.html | http://url> [--out <dir>] [--widths 360,390,430] [--light 390 | none] [--browser <path>]
 //
 // Pages built from assets/frame.html: every screen is shot at each width in the dark theme and at --light widths
 // in the light theme, and probe.js measures each screen. Other pages (landings) and URLs: screenshots only, each
@@ -25,7 +25,7 @@ const base = isUrl ? target : pathToFileURL(resolve(target)).href;
 const out = resolve(opt('out', isUrl ? 'verify' : join(dirname(resolve(target)), 'verify')));
 const widths = opt('widths', '360,390,430').split(',').map(Number);
 const pageWidths = opt('widths', '360,390,430,1440').split(',').map(Number);   /* plain pages also get a desktop view */
-const lightWidths = opt('light', '390').split(',').filter(Boolean).map(Number);
+const lightWidths = opt('light', '390') === 'none' ? [] : opt('light', '390').split(',').filter(Boolean).map(Number);   /* --light none: a dark-only page */
 const HEIGHT = { 360: 780, 390: 844, 430: 932, 1440: 900 };
 const LONG = Number(opt('long', '9000'));   /* the long view of a plain page; raise it for very long pages */
 mkdirSync(out, { recursive: true });
@@ -85,7 +85,7 @@ if (!screens.length) {
     const words = (text.match(/[\p{L}\p{N}][\p{L}\p{N}'’-]*/gu) || []).length;
     const details = (src.match(/<details\b/gi) || []).length, named = (src.match(/<details\b[^>]*\bname\s*=/gi) || []).length;
     report.page = { words, details, namedDetails: named };
-    if (words > 1000) report.pageWarn.push(`${words} words on the page: keep the most valuable, about 700 to 900 (references/landing.md)`);
+    if (words > 1000) report.pageWarn.push(`${words} words on the page: keep the most valuable, about 500 to 900 on a home page (landing skill, references/page.md)`);
     if (details >= 3 && named < details) report.pageWarn.push('the questions can stay open together: give their <details> one shared name, one answer at a time');
     report.warn += report.pageWarn.length;
   }

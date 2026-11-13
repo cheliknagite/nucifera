@@ -255,8 +255,10 @@
 .glassbar--quiet { border-bottom-color: transparent; transition: border-color var(--dur-exit) var(--ease-color); }
 .glassbar--quiet.scrolled { border-bottom-color: var(--line-1); }
 
-/* landing pages: each section one idea that reads as one screen, with clear air between (references/landing.md) */
+/* landing pages: each section one idea that reads as one screen, with clear air between (the landing skill, references/page.md) */
 .section { padding-block: calc(var(--sec-y) / 2); }
+.section .btn--primary { width: auto; }   /* a landing's main action is as wide as its label; full width only on phones */
+@media (max-width: 640px) { .section .btn--primary { width: 100%; } }
 .section--screen { min-height: min(100svh, 1000px); display: grid; align-content: center; }   /* hero, signature, final call: a screen of their own */
 .t-hero { font: var(--t-hero); letter-spacing: var(--ls-hero); }
 .t-section { font: var(--t-section); letter-spacing: var(--ls-section); }

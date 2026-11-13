@@ -13,7 +13,8 @@ Do these steps in the current project and report what changed.
 
    ```
    ## Design
-   For any UI work (screens, pages, components, mockups, restyling) use the nucifera:ui skill.
+   For any UI work (screens, components, mockups, restyling) use the nucifera:ui skill.
+   For landing pages and websites use the nucifera:landing skill.
    House style tokens: .design/tokens.css; brand: .design/brand.css; scene and direction: .design/DESIGN.md.
    Check rendered screens with the skill's verify script before handing them over.
    ```

@@ -2,12 +2,13 @@
 name: ui
 description: >-
   Use when the user asks to design, build, restyle, polish or fix any visual
-  interface: landing pages and websites, app and mobile screens, forms,
+  interface: app and mobile screens, forms,
   filters, result lists, checkout screens, empty and loading states,
   dashboards, design mockups. Applies a precise dark product style (in the
   line of Linear, Raycast and Reflect) with a light "Dusk" theme, from tokens
   plus the project's brand file, and checks the rendered screens before
-  hand-over. Not for backend, data or copy-only tasks.
+  hand-over. Landing pages and websites use the landing skill. Not for backend,
+  data or copy-only tasks.
 license: MIT-0
 ---
 
@@ -31,7 +32,7 @@ Write these to `.design/DESIGN.md` (create the folder; on later tasks update thi
 
 Decide the rest yourself unless the user wants to choose; state the choice in one line of your reply.
 
-The signature is the user's call. Before building a new project, a new kind of screen or a landing (not for edits of existing screens, and not when the brief already names it), ask one question, with the question tool when there is one, otherwise in one short message, in the user's language:
+The signature is the user's call. Before building a new project or a new kind of screen (not for edits of existing screens, and not when the brief already names it), ask one question, with the question tool when there is one, otherwise in one short message, in the user's language:
 1. If `.design/DESIGN.md` or the product's own design already has a signature: "Keep the current one", with its name.
 2. Your recommendation, found with `references/signature-moves.md`: what it is and why, in one line, marked as recommended; at most one alternative of another kind.
 3. "Your own": the user describes what they want to see (the question tool adds this field by itself).
@@ -95,7 +96,7 @@ Why these and not "avoid an AI look": a vague ban swaps one default for the next
 ## 4. Platform
 
 - App screens: quiet mode. No light effects on lists, forms and checkouts; character comes from the signature element, type and density. Mockups use `assets/frame.html` (a phone frame with an optional top bar and bottom action).
-- Website or landing: the same tokens. One hero object per page. A single soft light is allowed behind the hero, in the background's tone and at most alpha 0.08 (`--wash`). The hero rises once on load, and blocks may fade up once as they scroll in (`nuMotion.reveal`); app screens get neither. On a phone the hero object crosses into the first screen with its key data. The main action sits in the hero and at the end; on phones a bottom bar repeats it once the hero button has scrolled away (`.cta-bar`, `nuMotion.ctaBar`), and the header holds no action. A landing longer than two screens needs images beyond the product window (the subject's object, a real photo, at most one illustration per section, one look): text and UI alone read as empty (`references/image-direction.md`). Landing pages read `?theme=light|dark` in a one-line head script, so `verify.mjs` can shoot both themes. Before building a landing, read `references/landing.md`: the product's own signature and screens carried over, the section plan, a budget of about 700 to 900 words, one idea per screen, a background chosen per section, charts headed by their point, questions one at a time.
+- Website or landing page: use the `landing` skill (`../landing/SKILL.md`). It is a mode of its own: three hook concepts shown as sketches before the build, a living scene, something to look at on every screen, varied sections. The quiet rules of this file (one moment per screen, nothing in a loop, plain backgrounds) describe app screens and do not bind a landing's scene and demos.
 - Payment methods and business rules are not this skill's concern: a checkout screen is an ordinary screen.
 
 ## 5. Check before hand-over
@@ -111,7 +112,7 @@ Hand over: file paths, the screenshots, what was checked, what remains open.
 
 - `references/style.md`: token roles for both themes, light, glass, app screens vs landing pages, Tailwind mapping.
 - `references/motion.md`: the tempo, curves, rules, recipes and haptics for motion.
-- `references/landing.md`: landing pages: section plan, word budget, rhythm, backgrounds, charts, questions, pricing.
+- `../landing/SKILL.md`: the landing mode, a skill of its own (hooks, the world layer, the page plan).
 - `references/exemplars/index.md`: reference cards per screen type with their generic twins: the level to aim at, never a template.
 - `references/components.md`: the kit and when to use each component.
 - `references/typography-cyrillic.md`: Cyrillic typography, numbers and prices.

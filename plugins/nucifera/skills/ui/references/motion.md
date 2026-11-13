@@ -1,6 +1,6 @@
 # Motion: what moves, how fast, and why
 
-Restrained is not static. A screen feels finished when every change of state is explained: the menu came out of the button you pressed, the selection slid to the option you chose, the saved item confirmed itself. What makes motion look generated is the opposite: everything fading in on load, pulsing, bouncing, sliding for its own sake. This file says what moves, at which tempo, and which ready recipe to use.
+Restrained is not static. A screen feels finished when every change of state is explained: the menu came out of the button you pressed, the selection slid to the option you chose, the saved item confirmed itself. What makes motion look generated is the opposite: everything fading in on load, pulsing, bouncing, sliding for its own sake. This file says what moves, at which tempo, and which ready recipe to use. It describes the interface layer. Landing pages add a world layer (a scene, demos) with its own rules: the landing skill's `references/world.md`.
 
 ## 1. Before code: the motion map
 
