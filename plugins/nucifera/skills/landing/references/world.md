@@ -16,11 +16,13 @@ Keeping them apart is what lets a page feel alive without looking generated: the
 
 ## 2. The contract every scene keeps
 
-1. **Poster first.** A still image of the scene sits under it. It is what loads first, what shows without scripts or WebGL, and what the share image can use.
+`nuScene.canvas` (`assets/scene.js`, `parts.md`) keeps points 2 to 5 for a canvas scene, and `nuScene.layers` for layered artwork: write `draw(ctx, t, w, h)` as a pure function of time, name the `still` second, take randomness from `nuScene.rand`.
+
+1. **Poster first.** Artwork layers and a film have a still image under them: it is what loads first, what shows without scripts or WebGL, and what the share image can use. A canvas scene draws its still frame at once on load, so it needs an image only for the share picture.
 2. **One canvas**, sized to its box times `Math.min(devicePixelRatio, 2)`.
 3. **Runs only while seen.** Start the frame loop when an `IntersectionObserver` reports the scene visible; stop it when it leaves and on `visibilitychange` to hidden.
 4. **Reduced motion: one frame.** Draw the scene once at its most telling moment (never its empty start), no loop; a camera tied to the scroll jumps between its stops.
-5. **Weak devices** (`data-perf="low"`): the poster only.
+5. **Weak devices** (`data-perf="low"`): the poster or the one still frame.
 6. **Phones:** the same scene made simpler or the poster, and the hook still inside the first screen.
 7. **Deterministic.** Seed anything random, so the scene is the same on every load and in every screenshot.
 8. **Light.** A 2D scene is plain canvas code with no library. Reach for a 3D library only for a true 3D world the user asked for. Layered artwork stays within 1 to 2 MB, a film within about 2 MB.
@@ -42,13 +44,13 @@ A demo is the product's real interface replaying a short scenario.
 - Under reduced motion it shows the final state.
 - Depicted controls are flat and inert; only the page's own actions are buttons.
 
-Write the scenario as one function that resets the demo and replays it, and start and stop it with an `IntersectionObserver`. `nuMotion.demo`, `nuMotion.roll`, `nuMotion.grow` and the kit's `.tempo-calm` give the steps.
+`nuScene.play(box, { reset, steps, pause })` replays a scenario while it is on screen and shows its result off screen and under reduced motion. `nuMotion.roll`, `nuMotion.grow` and the kit's `.tempo-calm` give the steps. A step that carries words stays long enough to read them.
 
 ## 5. Scroll stops, when the concept needs them
 
 Rare among strong pages; use them only when the chosen concept is a journey.
 
-- A few stops (four to seven), each with one panel: a heading, two sentences, one link.
+- A few stops (four to seven), each with one panel: a heading, two sentences, one link. `nuScene.stops(panels, onMove)` gives the camera its value.
 - Normal scrolling moves the camera; never take the scroll away and never snap.
 - No empty stretch: at every scroll position either a panel or the hero text is on screen.
 - The camera eases between stops; under reduced motion it jumps.

@@ -14,42 +14,26 @@ One layer alone reads as thin, whichever it is. Build all three already in the s
 
 ## 2. Depth and material
 
-Values from the variant that reached; change the hues to the subject's palette, keep the structure.
-
-```css
-/* the screen: a wide tone from the subject's palette with the light behind the hero object, a grain, a vignette */
-.lp-screen { background: radial-gradient(90% 80% at 24% 44%, #17240f 0%, #0c110b 42%, var(--bg-0) 78%); isolation: isolate; }
-.lp-screen::before { /* grain, 6 to 7 % */ content: ""; position: absolute; inset: 0; z-index: 1; opacity: .07; pointer-events: none; background-image: url("…fractal noise svg…"); }
-.lp-screen::after { /* vignette */ content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none; background: radial-gradient(120% 100% at 50% 40%, transparent 55%, rgb(0 0 0 / .5) 100%); }
-
-/* the hero object is an object: one hue from light to dark, a thin top highlight, a dark cast shadow, a contact shadow under it */
-.lp-num { background: linear-gradient(175deg, #b6ef95 8%, #86cf60 46%, #4f9a35 96%); -webkit-background-clip: text; background-clip: text; color: transparent;
-  filter: drop-shadow(0 2px 0 rgb(255 255 255 / .14)) drop-shadow(0 34px 38px rgb(0 0 0 / .6)); }
-.lp-figure::after { content: ""; position: absolute; left: 2%; right: 14%; bottom: -4px; height: 46px; border-radius: 50%; background: radial-gradient(closest-side, rgb(0 0 0 / .55), transparent); }
-
-/* small surfaces: lighter at the top, a 1px top-edge light, a dark shadow below; the chosen one lifted */
-.lp-tile { background: linear-gradient(#1a1922, #111017); box-shadow: inset 0 1px 0 rgb(255 255 255 / .09), inset 0 0 0 1px var(--line-1), 0 10px 18px -10px rgb(0 0 0 / .8); }
-.lp-tile.is-chosen { transform: translateY(-6px); box-shadow: inset 0 1px 0 rgb(255 255 255 / .45), 0 18px 26px -12px rgb(0 0 0 / .85); }
-
-/* the main action: the same material */
-.lp-cta { background: linear-gradient(#a6e683, #7fcb5a); box-shadow: inset 0 1px 0 rgb(255 255 255 / .45), 0 14px 28px -10px rgb(0 0 0 / .7); }
-```
+The recipe is ready as classes in `assets/landing.css` (`parts.md`, section 3): `.stage` makes the screen a lit space (a wide dark tone of the subject's colour with the light behind the hero object, a grain, a vignette), `.solid` makes a figure or a word an object (one hue from light to dark, a thin top highlight, a dark cast shadow), `.cast` puts a contact shadow under it, `.tile` raises small surfaces and lifts the chosen one, `.btn--lit` gives the main action the same material. Set the hues with `--obj`, `--obj-ink`, `--stage-tone`, `--stage-x` and `--stage-y`.
 
 Rules of the material:
 
 - One hue per object, from lighter to darker. Never two hues in one object, never a rainbow.
 - Shadows are dark, never coloured. No glow around text, no neon.
-- Light comes from one side for everything on the screen (here from the top left).
+- Light comes from one side for everything on the screen (in the classes, from the top left).
 - The background is never the flat canvas on a first screen, and never a coloured cloud: a wide dark tone of the subject's own colour, darkest at the edges.
-- This is material for a landing's first screen and its hero objects. App screens keep the quiet rules of the `ui` skill; rows 2 to 4 of its refusals still describe decoration there.
+- This is material for a landing's first screen, its hero objects and the final call. App screens keep the quiet rules of the `ui` skill; rows 2 to 4 of its refusals still describe decoration there.
 
 ## 3. The product on the first screen
 
-A boxed card of label and value rows did not reach: it reads as a settings panel beside the scene. Product presence needs another form, and none has been approved yet. Directions to try in a sketch, one at a time:
+A boxed card of label and value rows did not reach: it reads as a settings panel beside the scene. In a second study three other forms stood on the same first screen: the product's own view drawn as shapes, the product's data living inside the scene, and one real moment of use. In a blind review the moment of use was chosen.
 
-- the product's own view drawn with the same depth as the scene: its shapes and its one main figure, not rows of text;
-- the product's data living inside the scene: the alert as the cursor's label, the beds as marks on the curve;
-- one real moment of use (a notification arriving on the day it matters) played as a demo.
+So the product appears on the first screen as **one real moment of use, played in step with the scene**:
+
+- One object in the material of the stage (`.tile`): the product's mark and name, a time, one or two sentences in the product's own words. In the study it was the morning notification.
+- It answers the scene's events: a message when the cursor reaches the first frost night, another on the day planting is safe.
+- Each message stays long enough to read (two seconds and more). A label that changes with every tick of the scene cannot be read.
+- Under reduced motion it shows the last message.
 
 ## 4. Before you show it
 

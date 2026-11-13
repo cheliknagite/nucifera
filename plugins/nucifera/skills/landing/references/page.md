@@ -18,21 +18,21 @@ If the product already has a design (a signature, a face, real screens in its `.
 
 ## 2. Compositions
 
-Pick one per section. Neighbouring sections never share one, and a home page uses at least four. Swapping the sides of a split does not make it a different composition.
+Pick one per section; each has a ready class in `assets/landing.css` and a working example in `assets/starter.html` (`parts.md`). Neighbouring sections never share one, and a home page uses at least four. Swapping the sides of a split does not make it a different composition.
 
-| Composition | What it is | Good for |
-|---|---|---|
-| Scene with headline | the hook as a backdrop, the text in its own zone | the hero |
-| Split, object leads | the object takes the larger half, the text the smaller | one feature; at most twice per page |
-| Stage | one wide object at a readable size, a heading above, one line below | the real output, a demo |
-| Close-ups | two to four tiles of unequal size, each a real crop with a one-line caption | details worth zooming into; never icon cards |
-| Statement | one number or sentence set very large, one line of support | proof, scale, a promise |
-| Steps rail | three to five steps along a line, each with its own small object | how it works |
-| Comparison | by hand against the product, before against after, headed by its takeaway | the routine removed |
-| Photo band | a real photo or illustration across the content width, text on its masked side | the world around the product |
-| Table | plans or specifications, labels once on the left | pricing |
-| List | questions or links, one open at a time | questions |
-| Final call | an object, one sentence, one action | the end |
+| Composition | Class | What it is | Good for |
+|---|---|---|---|
+| Scene with headline | `.first` | the hook as a backdrop, the text in its own zone | the hero |
+| Split, object leads | `.split` | the object takes the larger half, the text the smaller | one feature; at most twice per page |
+| Stage | `.show` | one wide object at a readable size, a heading above, one line below | the real output, a demo |
+| Close-ups | `.closeups` | two to four tiles of unequal size, each a real crop with a one-line caption | details worth zooming into; never icon cards |
+| Statement | `.statement` | one number or sentence set very large, one line of support | proof, scale, a promise |
+| Steps rail | `.steps` | three to five steps along a line, each with its own small object | how it works |
+| Comparison | `.compare` | by hand against the product, before against after, headed by its takeaway | the routine removed |
+| Photo band | `.band` | a real photo or illustration across the content width, text on its masked side | the world around the product |
+| Table | `.plans` | plans or specifications, labels once on the left | pricing |
+| List | `.faq` | questions or links, one open at a time | questions |
+| Final call | `.final` | an object, one sentence, one action | the end |
 
 ## 3. Imagery: something to look at on every screen
 
@@ -63,7 +63,7 @@ When the story does not fit a short home page, do not lengthen it: split it.
 
 - One idea per section; on a desktop a section fits about one screen. `.section` gives `--sec-y` between sections; `.section--screen` gives the hero, the signature and the final call a screen of their own.
 - Headings: `.t-hero` for the one headline, `.t-section` for sections, `.t-lead` for the sentence under them.
-- Alternate dense and calm sections. No scroll-snap, no slide-by-slide scrolling.
+- Alternate dense and calm sections: a statement and the final call are calm screens and work between dense ones. Two calm screens in a row read as emptiness, so plans and questions share one screen instead of standing as two screens of text. No scroll-snap, no slide-by-slide scrolling.
 - One grid per section: columns do not change halfway.
 - Surfaces: the canvas, a tinted band (`--bg-1`) for a section that should stand apart, an opaque panel over the scene. Light behind one object with `.light-behind`; `.grain` on a large dark gradient. Never a coloured gradient to fill emptiness.
 
@@ -90,6 +90,6 @@ If the product's character is the chosen hook, it is large and alive on the firs
 
 ## 11. Check
 
-- `verify.mjs --landing` walks the page screen by screen in real time: nearly empty and sparse screens, a still first screen, a stretch with no words, media cut by an edge, stretched images, a fixed element over text, script errors. It also counts the words (it warns past 1,000) and warns when the questions can stay open together.
+- `verify.mjs --landing` walks the page screen by screen in real time. It fails a nearly empty screen, two sparse screens in a row, or more than a third of the screens thin (detail on under a fifth of them), a still first screen, more than 1,500 words and a block still marked `data-example`; it warns about one sparse screen, a stretch with no words, media cut by an edge, stretched images, a fixed element over text, more than 1,000 words and questions that can stay open together.
 - In the walk shots: something to look at on every screenful, neighbouring sections of different compositions, no image cut by an edge, every chart headed by its point.
 - The critic's landing pass (`agents/design-critic.md`).

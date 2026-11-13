@@ -7,8 +7,9 @@
 // Pages built from assets/frame.html: every screen is shot at each width in the dark theme and at --light widths
 // in the light theme, and probe.js measures each screen. Other pages (landings) and URLs: still shots (the first
 // screen and a long view per width, the light theme through ?theme=light) and a walk in real time, screen by screen,
-// at 1440 and 390: detail on each screen, motion on the first one, layout faults, script errors. --landing turns a
-// nearly empty screen into a FAIL.
+// at 1440 and 390: detail on each screen, motion on the first one, layout faults, script errors. --landing fails a
+// nearly empty screen, a stretch of sparse ones, a still first screen, a page far over its word budget and blocks
+// still marked data-example from the starter page.
 // Writes <out>/report.md and <out>/report.json. Exit code 1 when anything FAILs.
 
 import { execFileSync, spawn } from 'node:child_process';
@@ -138,13 +139,13 @@ const SETTLE = `(async () => { const t0 = performance.now();
   return 0; })()`;
 
 async function walkPage(pageUrl, walkWidths, landing) {
-  const port = 9400 + Math.floor(Math.random() * 500);
+  const port = 9400 + Math.floor(Math.random() * 500), walkProfile = `${profile}-walk-${process.pid}`;   /* its own profile: a browser left from another run cannot swallow this one */
   const child = spawn(browser, ['--headless=new', '--no-first-run', '--no-default-browser-check', '--hide-scrollbars', '--force-device-scale-factor=1',
-    '--enable-unsafe-swiftshader', '--disable-background-timer-throttling', '--disable-renderer-backgrounding', '--disable-backgrounding-occluded-windows', `--remote-debugging-port=${port}`, `--user-data-dir=${profile}-walk`, '--window-size=1440,900', 'about:blank'], { stdio: 'ignore' });
+    '--enable-unsafe-swiftshader', '--disable-background-timer-throttling', '--disable-renderer-backgrounding', '--disable-backgrounding-occluded-windows', `--remote-debugging-port=${port}`, `--user-data-dir=${walkProfile}`, '--window-size=1440,900', 'about:blank'], { stdio: 'ignore' });
   let page, helper; const results = [];
   try {
     let list = null;
-    for (let i = 0; i < 60 && !list; i++) { await sleep(250); try { list = await (await fetch(`http://127.0.0.1:${port}/json/list`)).json(); } catch { /* not up yet */ } }
+    for (let i = 0; i < 100 && !list; i++) { await sleep(250); try { list = await (await fetch(`http://127.0.0.1:${port}/json/list`)).json(); } catch { /* not up yet */ } }
     if (!list) throw new Error('the browser did not open its debugging port');
     const first = list.find(t => t.type === 'page');
     const second = await (await fetch(`http://127.0.0.1:${port}/json/new?about:blank`, { method: 'PUT' })).json();
@@ -174,7 +175,7 @@ async function walkPage(pageUrl, walkWidths, landing) {
         if (i) { await page.evaluate(`scrollTo(0, ${stops[i]}); 0`); await sleep(350); await page.evaluate(SETTLE); b64 = await grab(); busy = (await pix(b64, 'screen' + w + '-' + i)).busy; }
         const file = join(out, `walk-${w}-${String(i + 1).padStart(2, '0')}.png`); writeFileSync(file, Buffer.from(b64, 'base64')); report.shots.push(file);
         const dom = await page.evaluate(DOMPROBE);
-        res.screens.push({ n: i + 1, busy, words: dom.words, objects: dom.objects });
+        res.screens.push({ n: i + 1, y: stops[i], busy, words: dom.words, objects: dom.objects });
         const where = `screen ${i + 1} at ${w}px`;
         if (busy < 15) (landing ? res.fail : res.warn).push(`${where} is nearly empty (detail on ${busy} % of it): show something there or merge the section`);
         else if (busy < 24) warn(`${where} is sparse (detail on ${busy} % of it): little to look at`);
@@ -183,8 +184,11 @@ async function walkPage(pageUrl, walkWidths, landing) {
         dom.stretched.forEach(c => warn(`stretched image: ${c}`));
         dom.floating.forEach(c => warn(`at ${w}px a fixed element covers text: ${c}`));
       }
-      const sparse = res.screens.filter(s => s.busy < 24).length;
-      if (landing && sparse >= 2) res.fail.push(`${sparse} of ${res.screens.length} screens at ${w}px are sparse: the page is mostly empty canvas between its texts`);
+      /* a calm screen between dense ones is rhythm (a statement, the final call); a stretch of them, or too many, is an empty page */
+      const thin = res.screens.filter(s => s.busy < 24), row = thin.find(s => thin.some(o => o.n === s.n + 1 && o.y - s.y > h * .6));   /* the last stop overlaps the one before it: that pair is one place */
+      if (landing && row) res.fail.push(`screens ${row.n} and ${row.n + 1} at ${w}px are both sparse: a stretch of the scroll with little to look at`);
+      const bare = res.screens.filter(s => s.busy < 20);   /* clearly thin: the warning line (24 %) is for the eye, a FAIL needs a clear case */
+      if (landing && !row && bare.length >= 2 && bare.length * 3 > res.screens.length) res.fail.push(`${bare.length} of ${res.screens.length} screens at ${w}px show detail on under a fifth of their area: the page is mostly empty canvas between its texts`);
       if (landing && moved < 0.3) {   /* a concept of still art says so: <html data-hook="still"> */
         const still = await page.evaluate(`document.documentElement.dataset.hook === 'still'`);
         if (!still) res.fail.push(`nothing moves on the first screen at ${w}px once its entrance is over (${moved} % of it changed in three seconds): a landing needs a living scene or a demo there`);
@@ -192,11 +196,15 @@ async function walkPage(pageUrl, walkWidths, landing) {
       [...new Set(page.errors)].forEach(e => res.fail.push(`script error at ${w}px: ${e}`));
       results.push(res);
     }
-  } finally { if (page) page.close(); if (helper) helper.close(); child.kill(); }
+  } finally {
+    if (page) page.close(); if (helper) helper.close(); child.kill();
+    await new Promise(r => { if (child.exitCode !== null || child.signalCode) return r(); child.once('exit', r); setTimeout(r, 3000); });
+    try { rmSync(walkProfile, { recursive: true, force: true }); } catch { /* the browser may still hold it; the system clears the temp folder */ }
+  }
   return results;
 }
 
-const report = { target, browser, when: new Date().toISOString(), shots: [], probe: [], pageWarn: [], fail: 0, warn: 0, mode: 'frame' };
+const report = { target, browser, when: new Date().toISOString(), shots: [], probe: [], pageWarn: [], pageFail: [], fail: 0, warn: 0, mode: 'frame' };
 let screens = [];
 if (!isUrl) { try { screens = JSON.parse(pre(dump({ list: 1 }), 'ui-screens') || '[]'); } catch { screens = []; } }
 
@@ -216,9 +224,13 @@ if (!screens.length) {
     const words = (text.match(/[\p{L}\p{N}][\p{L}\p{N}'’-]*/gu) || []).length;
     const details = (src.match(/<details\b/gi) || []).length, named = (src.match(/<details\b[^>]*\bname\s*=/gi) || []).length;
     report.page = { words, details, namedDetails: named };
-    if (words > 1000) report.pageWarn.push(`${words} words on the page: keep the most valuable, about 500 to 900 on a home page (landing skill, references/page.md)`);
+    const landing = args.includes('--landing');
+    if (landing && words > 1500) report.pageFail.push(`${words} words on the page: a home page reads in about 500 to 900; cut it or move the details to their own pages (landing skill, references/page.md)`);
+    else if (words > 1000) report.pageWarn.push(`${words} words on the page: keep the most valuable, about 500 to 900 on a home page (landing skill, references/page.md)`);
+    const examples = [...src.replace(/<!--[\s\S]*?-->/g, ' ').matchAll(/<[a-z][^>]*\sdata-example(?:="([^"]*)")?/gi)].map(m => m[1] || 'block');
+    if (landing && examples.length) report.pageFail.push(`${examples.length} blocks still show the starter's example product (data-example: ${[...new Set(examples)].slice(0, 6).join(', ')}): fill them with the real product and remove the attribute, or delete them`);
     if (details >= 3 && named < details) report.pageWarn.push('the questions can stay open together: give their <details> one shared name, one answer at a time');
-    report.warn += report.pageWarn.length;
+    report.warn += report.pageWarn.length; report.fail += report.pageFail.length;
   }
   if (opt('walk', 'on') !== 'off') {
     if (typeof WebSocket !== 'function') report.walkNote = 'The walk needs Node 22 or newer: only still screenshots were taken.';
@@ -227,6 +239,7 @@ if (!screens.length) {
       report.walk = await walkPage(base, ww.length ? ww : [pageWidths[0]], args.includes('--landing'));
       for (const r of report.walk) { report.fail += r.fail.length; report.warn += r.warn.length; }
     } catch (e) { report.walkNote = 'The walk did not run: ' + e.message; }
+    if (report.walkNote && args.includes('--landing')) { report.warn++; report.walkNote = 'WARN ' + report.walkNote + ' The landing checks (empty screens, motion, layout faults) were skipped: run it again.'; }
   }
   report.note = 'No frame.js screens found: no layout measurements. page-<width>.png is the first screen; walk-<width>-NN.png are the screens in real time; ' +
     '-long.png is the page in a tall view (--long, 9000px by default) (sections sized in vh look stretched there, blank space after the footer is outside the page). ' +
@@ -247,7 +260,7 @@ if (!screens.length) {
 const md = [`# Verify: ${target}`, '', `${report.when} · ${browser}`, ''];
 if (report.note) md.push(report.note, '');
 md.push(`**${report.fail} FAIL · ${report.warn} WARN**`, '');
-if (report.page) md.push(`Page text: ${report.page.words} words`, ...report.pageWarn.map(w => `- WARN ${w}`), '');
+if (report.page) md.push(`Page text: ${report.page.words} words`, ...report.pageFail.map(w => `- FAIL ${w}`), ...report.pageWarn.map(w => `- WARN ${w}`), '');
 if (report.walkNote) md.push(report.walkNote, '');
 for (const r of report.walk || []) md.push(`## Walk · ${r.width}x${r.height} · first screen: ${r.motion} % of it moves`,
   ...r.screens.map(s => `- screen ${s.n}: detail on ${s.busy} %, ${s.words} words, ${s.objects} things shown`), ...r.fail.map(f => `- FAIL ${f}`), ...r.warn.map(w => `- WARN ${w}`), '');

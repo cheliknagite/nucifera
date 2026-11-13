@@ -1,0 +1,536 @@
+<!doctype html>
+<!-- nucifera landing starter (the landing skill, references/parts.md).
+     Copy to .design/ together with tokens.css, kit.css, motion.js (from the ui skill) and landing.css, scene.js.
+     It is a catalogue of working parts, filled with one invented product so that every part can be seen alive.
+     Keep the mechanics; replace the subject: the hook, the scene's data and look, the product views, the words, the colours.
+     Every block that still shows the invented product carries data-example. Remove the attribute when the block shows
+     the real product; delete the blocks the page plan does not use. verify.mjs fails a landing with an example left in it. -->
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Seedbed: when seedlings can go out</title>
+<meta name="description" content="Seedbed watches the forecast for your town and tells you when seedlings can go out.">
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="kit.css">
+<link rel="stylesheet" href="landing.css">
+<style>
+/* ---- the product's colours (in a real project: .design/brand.css). Up to three, from the subject, named by role ---- */
+:root { --leaf: #8fd66a; --leaf-ink: #10200a; --frost: #7db7ff; --soil: #2b2218;
+  --obj: var(--leaf); --obj-ink: var(--leaf-ink); --cta-bg: var(--leaf); --cta-fg: var(--leaf-ink); --stage-tone: #17240f; --stage-x: 24%; }
+html { background: var(--bg-0); } body { margin: 0; }
+.lp-mark { flex: none; width: 22px; height: 22px; border-radius: 6px; background: linear-gradient(var(--leaf) 0 52%, #a9713f 52% 100%); }
+.btn { text-decoration: none; }
+
+/* ---- first screen: the figure, the copy, the nights as a living curve ---- */
+.lp-hero { flex: 1; display: grid; grid-template-columns: 44% 1fr; align-items: center; min-height: 290px; }
+.lp-figure { height: min(350px, 38svh); }
+.lp-num { position: absolute; left: -12px; top: 10px; font: 600 min(350px, 38svh)/.86 var(--font-sans); letter-spacing: -0.05em; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.lp-copy { padding-left: 24px; }
+.lp-kicker { margin-bottom: 12px; font-size: 19px; color: var(--fg-2); }
+.lp-kicker b { color: var(--fg-1); font-weight: 500; }
+.lp-copy .t-hero { max-width: 620px; font-size: clamp(36px, 4vw, 56px); text-wrap: balance; }
+.lp-copy .t-lead { margin-top: 16px; max-width: 540px; }
+.lp-actions { display: flex; align-items: center; gap: 14px; margin-top: 24px; }
+.lp-actions .btn { min-height: 54px; padding: 0 26px; border-radius: 14px; font-size: 17px; font-weight: 600; }
+.lp-season { height: clamp(120px, 20svh, 190px); margin-top: 4px; }
+.lp-zero { position: absolute; right: 0; font-size: 13px; color: var(--frost); transform: translateY(6px); }
+.lp-strip { display: grid; grid-template-columns: repeat(21, minmax(0, 1fr)); gap: 6px; margin-top: 6px; }
+.lp-night { position: relative; display: grid; place-items: center; align-content: center; gap: 2px; height: 66px; font-variant-numeric: tabular-nums; transition: transform var(--dur-enter) var(--ease-out); }
+.lp-night small { font-size: 13px; color: var(--fg-2); }
+.lp-night b { font-size: 15px; font-weight: 500; }
+.lp-night.is-frost { background: linear-gradient(#1b2740, #131b2c); }
+.lp-night.is-frost b { color: var(--frost); }
+.lp-night.is-chosen small { color: var(--leaf-ink); }
+.lp-night.is-today::after, .lp-night.is-lit::after { content: ""; position: absolute; inset: 0; border-radius: inherit; box-shadow: inset 0 0 0 1.5px var(--fg-1); }
+.lp-night.is-lit::after { box-shadow: inset 0 0 0 1.5px var(--fg-2); }
+.lp-sprout { position: absolute; left: 50%; bottom: 100%; width: 34px; height: 44px; margin-left: -17px; transform-origin: 50% 100%; transform: scale(0); pointer-events: none; }
+.lp-sprout.is-up { transform: scale(1); transition: transform var(--dur-signature) var(--ease-out); }
+.lp-legend { display: flex; flex-wrap: wrap; gap: 8px 22px; margin: 14px 0 28px; font-size: 14px; color: var(--fg-2); }
+.lp-legend i { display: inline-block; width: 11px; height: 11px; margin-right: 7px; border-radius: 3px; vertical-align: -1px; }
+
+/* the product on the first screen: one real moment of use, the morning notification, played in step with the scene
+   (references/finish.md, section 3) */
+.lp-push { display: flex; gap: 12px; align-items: flex-start; max-width: 470px; min-height: 76px; margin-top: 22px; padding: 13px 16px 13px 13px; border-radius: 18px;
+  opacity: 0; transform: translateY(calc(-10px * var(--travel))); transition: opacity var(--dur-enter) var(--ease-out), transform var(--dur-enter) var(--ease-out); }
+.lp-push.is-in { opacity: 1; transform: none; }
+.lp-push .lp-mark { width: 38px; height: 38px; border-radius: 10px; }
+.lp-push > div { flex: 1; min-width: 0; }
+.lp-push__top { display: flex; justify-content: space-between; gap: 12px; font-size: 14px; color: var(--fg-2); }
+.lp-push__top b { font-weight: 600; color: var(--fg-1); }
+.lp-push p { margin-top: 2px; font-size: 16px; line-height: 1.4; }
+/* a soil bed seen from above: planted, or under glass (the steps use the small ones, the plot below its own large ones) */
+.lp-bed { position: relative; height: 74px; overflow: hidden; border-radius: 10px; background: linear-gradient(#33281c, #231b12);
+  box-shadow: inset 0 2px 5px rgb(0 0 0 / .55), inset 0 0 0 1px rgb(255 255 255 / .05), 0 10px 18px -10px rgb(0 0 0 / .8); }
+.lp-bed.is-planted::before { content: ""; position: absolute; inset: 9px 8px; background: radial-gradient(circle, var(--plant, var(--leaf)) 0 3px, transparent 4px) 0 0 / 18px 19px; }
+.lp-bed--glass { box-shadow: inset 0 2px 5px rgb(0 0 0 / .55), inset 0 0 0 1.5px rgb(255 255 255 / .2), 0 10px 18px -10px rgb(0 0 0 / .8); }
+
+@media (max-height: 840px) and (min-width: 761px) {
+  .lp-copy .t-hero { font-size: clamp(34px, 3.5vw, 48px); } .lp-copy .t-lead { font-size: 18px; margin-top: 12px; } .lp-actions { margin-top: 18px; } .lp-push { margin-top: 16px; }
+}
+@media (max-width: 760px) {
+  .lp-hero { grid-template-columns: minmax(0, 1fr); align-items: start; min-height: 0; padding-top: 8px; }
+  .lp-figure { height: 118px; } .lp-num { left: -4px; top: 0; font-size: 132px; }
+  .lp-copy { padding: 0; } .lp-kicker { font-size: 17px; margin-bottom: 8px; } .lp-copy .t-lead { margin-top: 12px; }
+  .lp-actions { margin-top: 20px; flex-wrap: wrap; } .lp-actions .btn { flex: 1 1 100%; }
+  .lp-season { height: 118px; margin-top: 14px; }
+  .lp-strip { gap: 3px; } .lp-night { height: 30px; border-radius: 6px; } .lp-night small, .lp-night b { display: none; }
+  .lp-night.is-chosen { transform: translateY(-3px); } .lp-sprout { width: 24px; height: 32px; margin-left: -12px; }
+  .lp-legend { margin-bottom: 20px; }
+}
+
+/* ---- comparison: three weeks of evenings by hand against the product's alerts ---- */
+.lp-evenings > * { display: grid; grid-template-columns: 200px minmax(0, 1fr); align-items: center; gap: var(--s-8); padding: var(--s-6) var(--s-8); }
+.lp-evenings h3 { margin-bottom: var(--s-3); font: var(--t-label); color: var(--fg-2); }
+.lp-days { display: grid; grid-template-columns: repeat(21, minmax(0, 1fr)); gap: 6px; }
+.lp-days i { display: grid; place-items: center; align-content: center; gap: 9px; height: 84px; border-radius: 10px; background: linear-gradient(var(--bg-3), var(--bg-2));
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / .07), inset 0 0 0 1px var(--line-1); color: var(--fg-2); font: 13px/1 var(--font-sans); font-variant-numeric: tabular-nums; }
+.lp-days i svg { width: 18px; height: 18px; }
+.lp-days i.is-off { background: none; box-shadow: inset 0 0 0 1px var(--line-1); color: var(--fg-4); }
+.lp-days i.is-off small { color: var(--fg-2); }
+.lp-days i.is-off::before { content: ""; width: 4px; height: 4px; margin: 7px; border-radius: 50%; background: var(--fg-4); }
+.lp-days i.is-frost { background: linear-gradient(#27406f, #172339); box-shadow: inset 0 1px 0 rgb(255 255 255 / .16), 0 12px 18px -10px rgb(0 0 0 / .8); color: #cfe2ff; }
+.lp-days i.is-go { background: linear-gradient(#a6e683, #7cc758); box-shadow: inset 0 1px 0 rgb(255 255 255 / .45), 0 12px 18px -10px rgb(0 0 0 / .8); color: var(--leaf-ink); transform: translateY(-5px); }
+.lp-sum { color: var(--fg-2); font: var(--t-small); }
+.lp-sum b { display: block; margin-bottom: 6px; font: 600 64px/1 var(--font-sans); letter-spacing: -0.03em; color: var(--fg-1); font-variant-numeric: tabular-nums; }
+.is-ours .lp-sum b { color: var(--leaf); }
+@media (max-width: 860px) {
+  .lp-evenings > * { grid-template-columns: minmax(0, 1fr); gap: var(--s-4); padding: var(--s-5); }
+  .lp-days { gap: 3px; } .lp-days i { height: 34px; border-radius: 5px; } .lp-days i small, .lp-days i svg { display: none; } .lp-days i.is-off::before { margin: 0; }
+}
+
+/* ---- stage: the plot from above, living through one frost night ---- */
+.lp-plan { display: grid; grid-template-rows: auto 1fr; background: #0c120a; }
+.lp-plan__bar { display: flex; align-items: center; gap: var(--s-4); min-height: 64px; padding: var(--s-3) var(--s-5); border-bottom: 1px solid var(--line-1); background: var(--bg-1); }
+.lp-plan__bar time { color: var(--fg-2); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.lp-plan__alert { display: flex; align-items: center; gap: 10px; margin-left: auto; min-height: 40px; padding: 6px 14px 6px 10px; border-radius: 12px; font-weight: 500;
+  opacity: 0; transform: translateY(calc(-8px * var(--travel))); transition: opacity var(--dur-enter) var(--ease-out), transform var(--dur-enter) var(--ease-out); }
+.lp-plan__alert.is-in { opacity: 1; transform: none; }
+.lp-plan__alert[data-tone="frost"] { color: var(--frost); }
+.lp-plan__alert[data-tone="go"] { color: var(--leaf); }
+.lp-plan__beds { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); grid-template-rows: repeat(2, minmax(168px, 1fr)); gap: 14px; padding: 22px; }
+.lp-b { position: relative; overflow: hidden; border-radius: 14px; background: repeating-linear-gradient(0deg, rgb(0 0 0 / .2) 0 2px, transparent 2px 13px), linear-gradient(#3a2d1f, #241b12);
+  box-shadow: inset 0 3px 8px rgb(0 0 0 / .55), inset 0 0 0 1px rgb(255 255 255 / .05); }
+.lp-b::before { content: ""; position: absolute; inset: 50px 18px 16px; opacity: 0; transform: scale(.96); transition: opacity var(--dur-roll) var(--ease-out), transform var(--dur-roll) var(--ease-out);
+  background: radial-gradient(circle, var(--plant, var(--leaf)) 0 var(--dot, 4px), transparent calc(var(--dot, 4px) + 1px)) 0 0 / var(--gap, 26px) var(--gap, 26px); }
+.lp-b.is-planted::before { opacity: 1; transform: none; }
+.lp-b::after { content: ""; position: absolute; inset: 0; z-index: 1; border-radius: inherit; clip-path: inset(0 100% 0 0); transition: clip-path var(--dur-signature) var(--ease-out);
+  background: repeating-linear-gradient(45deg, rgb(255 255 255 / .14) 0 1px, transparent 1px 6px), linear-gradient(rgb(226 236 250 / .46), rgb(226 236 250 / .32)); box-shadow: inset 0 1px 0 rgb(255 255 255 / .55); }
+.lp-b.is-covered::after { clip-path: inset(0); }
+.lp-b--glass { box-shadow: inset 0 3px 8px rgb(0 0 0 / .55), inset 0 0 0 1.5px rgb(255 255 255 / .22); transition: box-shadow var(--dur-roll) var(--ease-out);
+  background: linear-gradient(90deg, rgb(255 255 255 / .1) 0 1.5px, transparent 1.5px) 0 46px / 16.666% 100% repeat-x, linear-gradient(115deg, rgb(255 255 255 / .09), transparent 40%), linear-gradient(#3a2d1f, #241b12); }
+.lp-b--glass.is-planted { box-shadow: inset 0 3px 8px rgb(0 0 0 / .55), inset 0 0 0 1.5px var(--leaf); }
+.lp-b span, .lp-b em { position: absolute; left: 16px; z-index: 2; white-space: nowrap; text-shadow: 0 1px 8px rgb(0 0 0 / .9); }
+.lp-b span { top: 13px; font-weight: 600; }
+.lp-b em { top: 13px; left: auto; right: 16px; font-style: normal; font-size: 14px; color: var(--fg-2); }
+.lp-b.is-covered em { color: var(--fg-1); } .lp-b--glass.is-planted em { color: var(--leaf); }
+@media (max-width: 760px) {
+  .lp-plan__bar { flex-wrap: wrap; } .lp-plan__alert { margin-left: 0; }
+  .lp-plan__beds { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: none; grid-auto-rows: 104px; gap: 10px; padding: 14px; }
+  .lp-plan__beds > * { grid-area: auto !important; } .lp-b em { top: 36px; left: 16px; right: auto; } .lp-b::before { inset: 62px 14px 12px; }
+}
+
+/* ---- close-ups ---- */
+.lp-lock { padding: 30px 30px 0; background: linear-gradient(160deg, #161a26, #0a0b10 70%); }
+.lp-lock time { display: block; font: 400 clamp(64px, 8vw, 104px)/1 var(--font-sans); letter-spacing: -0.04em; font-variant-numeric: tabular-nums; }
+.lp-lock > p { margin: 6px 0 22px; color: var(--fg-2); font: var(--t-lead); }
+.lp-note { display: flex; gap: 12px; padding: 13px 16px 13px 13px; border-radius: 18px; }
+.lp-note + .lp-note { margin-top: 10px; opacity: .55; }
+.lp-note .lp-mark { width: 38px; height: 38px; border-radius: 10px; }
+.lp-note div { flex: 1; min-width: 0; }
+.lp-note header { display: flex; justify-content: space-between; font-size: 14px; color: var(--fg-2); }
+.lp-note header b { color: var(--fg-1); font-weight: 600; }
+.lp-note p { margin-top: 2px; line-height: 1.4; }
+.closeups .frame { min-height: clamp(260px, 30vw, 410px); }
+.lp-home { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); align-content: start; gap: 20px; max-height: 410px; padding: 28px; background: linear-gradient(200deg, #1b2716, #0b0d0a 72%); }
+.lp-home > i { --c: #2a2936; aspect-ratio: 1; border-radius: 23%; background: linear-gradient(color-mix(in oklab, var(--c) 86%, white), var(--c)); box-shadow: inset 0 1px 0 rgb(255 255 255 / .1); }
+.lp-home > i:nth-of-type(4n + 1) { --c: #27364f; } .lp-home > i:nth-of-type(4n + 2) { --c: #433526; } .lp-home > i:nth-of-type(5n + 3) { --c: #2d3f2b; } .lp-home > i:nth-of-type(7n) { --c: #452c33; }
+.lp-note + .lp-note + .lp-note { opacity: .3; }
+.lp-widget { grid-column: span 2; grid-row: span 2; display: grid; align-content: space-between; padding: 14px 16px 16px; border-radius: 24px; }
+.lp-widget span { font: 600 clamp(64px, 7.4vw, 104px)/.9 var(--font-sans); letter-spacing: -0.05em; }
+.lp-widget b { display: block; font-weight: 500; line-height: 1.25; } .lp-widget small { color: var(--fg-2); font: var(--t-time); }
+.lp-years { width: 100%; margin-top: var(--s-6); }
+.lp-years svg { display: block; width: 100%; height: auto; overflow: visible; }
+.lp-years text { font: 13px var(--font-sans); fill: var(--fg-2); }
+.closeups .lp-crop { min-height: 0; }
+.lp-crop { display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: var(--s-8); align-items: center; padding: 30px; }
+.lp-crop h3 { font: 600 30px/1.15 var(--font-sans); letter-spacing: -0.02em; }
+.lp-crop p { margin-top: 6px; color: var(--fg-2); }
+.lp-line { position: relative; display: grid; grid-template-columns: 59fr 68fr 67fr; gap: 4px; padding-top: 34px; }
+.lp-line > div { min-width: 0; }
+.lp-line i { display: block; height: 30px; border-radius: 8px; }
+.lp-line div:nth-of-type(1) i { background: repeating-linear-gradient(-45deg, var(--bg-3) 0 6px, var(--bg-2) 6px 12px); }
+.lp-line div:nth-of-type(2) i { background: linear-gradient(#4f7f3a, #3c6a2b); box-shadow: inset 0 1px 0 rgb(255 255 255 / .16); }
+.lp-line div:nth-of-type(3) i { background: linear-gradient(#a6e683, #7cc758); box-shadow: inset 0 1px 0 rgb(255 255 255 / .45); }
+.lp-line b { display: block; margin-top: 10px; font-weight: 500; }
+.lp-line small { display: block; color: var(--fg-2); font: var(--t-small); font-variant-numeric: tabular-nums; }
+.lp-months { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); margin-top: var(--s-5); padding-top: var(--s-3); border-top: 1px solid var(--line-1); color: var(--fg-2); font: var(--t-time); }
+.lp-months span { padding-left: 8px; border-left: 1px solid var(--line-2); }
+@media (max-width: 760px) { .lp-months { display: none; } }
+.lp-line__today { position: absolute; top: 0; left: 26%; padding-bottom: 46px; border-left: 1.5px solid var(--fg-1); padding-left: 8px; font: var(--t-small); line-height: 20px; color: var(--fg-1); pointer-events: none; }
+@media (max-width: 760px) { .lp-crop { grid-template-columns: minmax(0, 1fr); gap: var(--s-5); padding: 22px; } .lp-lock { padding: 22px 18px 0; } }
+
+/* ---- band: the whole season as one curve ---- */
+.lp-year { min-height: 540px; background: #0a0f0a; }
+.lp-year::before { content: none; }   /* this scene keeps clear of the text by itself, so the band needs no mask; a photo does */
+@media (max-width: 760px) { .lp-year { min-height: 680px; } }
+
+/* ---- steps: three objects ---- */
+.lp-city { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 68px; padding: 0 20px; border-radius: 16px; font-size: 18px; }
+.lp-city b { font-weight: 500; } .lp-city span { margin-left: auto; color: var(--fg-2); font: var(--t-small); }
+.lp-mini { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; width: 100%; }
+.lp-mini .lp-bed { height: 84px; }
+.lp-mini .lp-add { display: grid; place-items: center; border-radius: 10px; box-shadow: inset 0 0 0 1.5px var(--line-3); color: var(--fg-2); font-size: 26px; }
+.steps .lp-note { width: 100%; padding: 16px 18px 16px 16px; text-align: left; }
+.steps .lp-note p { font-size: 17px; }
+
+/* ---- plans and questions ---- */
+.lp-ask { margin-top: var(--s-5); color: var(--fg-2); }
+.lp-cost .plans { margin-top: var(--s-8); } .lp-cost .faq { margin-top: var(--s-5); }
+
+/* ---- final call ---- */
+.lp-echo { width: 100%; margin-top: var(--s-6); text-align: left; }
+.lp-echo .lp-season { height: 150px; } .lp-echo .lp-night { text-align: center; }
+.lp-terms { color: var(--fg-2); font: var(--t-small); }
+</style>
+</head>
+<body class="app">
+
+<!-- ============ first screen: header, the hook (figure + living curve), headline, one sentence, one action,
+     and the product as one real moment of use ============ -->
+<section class="first stage" data-nights data-example="hero">
+  <div class="wrap">
+    <header class="site-head">
+      <a class="site-head__logo" href="#"><i class="lp-mark"></i>Seedbed</a>
+      <nav aria-label="Sections"><a href="#how">How it works</a><a href="#season">Season</a><a href="#plans">Pricing</a><a href="#faq">Questions</a></nav>
+    </header>
+    <div class="lp-hero">
+      <div class="lp-figure cast"><span class="lp-num solid" data-num>9</span></div>
+      <div class="lp-copy">
+        <p class="lp-kicker"><span data-unit>days</span> until tomatoes can go out. <b data-city>Leeds</b></p>
+        <h1 class="t-hero">Seedbed counts the frosts for you</h1>
+        <p class="t-lead">It watches the forecast for your town and tells you when seedlings can go out. And it reminds you to cover them when a frost is coming.</p>
+        <div class="lp-actions"><a class="btn btn--primary btn--lit" href="#get" data-main-action>Download for free</a><span class="example">Example</span></div>
+        <div class="lp-push tile" aria-hidden="true"><i class="lp-mark"></i><div><div class="lp-push__top"><b>Seedbed</b><span data-push-time></span></div><p data-push-text></p></div></div>
+      </div>
+    </div>
+    <div class="lp-season scene first__hook"><canvas></canvas><span class="lp-zero">0°, frost</span></div>
+    <div class="lp-strip"></div>
+    <p class="lp-legend"><span><i style="background:var(--frost)"></i>a night below zero</span><span><i style="background:var(--leaf)"></i>safe to plant</span><span><i style="box-shadow:inset 0 0 0 1.5px var(--fg-1)"></i>today</span><span>Night temperatures: a forecast for 21 nights and frost dates over 30 years. Example</span></p>
+  </div>
+</section>
+
+<main>
+<!-- ============ comparison: the routine the product removes; the heading is the takeaway ============ -->
+<section class="section" data-example="comparison">
+  <div class="wrap">
+    <div class="section-top reveal"><h2 class="t-section">5 alerts instead of 21 evenings with the forecast</h2><p class="t-lead">In spring the weather decides every day. Seedbed reads the forecast for you and writes only when there is something to do.</p></div>
+    <div class="compare compare--rows lp-evenings reveal">
+      <div><div><h3>By hand</h3><p class="lp-sum"><b>21</b>evenings with the weather forecast</p></div><div class="lp-days" data-days="hand"></div></div>
+      <div class="is-ours"><div><h3>With Seedbed</h3><p class="lp-sum"><b>5</b>alerts over the same three weeks</p></div><div class="lp-days" data-days="ours"></div></div>
+    </div>
+    <p class="caption">Leeds, 29 April – 19 May: four frost nights and the planting day. Example</p>
+  </div>
+</section>
+
+<!-- ============ stage: the real product at a readable size, replaying one scenario ============ -->
+<section class="section" id="how" data-example="product demo">
+  <div class="wrap show">
+    <div class="section-top reveal"><h2 class="t-section">The whole plot on one screen</h2></div>
+    <div class="frame lp-plan reveal" aria-label="Example: the plot plan in the app">
+      <div class="lp-plan__bar"><i class="lp-mark"></i><time data-plan-time></time><div class="lp-plan__alert tile" data-plan-alert></div></div>
+      <div class="lp-plan__beds">
+        <div class="lp-b is-planted" style="grid-area:1/1/2/4;--plant:#c3e59a;--dot:3px;--gap:20px"><span>Radishes</span><em>growing</em></div>
+        <div class="lp-b is-planted" data-tender style="grid-area:1/4/2/7;--plant:#7fbf8f;--dot:6px;--gap:34px"><span>Cabbage</span><em>growing</em></div>
+        <div class="lp-b lp-b--glass" data-main style="grid-area:1/7/2/13;--dot:5px;--gap:36px"><span>Greenhouse: tomatoes</span><em>waiting for warmth</em></div>
+        <div class="lp-b is-planted" data-tender style="grid-area:2/1/3/5;--plant:#b6ef95;--dot:5px;--gap:28px"><span>Lettuce</span><em>growing</em></div>
+        <div class="lp-b" style="grid-area:2/5/3/9"><span>Cucumbers</span><em>waiting for warmth</em></div>
+        <div class="lp-b is-planted" style="grid-area:2/9/3/13;--plant:#6f8f4f;--dot:4px;--gap:40px"><span>Potatoes</span><em>sprouting</em></div>
+      </div>
+    </div>
+    <p class="show__note">Seedbed shows what to cover tonight and what can already go out.</p>
+  </div>
+</section>
+
+<!-- ============ close-ups: real crops of the product, unequal tiles, a one-line caption each ============ -->
+<section class="section" data-example="close-ups">
+  <div class="wrap">
+    <div class="section-top reveal"><h2 class="t-section">It writes rarely and to the point</h2></div>
+    <div class="closeups">
+      <figure class="reveal"><div class="frame lp-lock">
+        <time>06:00</time><p>Thursday, 30 April</p>
+        <div class="lp-note tile"><i class="lp-mark"></i><div><header><b>Seedbed</b><span>now</span></header><p>−1° tonight. Cover the cabbage and the lettuce with fleece before evening.</p></div></div>
+        <div class="lp-note tile"><i class="lp-mark"></i><div><header><b>Seedbed</b><span>yesterday</span></header><p>Radishes can be sown: the soil has warmed to +6°.</p></div></div>
+        <div class="lp-note tile"><i class="lp-mark"></i><div><header><b>Seedbed</b><span>Monday</span></header><p>The peas are up. First feeding in 10 days.</p></div></div>
+      </div><figcaption class="caption">One alert in the morning: what to do today.</figcaption></figure>
+      <figure class="reveal"><div class="frame lp-home">
+        <i></i><i></i><i></i><i></i>
+        <div class="lp-widget tile"><span class="solid">9</span><div><b>days until tomatoes</b><small>Leeds, 8 May</small></div></div>
+        <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+      </div><figcaption class="caption">The widget on the home screen: the number of the day always in sight.</figcaption></figure>
+      <figure class="reveal"><div class="frame lp-crop">
+        <div><h3>Tomatoes</h3><p>De Barao, greenhouse, 12 plants</p></div>
+        <div class="lp-line">
+          <span class="lp-line__today">today, 29 April</span>
+          <div><i></i><b>Seedlings</b><small>10 March – 8 May</small></div>
+          <div><i></i><b>In the greenhouse</b><small>8 May – 15 July</small></div>
+          <div><i></i><b>Harvest</b><small>15 July – 20 September</small></div>
+          <p class="lp-months" aria-hidden="true"><span>March</span><span>April</span><span>May</span><span>June</span><span>July</span><span>August</span><span>September</span></p>
+        </div>
+      </div><figcaption class="caption">Every crop has its own calendar, from seed to harvest.</figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<!-- ============ statement: one number set very large, one line of support ============ -->
+<section class="section" data-example="statement">
+  <div class="wrap statement reveal">
+    <p class="statement__big">30 years</p>
+    <p class="statement__note">of night temperatures in your town stand behind every "go" from Seedbed.</p>
+    <div class="lp-years" data-years></div>
+    <p class="caption">Each dot: the last frost of one year in Leeds. Example</p>
+  </div>
+</section>
+
+<!-- ============ band: a scene (or a photo) across the content width, the text on its masked side ============ -->
+<section class="section" id="season" data-example="band">
+  <div class="wrap">
+    <div class="band lp-year reveal">
+      <div class="scene" data-year><canvas></canvas></div>
+      <div class="band__text"><h2 class="t-section">From the last frost to the first</h2><p class="t-lead">Seedbed runs the whole season: when to sow, when to plant out, and when to harvest before the autumn cold.</p><p><a class="link" href="#">How Seedbed works out the dates</a></p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ steps rail: how it works, each step with its own small object ============ -->
+<section class="section" data-example="steps">
+  <div class="wrap">
+    <div class="section-top reveal"><h2 class="t-section">Start in three minutes</h2></div>
+    <div class="steps reveal">
+      <div><div class="steps__object"><div class="lp-city tile"><i class="lp-mark"></i><b>Leeds</b><span>30 years of data</span></div></div><h3>Choose your town</h3><p>Seedbed brings in the forecast and the frost history.</p></div>
+      <div><div class="steps__object"><div class="lp-mini"><div class="lp-bed is-planted" style="--plant:#c3e59a"></div><div class="lp-bed is-planted" style="--plant:#7fbf8f"></div><div class="lp-bed lp-bed--glass"></div><div class="lp-add">+</div></div></div><h3>Mark your beds</h3><p>What is growing and what waits for warmth.</p></div>
+      <div><div class="steps__object"><div class="lp-note tile"><i class="lp-mark"></i><div><header><b>Seedbed</b><span>06:00</span></header><p>Tomatoes can go out today.</p></div></div></div><h3>Wait for an alert</h3><p>In the morning, and only when there is something to do.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ plans: one table, labels once on the left, plans named by situation ============ -->
+<section class="section" id="plans" data-example="plans and questions">
+  <div class="wrap split split--top lp-cost">
+   <div class="reveal">
+    <h2 class="t-section">One plot is free</h2>
+    <table class="plans">
+      <thead><tr><th></th><th><b>One plot</b><span class="price">$0</span>for a garden by the house</th><th class="is-main"><b>Garden and greenhouse</b><span class="price">$9</span>per season, up to five plots</th></tr></thead>
+      <tbody>
+        <tr><th>Frost alerts</th><td>yes</td><td class="is-main">yes</td></tr>
+        <tr><th>Season calendar</th><td>yes</td><td class="is-main">yes</td></tr>
+        <tr><th>Greenhouses and cold frames</th><td>no</td><td class="is-main">yes</td></tr>
+        <tr><th>Family access</th><td>no</td><td class="is-main">up to 4 people</td></tr>
+      </tbody>
+    </table>
+    <p class="caption">Paid once per season, no automatic renewal. <a class="link" href="#">All terms</a></p>
+   </div>
+   <!-- questions: those a buyer asks, one open at a time; they share the screen with the plans, so no screen is text alone twice -->
+   <div class="reveal" id="faq">
+    <h2 class="t-section">Questions</h2>
+    <div class="faq">
+      <details name="faq" open><summary>Where does Seedbed get the forecast?</summary><p>From open weather data for your town. The forecast is updated every morning at 06:00.</p></details>
+      <details name="faq"><summary>What if the forecast is wrong?</summary><p>Seedbed advises with a margin: it waits for two warm nights after the last frost and checks the dates over 30 years. The decision is still yours.</p></details>
+      <details name="faq"><summary>Does it work for a greenhouse?</summary><p>Yes. Seedbed counts a greenhouse and a cold frame separately: seedlings can go there earlier.</p></details>
+      <details name="faq"><summary>Do I pay every month?</summary><p>No. One plot is free; a garden and a greenhouse cost $9 per season.</p></details>
+    </div>
+    <p class="lp-ask">Did not find yours? <a class="link" href="#">Write to us</a></p>
+   </div>
+  </div>
+</section>
+
+<!-- ============ final call: an object, one sentence, one action ============ -->
+<section class="section" id="get" data-final data-example="final call">
+  <div class="wrap">
+    <div class="final stage reveal" data-nights style="--stage-x:50%;--stage-y:24%">
+      <h2 class="t-section">Find out when your seedlings can go out</h2>
+      <a class="btn btn--primary btn--lit" href="#">Download for free</a>
+      <p class="lp-terms">Free for one plot. An example page</p>
+      <div class="lp-echo" aria-hidden="true"><div class="lp-season scene"><canvas></canvas><span class="lp-zero">0°, frost</span></div><div class="lp-strip"></div></div>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer class="wrap site-foot" data-example="footer">
+  <div><a class="site-head__logo" href="#"><i class="lp-mark"></i>Seedbed</a><p>A planner for vegetable growers: frosts, beds, the season calendar. An example page, 2026</p></div>
+  <nav aria-label="Product"><b>Product</b><a href="#how">How it works</a><a href="#season">Season</a><a href="#plans">Pricing</a></nav>
+  <nav aria-label="Help"><b>Help</b><a href="#faq">Questions</a><a href="#">How Seedbed works out the dates</a><a href="#">Support</a></nav>
+  <nav aria-label="Documents"><b>Documents</b><a href="#">Terms</a><a href="#">Privacy</a></nav>
+</footer>
+<div class="cta-bar"><a class="btn btn--primary" href="#get">Download for free</a></div>
+
+<script src="motion.js"></script>
+<script src="scene.js"></script>
+<script>
+(() => {
+  /* ---- the example story, the same everywhere on the page: Leeds, 21 nights from 29 April ---- */
+  const CITIES = [
+    { name: 'Leeds', t: [1, -1, 2, 0, -2, 3, 1, -1, 4, 6, 7, 8, 9, 8, 10, 9, 11, 10, 9, 11, 12] },
+    { name: 'Bristol',   t: [2, -2, 4, 11, 8, 9, 10, 11, 8, 9, 10, 11, 8, 9, 10, 11, 8, 9, 10, 11, 8] },
+    { name: 'York',   t: [0, -3, 1, -1, -2, 2, 5, 6, 4, 7, 8, 6, 9, 8, 10, 9, 8, 10, 11, 9, 10] },
+    { name: 'Aberdeen',  t: [-1, -4, -2, 0, 1, -1, 2, -3, 0, -2, -1, 3, 5, 6, 4, 7, 8, 9, 8, 10, 9] },
+  ];
+  const N = 21, CYCLE = 10, LEAF = '143,214,106', FROST = '125,183,255';
+  const DATES = Array.from({ length: N }, (_, i) => i < 2 ? (29 + i) + ' Apr' : (i - 1) + ' May');
+  const { canvas, play, ease, lerp, clamp, calm, rand } = nuScene;
+  const safeDay = t => { let last = -1; t.forEach((v, i) => { if (v <= 0) last = i; }); return Math.min(N - 1, last + 2); };
+  const days = n => n === 1 ? 'day' : 'days';
+  const sign = v => (v > 0 ? '+' : v < 0 ? '−' : '') + Math.abs(v) + '°';
+  const SPROUT = '<svg class="lp-sprout" viewBox="0 0 34 44"><path d="M17 44V20" stroke="#8fd66a" stroke-width="3" stroke-linecap="round" fill="none"/><path d="M17 24C8 24 4 18 3 10c8 0 14 4 14 14z" fill="#8fd66a"/><path d="M17 18c0-9 5-14 14-15 0 9-5 15-14 15z" fill="#a6e683"/></svg>';
+  const night = (v, i, s) => `<div class="lp-night tile${i === 0 ? ' is-today' : ''}${v <= 0 ? ' is-frost' : ''}${i === s ? ' is-chosen' : ''}"><small>${DATES[i]}</small><b>${sign(v)}</b>${i === s ? SPROUT : ''}</div>`;
+
+  /* ---- the hook: 21 nights as one curve over the frost zone; a cursor walks from today to the day planting is safe,
+     and the product speaks at the two moments that matter. A pure function of t: city = floor(t / CYCLE), the walk = t % CYCLE.
+     The final call mounts the same scene without the figure and the notification. ---- */
+  function hero(sec) {
+    const $ = s => sec.querySelector(s);
+    const num = $('[data-num]'), strip = $('.lp-strip'), band = $('.lp-season'), zero = $('.lp-zero'), push = $('.lp-push');
+    let shown = -1, lit = -2, mood = '', said = '';
+
+    function city(k, roll) {
+      const c = CITIES[k], s = safeDay(c.t); shown = k; lit = -2; mood = said = '';
+      strip.innerHTML = c.t.map((v, i) => night(v, i, s)).join('');
+      if (!num) return;
+      $('[data-unit]').textContent = days(s); $('[data-city]').textContent = c.name;
+      if (roll) {
+        const old = num.cloneNode(true); num.after(old);
+        old.animate([{ transform: 'none', opacity: 1 }, { transform: 'translateY(-10%)', opacity: 0 }], { duration: 280, easing: 'cubic-bezier(.23, 1, .32, 1)', fill: 'forwards' }).finished.then(() => old.remove());
+        num.animate([{ transform: 'translateY(12%)', opacity: 0 }, { transform: 'none', opacity: 1 }], { duration: 480, easing: 'cubic-bezier(.23, 1, .32, 1)' });
+      }
+      num.textContent = s;
+    }
+
+    /* everything outside the canvas that follows the walk: the lit night, the sprout, the notification */
+    function follow(c, s, cur, done) {
+      const i = Math.round(cur), f0 = c.t.findIndex(n => n <= 0), state = done ? 'go' : i < f0 ? 'calm' : 'frost';   /* f0: the first frost night */
+      if (i !== lit) { lit = i; strip.querySelectorAll('.lp-night').forEach((n, j) => n.classList.toggle('is-lit', j === i && !done)); }
+      if (state === mood) return;
+      mood = state;
+      const sp = strip.querySelector('.lp-sprout'); if (sp) sp.classList.toggle('is-up', done);
+      if (!push) return;
+      /* one message from the first frost night to the arrival, then the one that matters: each stays long enough to read */
+      const text = done ? 'No more frosts ahead. Tomatoes can go out today.' : state === 'calm' ? '' : `${sign(c.t[f0])} tonight. Cover the seedlings with fleece before evening.`;
+      const show = () => { if (said !== text) return; $('[data-push-text]').textContent = text; $('[data-push-time]').textContent = DATES[done ? s : f0] + ', 06:00'; push.classList.add('is-in'); };
+      said = text; push.classList.remove('is-in');
+      if (text) { if (calm()) setTimeout(show, 190); else show(); }
+    }
+
+    canvas(band, { still: 8.8, from: .95, draw(ctx, t, W, H) {
+      const k = Math.floor(t / CYCLE) % CITIES.length, u = t % CYCLE, c = CITIES[k], prev = CITIES[(k + CITIES.length - 1) % CITIES.length], s = safeDay(c.t);
+      if (k !== shown) city(k, shown >= 0 && calm());
+      const m = ease(u / .9), T = c.t.map((v, i) => lerp(prev.t[i], v, m));
+      const walk = clamp((u - 1.1) / (.7 + s * .38)), cur = ease(walk) * s;
+      const x = i => (i + .5) * W / N, y = v => H - 12 - (v + 4) / 16 * (H - 18), y0 = y(0);
+      zero.style.top = y0 + 'px';
+      const path = () => { ctx.beginPath(); ctx.moveTo(0, y(T[0])); ctx.lineTo(x(0), y(T[0]));
+        for (let i = 1; i < N; i++) { const mx = (x(i - 1) + x(i)) / 2; ctx.bezierCurveTo(mx, y(T[i - 1]), mx, y(T[i]), x(i), y(T[i])); }
+        ctx.lineTo(W, y(T[N - 1])); };
+      const zone = (from, to, fill) => { ctx.save(); ctx.beginPath(); ctx.rect(0, from, W, to - from); ctx.clip(); path(); ctx.lineTo(W, y0); ctx.lineTo(0, y0); ctx.closePath(); ctx.fillStyle = fill; ctx.fill(); ctx.restore(); };
+      const warm = ctx.createLinearGradient(0, 0, 0, y0); warm.addColorStop(0, `rgba(${LEAF},.26)`); warm.addColorStop(1, `rgba(${LEAF},.03)`);
+      zone(0, y0, warm); zone(y0, H, `rgba(${FROST},.28)`);
+      for (let i = 0; i < N; i++) if (T[i] < 0) for (let j = 0; j < 5; j++) {   /* frost glints, only inside frost nights */
+        const r = rand(i * 31 + j + 1), gx = x(i) + (r() - .5) * W / N * .9 + Math.sin(t / 2.6 + j) * 3, gy = y0 + 4 + r() * Math.max(4, y(T[i]) - y0 - 6), a = .35 + .45 * Math.sin(t / .9 + r() * 6.28);
+        if (a <= 0) continue;
+        ctx.strokeStyle = `rgba(190,220,255,${a.toFixed(2)})`; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(gx - 3, gy); ctx.lineTo(gx + 3, gy); ctx.moveTo(gx, gy - 3); ctx.lineTo(gx, gy + 3); ctx.stroke(); }
+      ctx.setLineDash([4, 6]); ctx.strokeStyle = `rgba(${FROST},.55)`; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(0, y0); ctx.lineTo(W, y0); ctx.stroke(); ctx.setLineDash([]);
+      path(); ctx.strokeStyle = 'rgba(245,244,250,.9)'; ctx.lineWidth = 2; ctx.stroke();
+      const a = Math.floor(cur), cv = lerp(T[a], T[Math.min(N - 1, a + 1)], cur - a), cx = x(cur), cy = y(cv);
+      ctx.strokeStyle = 'rgba(245,244,250,.35)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(cx, 0); ctx.lineTo(cx, H); ctx.stroke();
+      ctx.fillStyle = cv <= 0 ? `rgb(${FROST})` : `rgb(${LEAF})`; ctx.beginPath(); ctx.arc(cx, cy, 6, 0, 6.3); ctx.fill();
+      ctx.strokeStyle = '#07060b'; ctx.lineWidth = 2; ctx.stroke();
+      follow(c, s, cur, walk >= 1);
+    } });
+  }
+  document.querySelectorAll('[data-nights]').forEach(hero);
+
+  /* ---- comparison: 21 evenings by hand, 5 alerts with the product (the same nights as the hook's first city) ---- */
+  const ICON = { look: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="7" cy="7" r="4.2"/><path d="M10.2 10.2 14 14"/></svg>',
+    frost: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M8 1.5v13M2.4 4.8l11.2 6.4M13.6 4.8 2.4 11.2"/></svg>',
+    go: '<svg viewBox="0 0 16 16" fill="currentColor"><path d="M7.3 15V8.6C3.6 8.6 1.6 6.3 1.4 2.8c3.6 0 5.8 1.6 6.4 4.3C8.3 3.6 10.6 1.3 14.6 1c0 4.3-2.2 6.9-5.9 7.2V15z"/></svg>' };
+  const V = CITIES[0].t, VS = safeDay(V);
+  document.querySelectorAll('[data-days]').forEach(row => {
+    const day = i => `<small>${DATES[i].split(' ')[0]}</small>`;
+    row.innerHTML = V.map((v, i) => row.dataset.days === 'hand' ? `<i>${ICON.look}${day(i)}</i>` : v <= 0 ? `<i class="is-frost">${ICON.frost}${day(i)}</i>` : i === VS ? `<i class="is-go">${ICON.go}${day(i)}</i>` : `<i class="is-off">${day(i)}</i>`).join('');
+  });
+
+  /* ---- stage: the plot lives through one frost night; nuScene.play replays it while it is on screen ---- */
+  document.querySelectorAll('.lp-plan').forEach(plan => {
+    const $ = s => plan.querySelector(s), time = $('[data-plan-time]'), alert = $('[data-plan-alert]'), main = $('[data-main]'), tender = [...plan.querySelectorAll('[data-tender]')];
+    const say = (text, tone) => { alert.classList.remove('is-in'); if (!text) return; alert.dataset.tone = tone; alert.textContent = text; void alert.offsetWidth; alert.classList.add('is-in'); };
+    const cover = on => tender.forEach(b => { b.classList.toggle('is-covered', on); b.querySelector('em').textContent = on ? 'covered' : 'growing'; });
+    play(plan, { pause: 3600,
+      reset() { time.textContent = 'Thursday, 18:40'; say(''); cover(false); main.classList.remove('is-planted'); main.querySelector('em').textContent = 'waiting for warmth'; },
+      steps: [
+        [900, () => say('−2° tonight. Cover the cabbage and the lettuce.', 'frost')],
+        [1500, () => cover(true)],
+        [2000, () => { time.textContent = 'Friday, 07:10'; say('The night is over: −2°. The seedlings are safe.', 'ok'); }],
+        [1500, () => cover(false)],
+        [1700, () => { time.textContent = '8 May, 06:00'; say('No more frosts ahead. Plant out the tomatoes.', 'go'); }],
+        [900, () => { main.classList.add('is-planted'); main.querySelector('em').textContent = 'ready to plant'; }],
+      ] });
+  });
+
+  /* ---- close-up: the last frost of each of 30 years as dots (seeded: the same on every load) ---- */
+  document.querySelectorAll('[data-years]').forEach(box => {
+    /* drawn at the size it is shown, so its labels stay readable on a phone */
+    const small = box.clientWidth < 600, r = rand(12), W = small ? 350 : 1200, H = small ? 230 : 190, R = small ? 4.5 : 10, UP = small ? 11 : 24, PAD = small ? 14 : 24, D0 = 10, D1 = 50;
+    const x = d => PAD + (d - D0) / (D1 - D0) * (W - 2 * PAD), count = {}, base = H - 32;
+    const dots = Array.from({ length: 30 }, () => Math.round(clamp(33 + (r() + r() + r() - 1.5) * 13, D0 + 1, D1 - 1))).sort((a, b) => a - b);
+    const med = dots[15], p90 = dots[26], label = d => d <= 30 ? d + ' Apr' : (d - 30) + ' May';
+    const circles = dots.map((d, i) => { const n = count[d] = (count[d] || 0) + 1; return `<circle cx="${x(d).toFixed(1)}" cy="${base - R - 8 - (n - 1) * UP}" r="${R}" fill="rgb(${FROST})" opacity="${i > 26 ? .4 : 1}"/>`; }).join('');
+    box.innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Dates of the last frost over 30 years">
+      <line x1="${x(med + .5)}" x2="${x(med + .5)}" y1="${small ? 26 : 8}" y2="${base}" stroke="var(--fg-1)" stroke-width="1.5"/><text x="${small ? PAD : x(med + .5) - 10}" y="${small ? 16 : 20}" text-anchor="${small ? 'start' : 'end'}" style="fill:var(--fg-1);font-weight:500">${small ? 'in half the years' : 'in half the years the frosts ended'} by ${label(med)}</text>
+      <line x1="${x(p90 + .5)}" x2="${x(p90 + .5)}" y1="${small ? 48 : 8}" y2="${base}" stroke="var(--fg-2)" stroke-width="1" stroke-dasharray="3 4"/><text x="${small ? W - PAD : x(p90 + .5) + 10}" y="${small ? 40 : 20}" text-anchor="${small ? 'end' : 'start'}">in 9 of 10: by ${label(p90)}</text>
+      <line x1="${PAD}" x2="${W - PAD}" y1="${base}" y2="${base}" stroke="var(--line-3)"/>${circles}
+      ${(small ? [10, 30, 50] : [10, 20, 30, 40, 50]).map(d => `<text x="${x(d)}" y="${H - 8}" text-anchor="${small && d === 10 ? 'start' : small && d === 50 ? 'end' : 'middle'}">${label(d)}</text>`).join('')}</svg>`;
+  });
+
+  /* ---- band: the whole season, March to October, as one curve; a cursor crosses it in 18 seconds ---- */
+  document.querySelectorAll('[data-year]').forEach(box => {
+    const DAYS = 240, A = 68, B = 215, MON = ['Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'], LEN = [31, 30, 31, 30, 31, 31, 30, 26], r = rand(5);
+    const wob = Array.from({ length: 25 }, () => r() - .5);
+    const temp = d => { const s = Math.sin(Math.PI * (d - A) / (B - A)), base = s > 0 ? 15 * Math.pow(s, .8) : 6 * s, i = d / 10, a = Math.floor(i); return base + lerp(wob[a], wob[a + 1], ease(i - a)) * 2.6 * Math.min(1, Math.abs(base) / 3); };
+    const date = d => { let m = 0; while (d >= LEN[m]) d -= LEN[m++]; return (Math.floor(d) + 1) + ' ' + MON[m]; };
+    const CROPS = [['radishes', 24, 50, 96], ['peas', 35, 95, 132], ['potatoes', 50, 150, 194], ['tomatoes', 68, 136, 203], ['cucumbers', 74, 122, 188]];   /* name, planted, first harvest, last harvest: days from 1 March */
+    canvas(box, { still: 6.2, draw(ctx, t, W, H) {
+      const narrow = W < 700, x0 = narrow ? 18 : W * .43, x1 = W - (narrow ? 18 : 34), yT = narrow ? H * .46 : 74, rows = CROPS.length * 24, yB = H - 50 - rows;
+      const x = d => x0 + d / DAYS * (x1 - x0), y = v => yB - (v + 7) / 24 * (yB - yT), z = y(0);
+      const path = () => { ctx.beginPath(); for (let d = 0; d <= DAYS; d += 2) ctx[d ? 'lineTo' : 'moveTo'](x(d), y(temp(d))); };
+      const zone = (from, to, fill) => { ctx.save(); ctx.beginPath(); ctx.rect(0, from, W, to - from); ctx.clip(); path(); ctx.lineTo(x1, z); ctx.lineTo(x0, z); ctx.closePath(); ctx.fillStyle = fill; ctx.fill(); ctx.restore(); };
+      const warm = ctx.createLinearGradient(0, yT, 0, z); warm.addColorStop(0, `rgba(${LEAF},.34)`); warm.addColorStop(1, `rgba(${LEAF},.04)`);
+      zone(0, z, warm); zone(z, H, `rgba(${FROST},.3)`);
+      ctx.setLineDash([4, 6]); ctx.strokeStyle = `rgba(${FROST},.55)`; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(x0, z); ctx.lineTo(x1, z); ctx.stroke(); ctx.setLineDash([]);
+      path(); ctx.strokeStyle = 'rgba(245,244,250,.9)'; ctx.lineWidth = 2; ctx.stroke();
+      ctx.font = '13px Geist, system-ui, sans-serif'; ctx.fillStyle = '#adacbd'; ctx.textAlign = 'center';
+      let d0 = 0; MON.forEach((m, i) => { ctx.fillText(m, x(d0 + LEN[i] / 2), H - 18); d0 += LEN[i]; });
+      ctx.strokeStyle = `rgb(${LEAF})`; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(x(A), yT - 22); ctx.lineTo(x(A), yT - 12); ctx.lineTo(x(B), yT - 12); ctx.lineTo(x(B), yT - 22); ctx.stroke();
+      ctx.font = '500 15px Geist, system-ui, sans-serif'; ctx.fillStyle = `rgb(${LEAF})`; ctx.fillText(`${B - A} nights without frost`, (x(A) + x(B)) / 2, yT - 26);
+      const d = (t % 18) / 18 * DAYS, v = temp(d), cx = x(d), cy = y(v);
+      ctx.textAlign = 'left'; ctx.font = '13px Geist, system-ui, sans-serif';
+      CROPS.forEach(([name, a, b, c], i) => {   /* the crops under the curve: growing, then harvest; a bar is lit while the cursor is inside it */
+        const by = yB + 16 + i * 24, on = d >= a && d <= c;
+        ctx.globalAlpha = on ? 1 : .6;
+        ctx.fillStyle = `rgba(${LEAF},.34)`; ctx.beginPath(); ctx.roundRect(x(a), by, x(b) - x(a) - 2, 14, 4); ctx.fill();
+        ctx.fillStyle = `rgb(${LEAF})`; ctx.beginPath(); ctx.roundRect(x(b), by, x(c) - x(b), 14, 4); ctx.fill();
+        ctx.fillStyle = on ? '#f5f4fa' : '#adacbd'; ctx.fillText(name, x(c) + 10, by + 12); ctx.globalAlpha = 1;
+      });
+      ctx.strokeStyle = 'rgba(245,244,250,.35)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(cx, yT); ctx.lineTo(cx, H - 40); ctx.stroke();
+      ctx.fillStyle = v <= 0 ? `rgb(${FROST})` : `rgb(${LEAF})`; ctx.beginPath(); ctx.arc(cx, cy, 6, 0, 6.3); ctx.fill(); ctx.strokeStyle = '#07060b'; ctx.lineWidth = 2; ctx.stroke();
+      ctx.font = '500 14px Geist, system-ui, sans-serif'; ctx.fillStyle = '#f5f4fa'; ctx.textAlign = cx > x1 - 110 ? 'right' : 'left';
+      ctx.fillText(`${date(d)}, night ${sign(Math.round(v))}`, cx + (cx > x1 - 110 ? -12 : 12), Math.max(yT + 14, cy - 14));
+    } });
+  });
+
+  /* ---- the page: reveals below the first screen, the phone's bottom action bar ---- */
+  nuMotion.reveal('.reveal');
+  nuMotion.ctaBar(document.querySelector('.cta-bar'), document.querySelector('[data-main-action]'), document.querySelector('[data-final]'));
+})();
+</script>
+</body>
+</html>
