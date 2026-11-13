@@ -45,7 +45,7 @@ A sketch answers one question: is this the page? It needs:
 - real or rebuilt product imagery, never grey boxes;
 - one neutral line under the screen: what it is, what moves, what the rest of the page would show.
 
-It does not need other sections, a phone layout, polish or fallbacks. About 150 lines per concept. All three in one file, one screen each, labelled A, B, C, so the user compares them in one scroll. Do not label them by technique and do not say which you prefer until the user has looked.
+It also needs depth and material in rough form (`finish.md`). It does not need other sections, a phone layout, polish or fallbacks. About 200 lines per concept. All three in one file, one screen each, labelled A, B, C, so the user compares them in one scroll. Do not label them by technique and do not say which you prefer until the user has looked.
 
 ## 5. Numbers from the measured pages
 

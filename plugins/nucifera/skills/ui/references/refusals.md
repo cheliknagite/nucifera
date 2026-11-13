@@ -4,7 +4,7 @@ A list of patterns that make interfaces read as generated, each with a replaceme
 
 The brief wins: if the user asks for one of these, do it well instead of refusing.
 
-Scope: the rows about motion (25, 32, 34, 37) describe app screens and decoration. On a landing the scene and the product demos belong to the world layer of the landing skill (`../../landing/references/world.md`) and may run all the time.
+Scope: the rows about motion (25, 32, 34, 37) describe app screens and decoration. On a landing the scene and the product demos belong to the world layer of the landing skill (`../../landing/references/world.md`) and may run all the time. Rows 2 to 4 (glow, gradient or shine on the main button, gradient text) describe app screens and decoration too: the landing skill's `references/finish.md` gives a landing's first screen tonal material of one hue and dark cast shadows.
 
 | # | Never | Instead | Basis | Since |
 |---|---|---|---|---|

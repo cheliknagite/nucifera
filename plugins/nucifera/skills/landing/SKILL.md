@@ -29,11 +29,11 @@ Priority: the user's brief > the project's `.design/brand.css` and `.design/DESI
 
 ## Step 2. Three concepts, shown before any build
 
-Read `references/hooks.md`. Then:
+Read `references/hooks.md` and `references/finish.md`. Then:
 
 1. Name the category default for this kind of product (for most: headline left, product screenshot right, on a dark empty page) and set it aside. It is nobody's concept.
 2. Write three concepts. Each takes its hook from the product's world, and each uses a different hook type. If the product already has a signature, one concept carries it; the other two differ from it.
-3. Sketch the three first screens in one file, `.design/concepts.html`: the real headline and action, the hook at its full size and drafted far enough that its main motion already runs, real or rebuilt product imagery. One screen each (`.section--screen`), labelled A, B, C, with one neutral line under each: what it is, what moves, what the rest of the page would show. A sketch is rough: about 150 lines each, composed for a 1440 by 900 window with the hook reaching the fold (no empty band under it), no other sections. Colours a concept proposes go into CSS variables at the top of the file. Prefix your own class names (`lp-…`): the kit already owns `.app`, `.row`, `.card`, `.hero`, `.section` and others.
+3. Sketch the three first screens in one file, `.design/concepts.html`: the real headline and action, the hook at its full size and drafted far enough that its main motion already runs, real or rebuilt product imagery. One screen each (`.section--screen`), labelled A, B, C, with one neutral line under each: what it is, what moves, what the rest of the page would show. Each sketch already carries the three layers of `finish.md`, roughly: the idea, a scene that moves, depth and material; an idea on a flat black sheet reads as thin and cannot be judged. A sketch is rough: about 200 lines each, composed for a 1440 by 900 window with the hook reaching the fold (no empty band under it), no other sections. Colours a concept proposes go into CSS variables at the top of the file. Prefix your own class names (`lp-…`): the kit already owns `.app`, `.row`, `.card`, `.hero`, `.section` and others.
 4. Shoot them with `node ../ui/scripts/verify.mjs .design/concepts.html --widths 1440 --light none`, look at the shots yourself and fix what is broken. The shots are taken with motion reduced, so give every scene a still frame that shows its most telling moment, never its empty start. Then watch each loop once in a browser if you have one: numbers stay rounded, labels do not collide midway.
 5. Show the user the file and ask one question: A, B, C, or their own (a mix, another idea). Do not recommend one before they have looked. Write the choice into `.design/DESIGN.md`, and the user's own words into `.design/calibration.md` (create it if missing: one dated line per verdict, quoted).
 
@@ -56,7 +56,7 @@ Count the things shown before you build. If the project has too little imagery f
 ## Step 4. Build
 
 - Copy `../ui/assets/tokens.css`, `kit.css` and `motion.js` into `.design/` as the `ui` skill does; use roles, never raw values; keep the `lp-` prefix for the page's own classes.
-- Build the hook first, as its own layer, by `references/world.md`: a poster image under it, running only while visible, a capped pixel ratio, one still frame under reduced motion.
+- Build the first screen in the three layers of `references/finish.md`. Build the hook first, as its own layer, by `references/world.md`: a poster image under it, running only while visible, a capped pixel ratio, one still frame under reduced motion.
 - Then the sections, top to bottom, from the table. A product demo is live markup that replays a short scenario with a pause while it is in view.
 - On a phone the hook is inside the first screen, and a bottom bar repeats the main action once the hero button has scrolled away (`.cta-bar`, `nuMotion.ctaBar`).
 - One theme, dark, unless the user asks for the light one too.
@@ -84,6 +84,7 @@ Count the things shown before you build. If the project has too little imagery f
 ## Reference files
 
 - `references/hooks.md`: hook types, how to find three concepts in the product, how rough a sketch is, measured numbers.
+- `references/finish.md`: what makes a first screen reach: the idea, a living scene and depth together; the material recipe.
 - `references/world.md`: the two layers, the scene's performance contract, tempo, readability, scroll stops, demos.
 - `references/page.md`: the section plan, compositions, the imagery plan, words, several pages, charts, questions, pricing.
 - `../ui/references/`: style, components, motion recipes, image direction, refusals.

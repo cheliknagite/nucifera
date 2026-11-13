@@ -31,6 +31,7 @@ Level pass, after the checklist:
 Landing pass, for landing pages only (the landing skill: `SKILL.md`, `references/page.md`, `references/world.md`):
 - The hook: what would a visitor describe an hour after seeing only the first screen? Name it. "A dark page with a screenshot" means no hook, and that is the biggest gap whatever else is right. A page that is only clean and correct is "sterile": as far from the level as the generic twin, and never "closer to the exemplars".
 - Every screenful has something to look at; neighbouring sections differ in composition; no image is cut by a screen edge by accident; nothing fixed covers text.
+- The first screen has three layers together (`finish.md`): the idea, a living scene from the subject, depth and material. A flat sheet with one of them reads as thin. Tonal material of one hue and dark cast shadows are allowed there; items 6 and 9 judge decoration, not this.
 - A scene and product demos may run all the time there: judge them by `world.md` (slow, from the product's world, text in its own zone or on a panel), not by item 12.
 - A home page of about 500 to 900 words; each section one idea that fits about one screen, with clear air between; no two dense sections in a row.
 - One grid per section; every chart headed by its takeaway; the questions open one at a time; one name per thing, one number format, one example story across the page; plans as one table with the labels once.
