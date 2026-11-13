@@ -90,6 +90,6 @@ If the product's character is the chosen hook, it is large and alive on the firs
 
 ## 11. Check
 
-- `verify.mjs` counts the words (it warns past 1,000) and warns when the questions can stay open together.
-- In the long shots: something to look at on every screenful, neighbouring sections of different compositions, no image cut by an edge, every chart headed by its point.
+- `verify.mjs --landing` walks the page screen by screen in real time: nearly empty and sparse screens, a still first screen, a stretch with no words, media cut by an edge, stretched images, a fixed element over text, script errors. It also counts the words (it warns past 1,000) and warns when the questions can stay open together.
+- In the walk shots: something to look at on every screenful, neighbouring sections of different compositions, no image cut by an edge, every chart headed by its point.
 - The critic's landing pass (`agents/design-critic.md`).

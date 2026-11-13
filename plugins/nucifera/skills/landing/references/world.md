@@ -59,6 +59,8 @@ Body text and headings after their entrance, prices and results, navigation. No 
 
 ## 7. Check
 
+`verify.mjs --landing` measures how much of the first screen changes in three seconds once the entrance is over, and fails a landing where nothing does (a concept of still art declares `data-hook="still"` on `<html>`). The rest is by eye:
+
 - Leave the tab, come back: the scene resumes. Scroll it off screen: it stops (watch the processor load).
 - Emulate reduced motion: one still frame, all content visible.
 - Block scripts: the poster and the text still make a page.

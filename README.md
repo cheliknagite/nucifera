@@ -2,7 +2,7 @@
 
 A design skill for Claude Code. It makes Claude design interfaces in one precise style, in the line of Linear, Raycast and Reflect: a monochrome dark theme and a light "Dusk" theme with a violet accent, and it checks the rendered screens before handing them over.
 
-> Named after *Cocos nucifera*, the coconut palm: a dark shell with a light inside, like the two themes. Status: 0.6.1, early. See "What it does not promise".
+> Named after *Cocos nucifera*, the coconut palm: a dark shell with a light inside, like the two themes. Status: 0.7.0, early. See "What it does not promise".
 
 ## What it does
 
@@ -13,7 +13,7 @@ A design skill for Claude Code. It makes Claude design interfaces in one precise
 - **Has a landing mode of its own.** A landing that is only clean and correct has failed, so the `landing` skill turns the defaults over. Before any build it finds three hook concepts in the product's own world, each of a different kind (the live product, an instrument scene, a world backdrop, a film, a character), sketches the three first screens and lets you pick. Then: a scene that moves slowly all the time, something to look at on every screen, product demos that play in view, neighbouring sections of different compositions, a short home page with details on their own pages. The scene keeps a contract: a poster under it, running only while seen, one still frame under reduced motion.
 - **Reads without effort.** Body text 16px, secondary text 14px in one grey, data as plain label-value lists instead of boxes and grids, a status shown only when it is the exception, drawings that need no legend.
 - **Names the AI tells and what to do instead.** Sixteen rules in the core and a dated list of 50 in the references: no coloured glows, no gradient buttons, no decorative dots, no small grey text in several shades, no data cut into boxes, no eyebrow labels on every heading, no washed-out photos, no airy screens where users came for data, and more. A vague "avoid the AI look" only swaps one default for another; named patterns with replacements hold.
-- **Checks pixels with code.** `scripts/verify.mjs` renders every mockup screen at 360, 390 and 430px in the dark theme and at 390px in the light one, and reports overflow, contrast, touch targets, fonts that did not load, small text, extra shades of grey, coloured glows, glass count, accent use and Cyrillic line-height, plus motion lint (`transition: all`, ease-in, endless loops). No npm packages: it uses your installed Chrome, Edge or Chromium.
+- **Checks pixels with code.** `scripts/verify.mjs` renders every mockup screen at 360, 390 and 430px in the dark theme and at 390px in the light one, and reports overflow, contrast, touch targets, fonts that did not load, small text, extra shades of grey, coloured glows, glass count, accent use and Cyrillic line-height, plus motion lint (`transition: all`, ease-in, endless loops). No npm packages: it uses your installed Chrome, Edge or Chromium. Landing pages get a walk in real time, screen by screen, through the browser's debugging port: it fails a page that is mostly empty canvas or whose first screen stands still, and reports media cut by the screen edge, stretched images, fixed elements lying over text and script errors. It finds holes; whether the page is good stays with the critic and with you.
 - **Asks a fresh critic.** The `design-critic` agent sees only the screenshots, the brief, DESIGN.md and the reference cards. It returns at most five rule-backed findings and a level verdict: is the screen closer to the references or to the generic twin? Asked twice in both orders, with a copy check. On "closer to the twin" Claude changes the face of the screen, not the polish. Claude waits for it before handing over.
 - **Keeps images honest.** Generated images are for heroes, empty states and share images, never for listings, condition or anything next to a price; a brief recipe, one look for the whole set and a checklist of generator tells.
 - **Handles Cyrillic properly**: subsets, line-height and tracking limits, the "її" test.
@@ -33,7 +33,7 @@ Then, once per project, inside Claude Code:
 
 It copies the tokens into `.design/`, adds a short "Design" block to the project's `CLAUDE.md` (a line in the project file makes Claude reach for the skill far more reliably), and turns off Anthropic's `frontend-design` plugin for this project only, because two design skills pull in different directions.
 
-Requirements: Claude Code; Node 18 or newer; Chrome, Edge or Chromium for `verify.mjs` (set `UI_BROWSER` to its path if it is not found). Without a browser the skill still works and marks the hand-over "PIXELS UNVERIFIED".
+Requirements: Claude Code; Node 18 or newer (22 or newer for the landing walk); Chrome, Edge or Chromium for `verify.mjs` (set `UI_BROWSER` to its path if it is not found). Without a browser the skill still works and marks the hand-over "PIXELS UNVERIFIED".
 
 Update: `claude plugin marketplace update` or `/plugin marketplace update`.
 

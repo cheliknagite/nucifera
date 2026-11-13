@@ -16,3 +16,23 @@ How a default AI generator builds a landing or onboarding first screen with the 
 4. **No coloured light behind text.** None of the three exemplars puts a glow behind the headline; the twin's whole composition sits on a coloured blob.
 5. **Fewer elements.** Resend's first screen has 5 text elements and one button, Things none at all; the twin stacks badge, headline, subtitle, two buttons, microcopy and logos.
 6. **Motion in reading order.** Linear reveals headline, lead, then product (400-1300 ms) and nothing loops in view; Things does not move; the twin fades everything the same way and loops the badge.
+
+## The sterile twin
+
+The other way a landing fails, and the usual one when a generator follows rules of restraint: nothing is wrong and nothing is there.
+
+- A near-black canvas, a headline on the left, a product screenshot on the right, shrunk until its text cannot be read or cut by the screen edge.
+- Below: sections of a heading, two grey sentences and one more screenshot, each built the same way, with wide empty bands between them. Most of every screen is empty canvas.
+- One fade on load; after that nothing moves.
+- No idea: after one screen a visitor could describe only "a dark page with a screenshot".
+- It passes every rule: contrast, spacing, one accent, no glow, no gradient.
+
+**Named differences:**
+
+1. **A hook.** The pages that pass have one thing from the product's world that fills the first screen and lives; the sterile twin has a layout.
+2. **Something on every screen.** Strong pages show the product twenty times and more, whole and cropped close; the sterile twin shows text and bands of canvas.
+3. **Life.** A scene that moves slowly all the time, demos that play in view; the sterile twin stands still after its entrance.
+4. **Depth.** A lit space with objects in it; the sterile twin is a flat sheet.
+5. **Variety.** Neighbouring sections of different compositions; the sterile twin repeats one.
+
+A page closer to the sterile twin is as far from the level as one closer to the generic twin above. The verdict for it is "sterile".
