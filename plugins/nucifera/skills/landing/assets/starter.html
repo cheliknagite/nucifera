@@ -22,8 +22,10 @@ html { background: var(--bg-0); } body { margin: 0; }
 .lp-mark { flex: none; width: 22px; height: 22px; border-radius: 6px; background: linear-gradient(var(--leaf) 0 52%, #a9713f 52% 100%); }
 .btn { text-decoration: none; }
 
-/* ---- first screen: the figure, the copy, the nights as a living curve ---- */
-.lp-hero { flex: 1; display: grid; grid-template-columns: 44% 1fr; align-items: center; min-height: 290px; }
+/* ---- first screen: the figure, the copy, the nights as columns under a living curve.
+   Nothing here is an interface box: the nights are drawn in the scene, the product speaks in one line of type
+   (references/finish.md, section 3) ---- */
+.lp-hero { flex: none; display: grid; grid-template-columns: 44% 1fr; align-items: center; padding-block: 12px 4px; }
 .lp-figure { height: min(350px, 38svh); }
 .lp-num { position: absolute; left: -12px; top: 10px; font: 600 min(350px, 38svh)/.86 var(--font-sans); letter-spacing: -0.05em; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .lp-copy { padding-left: 24px; }
@@ -31,34 +33,17 @@ html { background: var(--bg-0); } body { margin: 0; }
 .lp-kicker b { color: var(--fg-1); font-weight: 500; }
 .lp-copy .t-hero { max-width: 620px; font-size: clamp(36px, 4vw, 56px); text-wrap: balance; }
 .lp-copy .t-lead { margin-top: 16px; max-width: 540px; }
-.lp-actions { display: flex; align-items: center; gap: 14px; margin-top: 24px; }
+.lp-actions { display: flex; align-items: center; gap: 16px; margin-top: 24px; color: var(--fg-2); font: var(--t-small); }
 .lp-actions .btn { min-height: 54px; padding: 0 26px; border-radius: 14px; font-size: 17px; font-weight: 600; }
-.lp-season { height: clamp(120px, 20svh, 190px); margin-top: 4px; }
+/* the product's message: one line of type under the action, no box around it */
+.lp-wire { display: flex; align-items: baseline; gap: 10px; max-width: 560px; min-height: 56px; margin-top: 22px; padding-top: 16px; border-top: 1px solid var(--line-2); font-size: 17px; line-height: 1.4;
+  opacity: 0; transition: opacity var(--dur-enter) var(--ease-out); }
+.lp-wire.is-in { opacity: 1; }
+.lp-wire .lp-mark { width: 16px; height: 16px; border-radius: 4px; transform: translateY(2px); }
+.lp-wire time { flex: none; color: var(--fg-2); font-variant-numeric: tabular-nums; }
+.lp-season { min-height: 230px; margin-top: 4px; }
 .lp-zero { position: absolute; right: 0; font-size: 13px; color: var(--frost); transform: translateY(6px); }
-.lp-strip { display: grid; grid-template-columns: repeat(21, minmax(0, 1fr)); gap: 6px; margin-top: 6px; }
-.lp-night { position: relative; display: grid; place-items: center; align-content: center; gap: 2px; height: 66px; font-variant-numeric: tabular-nums; transition: transform var(--dur-enter) var(--ease-out); }
-.lp-night small { font-size: 13px; color: var(--fg-2); }
-.lp-night b { font-size: 15px; font-weight: 500; }
-.lp-night.is-frost { background: linear-gradient(#1b2740, #131b2c); }
-.lp-night.is-frost b { color: var(--frost); }
-.lp-night.is-chosen small { color: var(--leaf-ink); }
-.lp-night.is-today::after, .lp-night.is-lit::after { content: ""; position: absolute; inset: 0; border-radius: inherit; box-shadow: inset 0 0 0 1.5px var(--fg-1); }
-.lp-night.is-lit::after { box-shadow: inset 0 0 0 1.5px var(--fg-2); }
-.lp-sprout { position: absolute; left: 50%; bottom: 100%; width: 34px; height: 44px; margin-left: -17px; transform-origin: 50% 100%; transform: scale(0); pointer-events: none; }
-.lp-sprout.is-up { transform: scale(1); transition: transform var(--dur-signature) var(--ease-out); }
-.lp-legend { display: flex; flex-wrap: wrap; gap: 8px 22px; margin: 14px 0 28px; font-size: 14px; color: var(--fg-2); }
-.lp-legend i { display: inline-block; width: 11px; height: 11px; margin-right: 7px; border-radius: 3px; vertical-align: -1px; }
-
-/* the product on the first screen: one real moment of use, the morning notification, played in step with the scene
-   (references/finish.md, section 3) */
-.lp-push { display: flex; gap: 12px; align-items: flex-start; max-width: 470px; min-height: 76px; margin-top: 22px; padding: 13px 16px 13px 13px; border-radius: 18px;
-  opacity: 0; transform: translateY(calc(-10px * var(--travel))); transition: opacity var(--dur-enter) var(--ease-out), transform var(--dur-enter) var(--ease-out); }
-.lp-push.is-in { opacity: 1; transform: none; }
-.lp-push .lp-mark { width: 38px; height: 38px; border-radius: 10px; }
-.lp-push > div { flex: 1; min-width: 0; }
-.lp-push__top { display: flex; justify-content: space-between; gap: 12px; font-size: 14px; color: var(--fg-2); }
-.lp-push__top b { font-weight: 600; color: var(--fg-1); }
-.lp-push p { margin-top: 2px; font-size: 16px; line-height: 1.4; }
+.lp-legend { margin: 14px 0 28px; font-size: 14px; color: var(--fg-2); }
 /* a soil bed seen from above: planted, or under glass (the steps use the small ones, the plot below its own large ones) */
 .lp-bed { position: relative; height: 74px; overflow: hidden; border-radius: 10px; background: linear-gradient(#33281c, #231b12);
   box-shadow: inset 0 2px 5px rgb(0 0 0 / .55), inset 0 0 0 1px rgb(255 255 255 / .05), 0 10px 18px -10px rgb(0 0 0 / .8); }
@@ -66,16 +51,15 @@ html { background: var(--bg-0); } body { margin: 0; }
 .lp-bed--glass { box-shadow: inset 0 2px 5px rgb(0 0 0 / .55), inset 0 0 0 1.5px rgb(255 255 255 / .2), 0 10px 18px -10px rgb(0 0 0 / .8); }
 
 @media (max-height: 840px) and (min-width: 761px) {
-  .lp-copy .t-hero { font-size: clamp(34px, 3.5vw, 48px); } .lp-copy .t-lead { font-size: 18px; margin-top: 12px; } .lp-actions { margin-top: 18px; } .lp-push { margin-top: 16px; }
+  .lp-copy .t-hero { font-size: clamp(34px, 3.5vw, 48px); } .lp-copy .t-lead { font-size: 18px; margin-top: 12px; } .lp-actions { margin-top: 18px; } .lp-wire { margin-top: 16px; }
 }
 @media (max-width: 760px) {
-  .lp-hero { grid-template-columns: minmax(0, 1fr); align-items: start; min-height: 0; padding-top: 8px; }
+  .lp-hero { grid-template-columns: minmax(0, 1fr); align-items: start; padding-top: 8px; }
   .lp-figure { height: 118px; } .lp-num { left: -4px; top: 0; font-size: 132px; }
   .lp-copy { padding: 0; } .lp-kicker { font-size: 17px; margin-bottom: 8px; } .lp-copy .t-lead { margin-top: 12px; }
   .lp-actions { margin-top: 20px; flex-wrap: wrap; } .lp-actions .btn { flex: 1 1 100%; }
-  .lp-season { height: 118px; margin-top: 14px; }
-  .lp-strip { gap: 3px; } .lp-night { height: 30px; border-radius: 6px; } .lp-night small, .lp-night b { display: none; }
-  .lp-night.is-chosen { transform: translateY(-3px); } .lp-sprout { width: 24px; height: 32px; margin-left: -12px; }
+  .lp-wire { flex-wrap: wrap; font-size: 15px; margin-top: 16px; padding-top: 12px; }
+  .lp-season { min-height: 0; height: 150px; margin-top: 12px; }
   .lp-legend { margin-bottom: 20px; }
 }
 
@@ -190,14 +174,14 @@ html { background: var(--bg-0); } body { margin: 0; }
 
 /* ---- final call ---- */
 .lp-echo { width: 100%; margin-top: var(--s-6); text-align: left; }
-.lp-echo .lp-season { height: 150px; } .lp-echo .lp-night { text-align: center; }
+.lp-echo .lp-season { min-height: 0; height: 210px; }
 .lp-terms { color: var(--fg-2); font: var(--t-small); }
 </style>
 </head>
 <body class="app">
 
-<!-- ============ first screen: header, the hook (figure + living curve), headline, one sentence, one action,
-     and the product as one real moment of use ============ -->
+<!-- ============ first screen: header, the hook (figure + nights under a living curve), headline, one sentence, one action,
+     and the product as one real moment of use, set in type: no interface boxes on this screen ============ -->
 <section class="first stage" data-nights data-example="hero">
   <div class="wrap">
     <header class="site-head">
@@ -208,15 +192,14 @@ html { background: var(--bg-0); } body { margin: 0; }
       <div class="lp-figure cast"><span class="lp-num solid" data-num>9</span></div>
       <div class="lp-copy">
         <p class="lp-kicker"><span data-unit>days</span> until tomatoes can go out. <b data-city>Leeds</b></p>
-        <h1 class="t-hero">Seedbed counts the frosts for you</h1>
+        <h1 class="t-hero" data-words>Seedbed counts the frosts for you</h1>
         <p class="t-lead">It watches the forecast for your town and tells you when seedlings can go out. And it reminds you to cover them when a frost is coming.</p>
-        <div class="lp-actions"><a class="btn btn--primary btn--lit" href="#get" data-main-action>Download for free</a><span class="example">Example</span></div>
-        <div class="lp-push tile" aria-hidden="true"><i class="lp-mark"></i><div><div class="lp-push__top"><b>Seedbed</b><span data-push-time></span></div><p data-push-text></p></div></div>
+        <div class="lp-actions"><a class="btn btn--primary btn--lit" href="#get" data-main-action>Download for free</a><span>Example</span></div>
+        <p class="lp-wire" aria-hidden="true"><i class="lp-mark"></i><time></time><span></span></p>
       </div>
     </div>
     <div class="lp-season scene first__hook"><canvas></canvas><span class="lp-zero">0°, frost</span></div>
-    <div class="lp-strip"></div>
-    <p class="lp-legend"><span><i style="background:var(--frost)"></i>a night below zero</span><span><i style="background:var(--leaf)"></i>safe to plant</span><span><i style="box-shadow:inset 0 0 0 1.5px var(--fg-1)"></i>today</span><span>Night temperatures: a forecast for 21 nights and frost dates over 30 years. Example</span></p>
+    <p class="lp-legend">Night temperatures: a forecast for 21 nights and frost dates over 30 years. Example</p>
   </div>
 </section>
 
@@ -225,7 +208,7 @@ html { background: var(--bg-0); } body { margin: 0; }
 <section class="section" data-example="comparison">
   <div class="wrap">
     <div class="section-top reveal"><h2 class="t-section">5 alerts instead of 21 evenings with the forecast</h2><p class="t-lead">In spring the weather decides every day. Seedbed reads the forecast for you and writes only when there is something to do.</p></div>
-    <div class="compare compare--rows lp-evenings reveal">
+    <div class="compare compare--rows lp-evenings">
       <div><div><h3>By hand</h3><p class="lp-sum"><b>21</b>evenings with the weather forecast</p></div><div class="lp-days" data-days="hand"></div></div>
       <div class="is-ours"><div><h3>With Seedbed</h3><p class="lp-sum"><b>5</b>alerts over the same three weeks</p></div><div class="lp-days" data-days="ours"></div></div>
     </div>
@@ -237,7 +220,7 @@ html { background: var(--bg-0); } body { margin: 0; }
 <section class="section" id="how" data-example="product demo">
   <div class="wrap show">
     <div class="section-top reveal"><h2 class="t-section">The whole plot on one screen</h2></div>
-    <div class="frame lp-plan reveal" aria-label="Example: the plot plan in the app">
+    <div class="frame lp-plan" aria-label="Example: the plot plan in the app">
       <div class="lp-plan__bar"><i class="lp-mark"></i><time data-plan-time></time><div class="lp-plan__alert tile" data-plan-alert></div></div>
       <div class="lp-plan__beds">
         <div class="lp-b is-planted" style="grid-area:1/1/2/4;--plant:#c3e59a;--dot:3px;--gap:20px"><span>Radishes</span><em>growing</em></div>
@@ -256,19 +239,19 @@ html { background: var(--bg-0); } body { margin: 0; }
 <section class="section" data-example="close-ups">
   <div class="wrap">
     <div class="section-top reveal"><h2 class="t-section">It writes rarely and to the point</h2></div>
-    <div class="closeups">
-      <figure class="reveal"><div class="frame lp-lock">
+    <div class="closeups" data-each>
+      <figure><div class="frame spot lp-lock">
         <time>06:00</time><p>Thursday, 30 April</p>
         <div class="lp-note tile"><i class="lp-mark"></i><div><header><b>Seedbed</b><span>now</span></header><p>−1° tonight. Cover the cabbage and the lettuce with fleece before evening.</p></div></div>
         <div class="lp-note tile"><i class="lp-mark"></i><div><header><b>Seedbed</b><span>yesterday</span></header><p>Radishes can be sown: the soil has warmed to +6°.</p></div></div>
         <div class="lp-note tile"><i class="lp-mark"></i><div><header><b>Seedbed</b><span>Monday</span></header><p>The peas are up. First feeding in 10 days.</p></div></div>
       </div><figcaption class="caption">One alert in the morning: what to do today.</figcaption></figure>
-      <figure class="reveal"><div class="frame lp-home">
+      <figure><div class="frame spot lp-home">
         <i></i><i></i><i></i><i></i>
         <div class="lp-widget tile"><span class="solid">9</span><div><b>days until tomatoes</b><small>Leeds, 8 May</small></div></div>
         <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
       </div><figcaption class="caption">The widget on the home screen: the number of the day always in sight.</figcaption></figure>
-      <figure class="reveal"><div class="frame lp-crop">
+      <figure><div class="frame spot lp-crop">
         <div><h3>Tomatoes</h3><p>De Barao, greenhouse, 12 plants</p></div>
         <div class="lp-line">
           <span class="lp-line__today">today, 29 April</span>
@@ -285,7 +268,7 @@ html { background: var(--bg-0); } body { margin: 0; }
 <!-- ============ statement: one number set very large, one line of support ============ -->
 <section class="section" data-example="statement">
   <div class="wrap statement reveal">
-    <p class="statement__big">30 years</p>
+    <p class="statement__big" data-count>30 years</p>
     <p class="statement__note">of night temperatures in your town stand behind every "go" from Seedbed.</p>
     <div class="lp-years" data-years></div>
     <p class="caption">Each dot: the last frost of one year in Leeds. Example</p>
@@ -306,7 +289,7 @@ html { background: var(--bg-0); } body { margin: 0; }
 <section class="section" data-example="steps">
   <div class="wrap">
     <div class="section-top reveal"><h2 class="t-section">Start in three minutes</h2></div>
-    <div class="steps reveal">
+    <div class="steps" data-each>
       <div><div class="steps__object"><div class="lp-city tile"><i class="lp-mark"></i><b>Leeds</b><span>30 years of data</span></div></div><h3>Choose your town</h3><p>Seedbed brings in the forecast and the frost history.</p></div>
       <div><div class="steps__object"><div class="lp-mini"><div class="lp-bed is-planted" style="--plant:#c3e59a"></div><div class="lp-bed is-planted" style="--plant:#7fbf8f"></div><div class="lp-bed lp-bed--glass"></div><div class="lp-add">+</div></div></div><h3>Mark your beds</h3><p>What is growing and what waits for warmth.</p></div>
       <div><div class="steps__object"><div class="lp-note tile"><i class="lp-mark"></i><div><header><b>Seedbed</b><span>06:00</span></header><p>Tomatoes can go out today.</p></div></div></div><h3>Wait for an alert</h3><p>In the morning, and only when there is something to do.</p></div>
@@ -351,7 +334,7 @@ html { background: var(--bg-0); } body { margin: 0; }
       <h2 class="t-section">Find out when your seedlings can go out</h2>
       <a class="btn btn--primary btn--lit" href="#">Download for free</a>
       <p class="lp-terms">Free for one plot. An example page</p>
-      <div class="lp-echo" aria-hidden="true"><div class="lp-season scene"><canvas></canvas><span class="lp-zero">0°, frost</span></div><div class="lp-strip"></div></div>
+      <div class="lp-echo" aria-hidden="true"><div class="lp-season scene"><canvas></canvas><span class="lp-zero">0°, frost</span></div></div>
     </div>
   </div>
 </section>
@@ -378,24 +361,23 @@ html { background: var(--bg-0); } body { margin: 0; }
   ];
   const N = 21, CYCLE = 10, LEAF = '143,214,106', FROST = '125,183,255';
   const DATES = Array.from({ length: N }, (_, i) => i < 2 ? (29 + i) + ' Apr' : (i - 1) + ' May');
-  const { canvas, play, ease, lerp, clamp, calm, rand } = nuScene;
+  const { canvas, play, ease, out, lerp, clamp, calm, rand } = nuScene;
   const safeDay = t => { let last = -1; t.forEach((v, i) => { if (v <= 0) last = i; }); return Math.min(N - 1, last + 2); };
   const days = n => n === 1 ? 'day' : 'days';
   const sign = v => (v > 0 ? '+' : v < 0 ? '−' : '') + Math.abs(v) + '°';
-  const SPROUT = '<svg class="lp-sprout" viewBox="0 0 34 44"><path d="M17 44V20" stroke="#8fd66a" stroke-width="3" stroke-linecap="round" fill="none"/><path d="M17 24C8 24 4 18 3 10c8 0 14 4 14 14z" fill="#8fd66a"/><path d="M17 18c0-9 5-14 14-15 0 9-5 15-14 15z" fill="#a6e683"/></svg>';
-  const night = (v, i, s) => `<div class="lp-night tile${i === 0 ? ' is-today' : ''}${v <= 0 ? ' is-frost' : ''}${i === s ? ' is-chosen' : ''}"><small>${DATES[i]}</small><b>${sign(v)}</b>${i === s ? SPROUT : ''}</div>`;
+  const LEAF_A = new Path2D('M17 24C8 24 4 18 3 10c8 0 14 4 14 14z'), LEAF_B = new Path2D('M17 18c0-9 5-14 14-15 0 9-5 15-14 15z');   /* the sprout's two leaves */
+  const FONT = 'Geist, system-ui, sans-serif';
 
-  /* ---- the hook: 21 nights as one curve over the frost zone; a cursor walks from today to the day planting is safe,
-     and the product speaks at the two moments that matter. A pure function of t: city = floor(t / CYCLE), the walk = t % CYCLE.
-     The final call mounts the same scene without the figure and the notification. ---- */
+  /* ---- the hook: 21 nights as columns standing on the zero line, a curve over them; a cursor walks from today to the day
+     planting is safe, and the product speaks at the two moments that matter. A pure function of t:
+     city = floor(t / CYCLE), the walk = t % CYCLE. The final call mounts the same scene without the figure and the message. ---- */
   function hero(sec) {
     const $ = s => sec.querySelector(s);
-    const num = $('[data-num]'), strip = $('.lp-strip'), band = $('.lp-season'), zero = $('.lp-zero'), push = $('.lp-push');
-    let shown = -1, lit = -2, mood = '', said = '';
+    const num = $('[data-num]'), band = $('.lp-season'), zero = $('.lp-zero'), wire = $('.lp-wire');
+    let shown = -1, mood = '', said = '';
 
     function city(k, roll) {
-      const c = CITIES[k], s = safeDay(c.t); shown = k; lit = -2; mood = said = '';
-      strip.innerHTML = c.t.map((v, i) => night(v, i, s)).join('');
+      const c = CITIES[k], s = safeDay(c.t); shown = k; mood = said = '';
       if (!num) return;
       $('[data-unit]').textContent = days(s); $('[data-city]').textContent = c.name;
       if (roll) {
@@ -405,46 +387,53 @@ html { background: var(--bg-0); } body { margin: 0; }
       }
       num.textContent = s;
     }
-
-    /* everything outside the canvas that follows the walk: the lit night, the sprout, the notification */
-    function follow(c, s, cur, done) {
-      const i = Math.round(cur), f0 = c.t.findIndex(n => n <= 0), state = done ? 'go' : i < f0 ? 'calm' : 'frost';   /* f0: the first frost night */
-      if (i !== lit) { lit = i; strip.querySelectorAll('.lp-night').forEach((n, j) => n.classList.toggle('is-lit', j === i && !done)); }
-      if (state === mood) return;
-      mood = state;
-      const sp = strip.querySelector('.lp-sprout'); if (sp) sp.classList.toggle('is-up', done);
-      if (!push) return;
-      /* one message from the first frost night to the arrival, then the one that matters: each stays long enough to read */
-      const text = done ? 'No more frosts ahead. Tomatoes can go out today.' : state === 'calm' ? '' : `${sign(c.t[f0])} tonight. Cover the seedlings with fleece before evening.`;
-      const show = () => { if (said !== text) return; $('[data-push-text]').textContent = text; $('[data-push-time]').textContent = DATES[done ? s : f0] + ', 06:00'; push.classList.add('is-in'); };
-      said = text; push.classList.remove('is-in');
-      if (text) { if (calm()) setTimeout(show, 190); else show(); }
+    /* one message from the first frost night to the arrival, then the one that matters: each stays long enough to read */
+    function speak(c, s, f0, state) {
+      if (!wire) return;
+      const text = state === 'go' ? 'No more frosts ahead. Tomatoes can go out today.' : state === 'calm' ? '' : `${sign(c.t[f0])} tonight. Cover the seedlings with fleece before evening.`;
+      const show = () => { if (said !== text) return; wire.querySelector('time').textContent = DATES[state === 'go' ? s : f0] + ', 06:00'; wire.querySelector('span').textContent = text; wire.classList.add('is-in'); };
+      said = text; wire.classList.remove('is-in');
+      if (text) { if (calm()) setTimeout(show, 200); else show(); }
     }
 
     canvas(band, { still: 8.8, from: .95, draw(ctx, t, W, H) {
-      const k = Math.floor(t / CYCLE) % CITIES.length, u = t % CYCLE, c = CITIES[k], prev = CITIES[(k + CITIES.length - 1) % CITIES.length], s = safeDay(c.t);
+      const k = Math.floor(t / CYCLE) % CITIES.length, u = t % CYCLE, c = CITIES[k], prev = CITIES[(k + CITIES.length - 1) % CITIES.length], s = safeDay(c.t), f0 = c.t.findIndex(n => n <= 0);
       if (k !== shown) city(k, shown >= 0 && calm());
       const m = ease(u / .9), T = c.t.map((v, i) => lerp(prev.t[i], v, m));
-      const walk = clamp((u - 1.1) / (.7 + s * .38)), cur = ease(walk) * s;
-      const x = i => (i + .5) * W / N, y = v => H - 12 - (v + 4) / 16 * (H - 18), y0 = y(0);
+      const walkT = .7 + s * .38, walk = clamp((u - 1.1) / walkT), cur = ease(walk) * s, done = walk >= 1, grow = out((u - 1.1 - walkT) / .7), i0 = Math.round(cur);
+      const narrow = W < 700, x = i => (i + .5) * W / N, y = v => H - 50 - (v + 4) / 16 * (H - 58), y0 = y(0), bw = Math.min(30, W / N * .56);
       zero.style.top = y0 + 'px';
-      const path = () => { ctx.beginPath(); ctx.moveTo(0, y(T[0])); ctx.lineTo(x(0), y(T[0]));
-        for (let i = 1; i < N; i++) { const mx = (x(i - 1) + x(i)) / 2; ctx.bezierCurveTo(mx, y(T[i - 1]), mx, y(T[i]), x(i), y(T[i])); }
-        ctx.lineTo(W, y(T[N - 1])); };
-      const zone = (from, to, fill) => { ctx.save(); ctx.beginPath(); ctx.rect(0, from, W, to - from); ctx.clip(); path(); ctx.lineTo(W, y0); ctx.lineTo(0, y0); ctx.closePath(); ctx.fillStyle = fill; ctx.fill(); ctx.restore(); };
-      const warm = ctx.createLinearGradient(0, 0, 0, y0); warm.addColorStop(0, `rgba(${LEAF},.26)`); warm.addColorStop(1, `rgba(${LEAF},.03)`);
-      zone(0, y0, warm); zone(y0, H, `rgba(${FROST},.28)`);
-      for (let i = 0; i < N; i++) if (T[i] < 0) for (let j = 0; j < 5; j++) {   /* frost glints, only inside frost nights */
-        const r = rand(i * 31 + j + 1), gx = x(i) + (r() - .5) * W / N * .9 + Math.sin(t / 2.6 + j) * 3, gy = y0 + 4 + r() * Math.max(4, y(T[i]) - y0 - 6), a = .35 + .45 * Math.sin(t / .9 + r() * 6.28);
-        if (a <= 0) continue;
-        ctx.strokeStyle = `rgba(190,220,255,${a.toFixed(2)})`; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(gx - 3, gy); ctx.lineTo(gx + 3, gy); ctx.moveTo(gx, gy - 3); ctx.lineTo(gx, gy + 3); ctx.stroke(); }
+      for (let i = 0; i < N; i++) {   /* the nights: warm ones rise from the zero line, frost hangs under it, the planting day is solid */
+        const v = T[i], up = v > 0, top = up ? y(v) : y0, h = Math.max(4, Math.abs(y(v) - y0));
+        ctx.globalAlpha = i === s ? 1 : i <= cur + .01 ? .95 : .5;
+        if (up) { const g = ctx.createLinearGradient(0, top, 0, y0); g.addColorStop(0, i === s ? '#a6e683' : `rgba(${LEAF},.5)`); g.addColorStop(1, i === s ? '#5c9d3f' : `rgba(${LEAF},.1)`); ctx.fillStyle = g; }
+        else ctx.fillStyle = `rgba(${FROST},.75)`;
+        ctx.beginPath(); ctx.roundRect(x(i) - bw / 2, top, bw, h, up ? [5, 5, 0, 0] : [0, 0, 5, 5]); ctx.fill();
+      }
+      ctx.globalAlpha = 1;
       ctx.setLineDash([4, 6]); ctx.strokeStyle = `rgba(${FROST},.55)`; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(0, y0); ctx.lineTo(W, y0); ctx.stroke(); ctx.setLineDash([]);
-      path(); ctx.strokeStyle = 'rgba(245,244,250,.9)'; ctx.lineWidth = 2; ctx.stroke();
-      const a = Math.floor(cur), cv = lerp(T[a], T[Math.min(N - 1, a + 1)], cur - a), cx = x(cur), cy = y(cv);
-      ctx.strokeStyle = 'rgba(245,244,250,.35)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(cx, 0); ctx.lineTo(cx, H); ctx.stroke();
-      ctx.fillStyle = cv <= 0 ? `rgb(${FROST})` : `rgb(${LEAF})`; ctx.beginPath(); ctx.arc(cx, cy, 6, 0, 6.3); ctx.fill();
-      ctx.strokeStyle = '#07060b'; ctx.lineWidth = 2; ctx.stroke();
-      follow(c, s, cur, walk >= 1);
+      ctx.beginPath(); ctx.moveTo(0, y(T[0])); ctx.lineTo(x(0), y(T[0]));
+      for (let i = 1; i < N; i++) { const mx = (x(i - 1) + x(i)) / 2; ctx.bezierCurveTo(mx, y(T[i - 1]), mx, y(T[i]), x(i), y(T[i])); }
+      ctx.lineTo(W, y(T[N - 1])); ctx.strokeStyle = 'rgba(245,244,250,.5)'; ctx.lineWidth = 1.5; ctx.stroke();
+      ctx.textAlign = 'center';   /* the dates and the temperatures: plain type under the columns */
+      for (let i = 0; i < N; i++) {
+        if (narrow && i !== s && (i % 4 || Math.abs(i - s) < 3)) continue;   /* a phone shows every fourth night and the planting day */
+        const v = c.t[i], safe = i === s, on = i === i0 && !done;
+        ctx.font = `13px ${FONT}`; ctx.fillStyle = safe ? `rgb(${LEAF})` : on || i === 0 ? '#f5f4fa' : '#adacbd'; const lx = clamp(x(i), 18, W - 18); ctx.fillText(narrow ? DATES[i].split(' ')[0] : DATES[i], lx, H - 24);
+        ctx.font = `${safe || on ? 600 : 500} 15px ${FONT}`; ctx.fillStyle = safe ? `rgb(${LEAF})` : v <= 0 ? `rgb(${FROST})` : on ? '#f5f4fa' : '#d8d7e2'; ctx.fillText(sign(v), lx, H - 5);
+      }
+      if (done) {   /* the sprout grows on the planting day */
+        const g = 1.1 * grow;
+        ctx.save(); ctx.translate(x(s) - 17 * g, y(T[s]) - 44 * g); ctx.scale(g, g);
+        ctx.strokeStyle = '#8fd66a'; ctx.lineWidth = 3; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(17, 44); ctx.lineTo(17, 20); ctx.stroke();
+        ctx.fillStyle = '#8fd66a'; ctx.fill(LEAF_A); ctx.fillStyle = '#a6e683'; ctx.fill(LEAF_B); ctx.restore();
+      } else {   /* the cursor */
+        const a = Math.floor(cur), cv = lerp(T[a], T[Math.min(N - 1, a + 1)], cur - a), cx = x(cur);
+        ctx.strokeStyle = 'rgba(245,244,250,.35)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(cx, 0); ctx.lineTo(cx, H - 44); ctx.stroke();
+        ctx.fillStyle = cv <= 0 ? `rgb(${FROST})` : `rgb(${LEAF})`; ctx.beginPath(); ctx.arc(cx, y(cv), 6, 0, 6.3); ctx.fill(); ctx.strokeStyle = '#07060b'; ctx.lineWidth = 2; ctx.stroke();
+      }
+      const state = done ? 'go' : i0 < f0 ? 'calm' : 'frost';
+      if (state !== mood) { mood = state; speak(c, s, f0, state); }
     } });
   }
   document.querySelectorAll('[data-nights]').forEach(hero);
@@ -483,7 +472,7 @@ html { background: var(--bg-0); } body { margin: 0; }
     const x = d => PAD + (d - D0) / (D1 - D0) * (W - 2 * PAD), count = {}, base = H - 32;
     const dots = Array.from({ length: 30 }, () => Math.round(clamp(33 + (r() + r() + r() - 1.5) * 13, D0 + 1, D1 - 1))).sort((a, b) => a - b);
     const med = dots[15], p90 = dots[26], label = d => d <= 30 ? d + ' Apr' : (d - 30) + ' May';
-    const circles = dots.map((d, i) => { const n = count[d] = (count[d] || 0) + 1; return `<circle cx="${x(d).toFixed(1)}" cy="${base - R - 8 - (n - 1) * UP}" r="${R}" fill="rgb(${FROST})" opacity="${i > 26 ? .4 : 1}"/>`; }).join('');
+    const circles = dots.map((d, i) => { const n = count[d] = (count[d] || 0) + 1; return `<circle data-draw="mark" cx="${x(d).toFixed(1)}" cy="${base - R - 8 - (n - 1) * UP}" r="${R}" fill="rgb(${FROST})" opacity="${i > 26 ? .4 : 1}"/>`; }).join('');
     box.innerHTML = `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Dates of the last frost over 30 years">
       <line x1="${x(med + .5)}" x2="${x(med + .5)}" y1="${small ? 26 : 8}" y2="${base}" stroke="var(--fg-1)" stroke-width="1.5"/><text x="${small ? PAD : x(med + .5) - 10}" y="${small ? 16 : 20}" text-anchor="${small ? 'start' : 'end'}" style="fill:var(--fg-1);font-weight:500">${small ? 'in half the years' : 'in half the years the frosts ended'} by ${label(med)}</text>
       <line x1="${x(p90 + .5)}" x2="${x(p90 + .5)}" y1="${small ? 48 : 8}" y2="${base}" stroke="var(--fg-2)" stroke-width="1" stroke-dasharray="3 4"/><text x="${small ? W - PAD : x(p90 + .5) + 10}" y="${small ? 40 : 20}" text-anchor="${small ? 'end' : 'start'}">in 9 of 10: by ${label(p90)}</text>
@@ -527,7 +516,16 @@ html { background: var(--bg-0); } body { margin: 0; }
     } });
   });
 
-  /* ---- the page: reveals below the first screen, the phone's bottom action bar ---- */
+  /* ---- the page: every section has its own planned motion (references/page.md): the headline's words rise, tiles and
+     steps arrive one by one, the plot assembles as it scrolls in, the figure counts, the dots land, cards answer the mouse;
+     text blocks fade up; the phone gets its bottom action bar ---- */
+  document.querySelectorAll('[data-words]').forEach(el => nuScene.words(el));
+  document.querySelectorAll('[data-each]').forEach(el => nuScene.each(el));
+  document.querySelectorAll('.lp-days').forEach(el => nuScene.each(el, { gap: 26 }));
+  document.querySelectorAll('[data-count]').forEach(el => nuScene.count(el));
+  document.querySelectorAll('.lp-years svg').forEach(el => nuScene.chart(el));
+  document.querySelectorAll('.lp-plan__beds').forEach(el => nuScene.assemble(el));
+  nuScene.spot();
   nuMotion.reveal('.reveal');
   nuMotion.ctaBar(document.querySelector('.cta-bar'), document.querySelector('[data-main-action]'), document.querySelector('[data-final]'));
 })();

@@ -18,6 +18,8 @@ You are the design lead. The look is dark, precise and product-grade, in the lin
 
 Priority: the user's brief > the project's `.design/brand.css` > this style > defaults. If the user pins a look that conflicts with a rule below, follow the user and keep the craft.
 
+A small change to an existing screen (one block, the copy, a colour, spacing): read `.design/DESIGN.md` and the file, make the change, run verify once. No reference cards and no critic for it.
+
 ## 1. Scene and direction, before any code
 
 Write these to `.design/DESIGN.md` (create the folder; on later tasks update this file instead of starting a new one):
@@ -43,7 +45,7 @@ Then raise the level with references: open `references/exemplars/index.md`, read
 
 ## 2. Build from the system
 
-Copy `assets/tokens.css`, `assets/kit.css` and `assets/motion.js` into `.design/` (for mockups also `assets/frame.html`, `frame.js`, `probe.js`). Use roles, never raw values: `var(--accent)`, not a hex. The tokens are the closed vocabulary; when something is missing, add a role to the project's brand file instead of inlining a value. For React or Tailwind map the same roles (`references/style.md`).
+Copy `assets/tokens.css`, `assets/kit.css` and `assets/motion.js` into `.design/` (for mockups also `assets/frame.html`, `frame.js`, `probe.js`). Copy them without reading them through: `references/components.md` and `references/motion.md` list what they give. Use roles, never raw values: `var(--accent)`, not a hex. The tokens are the closed vocabulary; when something is missing, add a role to the project's brand file instead of inlining a value. For React or Tailwind map the same roles (`references/style.md`).
 
 Compose screens from the kit (`references/components.md`): list rows, hero card, stat, chips, fields, key-value rows, section heads, states. When the kit lacks a piece, add a component rather than one-off styles.
 

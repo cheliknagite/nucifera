@@ -21,6 +21,10 @@ A landing persuades; an app screen operates. The `ui` skill keeps app screens qu
 
 Priority: the user's brief > the project's `.design/brand.css` and `.design/DESIGN.md` > this mode > the `ui` skill's defaults. From `../ui/SKILL.md` these still hold: tokens and kit, type, contrast, touch sizes, copy in the product's own words. Its rules "one moment per screen", "never in a loop" and "plain backgrounds" describe app screens; they do not bind the scene and the demos here.
 
+**A small change to an existing landing** (one block, the copy, a colour, spacing): read `.design/DESIGN.md` and the page, make the change, run verify once. No concept round and no critic.
+
+**Reading.** Read this file and the references each step names, nothing more. Copy the asset files without reading them: their classes and calls are listed in `references/parts.md`. Read `starter.html` in pieces: its head and first screen, then only the sections the plan keeps (each starts at a `<!-- ====` banner).
+
 ## Step 1. Read the product
 
 - Read the brief, the product's own texts and screens, `.design/DESIGN.md` (signature, face) and `.design/calibration.md` (what this user liked and rejected before) when they exist.
@@ -48,7 +52,7 @@ Read `references/page.md`. Add a "Sections" table to `.design/DESIGN.md` and bui
 
 - "What is shown" is never empty: every section shows a real thing (a product view, a close crop, a photo, an object, the scene).
 - No two neighbouring rows share a composition; a home page uses at least four different ones.
-- "Motion" is one of: scene, demo, moment, reveal, none.
+- "Motion" names the section's one planned motion (`references/page.md`, section 1): a scene, a demo, words, count, each, chart, assemble; plain text blocks take reveal. No section with something to show stands still.
 - The home page stays short; the full story lives on detail pages, and "Link" names the page a block leads to.
 
 Count the things shown before you build. If the project has too little imagery for the plan, say so now and propose what to capture, draw or generate; do not fill the gap with text.
@@ -64,14 +68,14 @@ Count the things shown before you build. If the project has too little imagery f
 
 ## Step 5. Check
 
-1. Run `node ../ui/scripts/verify.mjs <page> --landing` on each page (add `--light none` for a dark-only site). Besides the still shots it walks the page in real time, screen by screen, at 1440 and at 390. It fails: a nearly empty screen, two sparse screens in a row, or more than a third of the screens thin (detail on under a fifth of them), a first screen where nothing moves once its entrance is over, more than 1,500 words, a block still marked `data-example`, a script error. It warns about a single sparse screen, a stretch with no words, media cut by the screen edge, stretched images and a small fixed element lying over text. Fix every FAIL; at most three rounds. A concept of still art sets `data-hook="still"` on `<html>`, so the check does not ask it to move. Then look at every `walk-*.png` yourself: something to look at on every screenful, neighbouring sections of different compositions, the hook reading on the first screen at both widths. The check finds holes; it does not judge whether the page is good.
+1. Run `node ../ui/scripts/verify.mjs <page> --landing` on each page (add `--light none` for a dark-only site). It shoots the page still and walks it in real time at 1440 and at 390; what it fails and what it warns about is listed in `references/page.md`, section 10. Fix every FAIL; at most three rounds. A concept of still art sets `data-hook="still"` on `<html>`. Then look at every `walk-*.png` yourself: something to look at on every screenful, neighbouring sections of different compositions, the hook reading on the first screen at both widths. The check finds holes; it does not judge whether the page is good.
 2. Open the page in a browser: the scene runs, stops off screen and in a hidden tab, and stands still under reduced motion; every demo plays.
 3. Run the `design-critic` agent with the walk shots and the three motion frames, the brief, `.design/DESIGN.md`, the calibration files and `../ui/references/exemplars/hero/twin.md` (both twins). Ask it one extra question: "What would a visitor describe an hour after seeing only the first screen?" If the honest answer is "a dark page with a screenshot", or its verdict is "sterile", go back to the hook, not to polish.
 4. Hand over: file paths, the shots, what was not checked. When the user gives a verdict, append their words to `.design/calibration.md`.
 
 ## Ten rules of this mode
 
-1. The first screen holds the hook, a headline, one sentence and one action. The hook fills most of the screen (60 to 90 %): as a backdrop, or as a stage with the headline above or inside it. An object in a column beside the text is the default layout again, whatever the object shows.
+1. The first screen holds the hook, a headline, one sentence and one action. The hook fills most of the screen (60 to 90 %): as a backdrop, or as a stage with the headline above or inside it. An object in a column beside the text is the default layout again, whatever the object shows. Nothing on this screen is an interface box: no cards, tiles or chips beside the scene. The data is drawn in the scene and the product speaks in type (`references/finish.md`, section 3).
 2. Every screenful has something to look at. A text-only screen is allowed once, for the questions.
 3. Show the real product many times: whole, cropped close, in use. Crop instead of shrinking: a screenshot nobody can read shows nothing.
 4. Images stay inside the page margins with a frame, or run as a deliberate full-width band; nothing is cut by the screen edge by accident.
@@ -84,9 +88,9 @@ Count the things shown before you build. If the project has too little imagery f
 
 ## Reference files
 
-- `references/hooks.md`: hook types, how to find three concepts in the product, how rough a sketch is, measured numbers.
-- `references/finish.md`: what makes a first screen reach: the idea, a living scene and depth together; the material recipe.
-- `references/parts.md`: the ready parts: the scene engine, the material and composition classes, the starter page.
-- `references/world.md`: the two layers, the scene's performance contract, tempo, readability, scroll stops, demos.
-- `references/page.md`: the section plan, compositions, the imagery plan, words, several pages, charts, questions, pricing.
+- `references/hooks.md`: hook types and how to find three concepts in the product.
+- `references/finish.md`: the three layers of a first screen; no boxes on it.
+- `references/parts.md`: ready code: scenes, moments, classes, the starter page.
+- `references/world.md`: what a scene must keep, demos, scroll stops.
+- `references/page.md`: the plan, compositions, motion per section, words, the check.
 - `../ui/references/`: style, components, motion recipes, image direction, refusals.

@@ -54,7 +54,8 @@ const common = ['--headless=new', '--disable-gpu', '--hide-scrollbars', '--disab
   '--no-first-run', '--no-default-browser-check', `--user-data-dir=${profile}`, '--virtual-time-budget=10000',
   '--force-prefers-reduced-motion'];   /* shots show every moment in its end state, the way a still review needs it */
 const url = q => base + (base.includes('?') ? '&' : '?') + new URLSearchParams(q).toString();
-const run = extra => execFileSync(browser, [...common, ...extra], { encoding: 'utf8', maxBuffer: 256 * 1024 * 1024, timeout: 90000, stdio: ['ignore', 'pipe', 'ignore'] });
+const launch = extra => execFileSync(browser, [...common, ...extra], { encoding: 'utf8', maxBuffer: 256 * 1024 * 1024, timeout: 90000, stdio: ['ignore', 'pipe', 'ignore'] });
+const run = extra => { try { return launch(extra); } catch { return launch(extra); } };   /* the first launch with a fresh profile can fail: once more */
 const dump = q => run(['--window-size=1400,1000', '--dump-dom', url(q)]);
 const shot = (q, w, h, file) => { run([`--window-size=${w},${h}`, `--screenshot=${file}`, url(q)]); return file; };
 /* headless browsers do not lay a page out narrower than about 500px, so a local plain page is shot inside an iframe

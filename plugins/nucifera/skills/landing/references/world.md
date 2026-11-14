@@ -16,17 +16,14 @@ Keeping them apart is what lets a page feel alive without looking generated: the
 
 ## 2. The contract every scene keeps
 
-`nuScene.canvas` (`assets/scene.js`, `parts.md`) keeps points 2 to 5 for a canvas scene, and `nuScene.layers` for layered artwork: write `draw(ctx, t, w, h)` as a pure function of time, name the `still` second, take randomness from `nuScene.rand`.
+`nuScene.canvas` and `nuScene.layers` (`assets/scene.js`, `parts.md`) keep the mechanical part: one canvas at a pixel ratio of 2 at most, a loop that runs only while the scene is on screen in a visible tab, one frame under reduced motion and on weak devices (`data-perf="low"`), a redraw on resize. What stays with you:
 
-1. **Poster first.** Artwork layers and a film have a still image under them: it is what loads first, what shows without scripts or WebGL, and what the share image can use. A canvas scene draws its still frame at once on load, so it needs an image only for the share picture.
-2. **One canvas**, sized to its box times `Math.min(devicePixelRatio, 2)`.
-3. **Runs only while seen.** Start the frame loop when an `IntersectionObserver` reports the scene visible; stop it when it leaves and on `visibilitychange` to hidden.
-4. **Reduced motion: one frame.** Draw the scene once at its most telling moment (never its empty start), no loop; a camera tied to the scroll jumps between its stops.
-5. **Weak devices** (`data-perf="low"`): the poster or the one still frame.
-6. **Phones:** the same scene made simpler or the poster, and the hook still inside the first screen.
-7. **Deterministic.** Seed anything random, so the scene is the same on every load and in every screenshot.
-8. **Light.** A 2D scene is plain canvas code with no library. Reach for a 3D library only for a true 3D world the user asked for. Layered artwork stays within 1 to 2 MB, a film within about 2 MB.
-9. **Real.** The scene is built from the product's own data, art and instruments; examples that could pass for real data are labelled.
+1. **A telling still frame.** Name the `still` second: the scene at its most telling moment, never its empty start. Reduced motion, screenshots and the first paint show it.
+2. **A pure function of time.** `draw(ctx, t, w, h)` depends only on `t`, and randomness comes from `nuScene.rand(seed)`: the scene is the same on every load.
+3. **A poster for artwork.** Layered artwork and a film have a still image under them; a canvas scene needs an image only for the share picture.
+4. **Phones.** The same scene made simpler, and the hook still inside the first screen.
+5. **Light.** A 2D scene is plain canvas code with no library; a 3D library only for a true 3D world the user asked for. Layered artwork stays within 1 to 2 MB, a film within about 2 MB.
+6. **Real.** Built from the product's own data, art and instruments; examples that could pass for real data are labelled.
 
 ## 3. Text over a scene
 
@@ -61,9 +58,4 @@ Body text and headings after their entrance, prices and results, navigation. No 
 
 ## 7. Check
 
-`verify.mjs --landing` measures how much of the first screen changes in three seconds once the entrance is over, and fails a landing where nothing does (a concept of still art declares `data-hook="still"` on `<html>`). The rest is by eye:
-
-- Leave the tab, come back: the scene resumes. Scroll it off screen: it stops (watch the processor load).
-- Emulate reduced motion: one still frame, all content visible.
-- Block scripts: the poster and the text still make a page.
-- At 390px: the hook is inside the first screen and the text reads.
+`verify.mjs --landing` fails a first screen where nothing moves once its entrance is over. By eye: the scene resumes when you come back to the tab and stops off screen; under reduced motion one still frame and all content; at 390px the hook is inside the first screen.

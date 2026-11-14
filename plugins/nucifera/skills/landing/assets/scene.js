@@ -1,5 +1,7 @@
-/* nucifera: scenes for landing pages (the world layer, references/world.md). No dependencies.
-   window.nuScene = { canvas, layers, stops, play, seen, rand, ease, out, lerp, clamp, calm, ink }
+/* nucifera: scenes and moments for landing pages (references/world.md, references/parts.md). No dependencies.
+   window.nuScene = { canvas, layers, stops, play,                    scenes: they live all the time
+                      words, count, each, chart, assemble, tied, spot,  moments: once, as a block comes into view
+                      seen, rand, ease, out, lerp, clamp, calm, ink }
 
    Everything made with it keeps the scene contract: it runs only while it is on screen in a visible tab, caps the
    pixel ratio at 2, shows one telling still frame under reduced motion and on weak devices (<html data-perf="low">),
@@ -137,5 +139,92 @@
     return { replay: set, stop() { off(); vis = false; result(); } };
   }
 
-  window.nuScene = { canvas, layers, stops, play, seen, rand, ease, out, lerp, clamp, calm, ink };
+  /* ---------- landing moments. Stronger than an app screen allows, so they stay on landings. Each plays once, when its
+     block comes into view; a block already on screen at load plays at once. Nothing is hidden without this script,
+     and under reduced motion or on a weak device every block simply stands in its final state. ---------- */
+  const OUT = 'cubic-bezier(.23, 1, .32, 1)', MOVE = 'cubic-bezier(.77, 0, .175, 1)';
+  const below = el => el.getBoundingClientRect().top > innerHeight - 20;
+  const enter = (el, cb, threshold = .3) => { const off = seen(el, v => { if (v) { off(); cb(); } }, threshold); };
+
+  /* The words of a heading rise out of their own line, one after another. Screen readers keep the whole sentence. */
+  function words(el, opt = {}) {
+    if (!calm() || el.dataset.nuWords) return;
+    el.dataset.nuWords = '1'; el.setAttribute('aria-label', el.textContent.trim().replace(/\s+/g, ' '));
+    const texts = [], tw = document.createTreeWalker(el, NodeFilter.SHOW_TEXT); let node;
+    while ((node = tw.nextNode())) if (node.nodeValue.trim()) texts.push(node);
+    texts.forEach(n => {
+      const f = document.createDocumentFragment();
+      n.nodeValue.split(/(\s+)/).forEach(part => {
+        if (!part.trim()) { f.append(part); return; }
+        const w = document.createElement('span'), i = document.createElement('i'); w.className = 'nu-word'; w.setAttribute('aria-hidden', 'true'); i.textContent = part; w.append(i); f.append(w);
+      });
+      n.replaceWith(f);
+    });
+    const list = [...el.querySelectorAll('.nu-word > i')], wait = below(el);
+    if (wait) list.forEach(w => { w.style.transform = 'translateY(108%)'; });
+    const run = () => list.forEach((w, i) => { w.style.transform = ''; w.animate([{ transform: 'translateY(108%)' }, { transform: 'none' }], { duration: 760, delay: (opt.delay || 0) + i * 60, easing: OUT, fill: 'backwards' }); });
+    if (wait) enter(el, run); else run();
+  }
+
+  /* The figure in el counts up to its value and settles: "147", "$27,400", "30 years". Give el tabular figures. */
+  function count(el, opt = {}) {
+    const text = el.textContent, m = text.match(/\d(?:[\d,\u00a0 ]*\d)?/);
+    if (!m || !calm()) return;
+    const to = parseInt(m[0].replace(/\D/g, ''), 10), sep = (m[0].match(/[,\u00a0 ]/) || [''])[0], dur = opt.duration || 1400;
+    const show = n => { el.textContent = text.replace(m[0], sep ? String(n).replace(/\B(?=(\d{3})+(?!\d))/g, sep) : String(n)); };
+    const run = () => { const t0 = performance.now(), step = now => { const u = clamp((now - t0) / dur); show(Math.round(to * (1 - Math.pow(1 - u, 4)))); if (u < 1) requestAnimationFrame(step); }; requestAnimationFrame(step); };
+    if (below(el)) { show(0); enter(el, run, .6); } else run();
+  }
+
+  /* The children of box arrive one after another: tiles, cards, steps. opt.gap: ms between them (80). */
+  function each(box, opt = {}) {
+    const kids = [...box.children], gap = opt.gap == null ? 80 : opt.gap;
+    if (!calm() || !below(box)) return;
+    kids.forEach(k => { k.style.opacity = '0'; });
+    enter(box, () => kids.forEach((k, i) => { k.style.opacity = ''; k.animate([{ opacity: 0, transform: 'translateY(18px) scale(.95)' }, { opacity: 1, transform: 'none' }], { duration: 700, delay: i * gap, easing: OUT, fill: 'backwards' }); }), .2);
+  }
+
+  /* An SVG chart tells its point in order: [data-draw="line"] draws itself, [data-draw="fill"] comes up under it,
+     [data-draw="mark"] lands last, one after another. */
+  function chart(svg) {
+    if (!calm() || !below(svg)) return;
+    const q = k => [...svg.querySelectorAll('[data-draw="' + k + '"]')], lines = q('line'), fills = q('fill'), marks = q('mark');
+    lines.forEach(l => { l.setAttribute('pathLength', '1'); l.style.strokeDasharray = '1'; l.style.strokeDashoffset = '1'; });
+    fills.concat(marks).forEach(e => { e.style.opacity = '0'; });
+    const after = lines.length ? 1150 : 0;
+    enter(svg, () => {
+      lines.forEach(l => { l.style.strokeDashoffset = ''; l.animate([{ strokeDashoffset: 1 }, { strokeDashoffset: 0 }], { duration: 1100, delay: 200, easing: MOVE, fill: 'backwards' }); });
+      fills.forEach(e => { e.style.opacity = ''; e.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 700, delay: after ? 1000 : 0, easing: 'ease', fill: 'backwards' }); });
+      marks.forEach((e, i) => { e.style.opacity = ''; e.style.transformBox = 'fill-box'; e.style.transformOrigin = 'center';
+        e.animate([{ opacity: 0, transform: 'scale(.6)' }, { opacity: 1, transform: 'none' }], { duration: 500, delay: after + 200 + i * Math.min(60, 900 / marks.length), easing: OUT, fill: 'backwards' }); });
+    }, .4);
+  }
+
+  /* Tied to the scroll: fn(u), where u is 0 as el enters at the bottom of the window and 1 once it has risen to the
+     upper third. The page scrolls as usual. Under reduced motion fn(1) once. */
+  const ties = []; let tieRaf = 0;
+  const tieTick = () => { tieRaf = 0; ties.forEach(([el, fn]) => { const r = el.getBoundingClientRect(); fn(calm() ? clamp((innerHeight * .96 - r.top) / (innerHeight * .62)) : 1); }); };
+  function tied(el, fn) {
+    if (!ties.length) { addEventListener('scroll', () => { if (!tieRaf) tieRaf = requestAnimationFrame(tieTick); }, { passive: true }); addEventListener('resize', tieTick); mq.addEventListener('change', tieTick); }
+    ties.push([el, fn]); tieTick();
+  }
+  /* The children of box come together as the page scrolls it into view: an object assembling from its parts. */
+  function assemble(box) {
+    const kids = [...box.children], b = box.getBoundingClientRect();
+    const from = kids.map(k => { const r = k.getBoundingClientRect(), dx = (r.left + r.width / 2 - b.left - b.width / 2) / (b.width / 2 || 1), dy = (r.top + r.height / 2 - b.top) / (b.height || 1); return [dx * 46, 30 + dy * 34]; });
+    tied(box, u => kids.forEach((k, i) => {
+      const left = 1 - out(clamp(u * 1.5 - i * .09));
+      k.style.transform = left ? `translate(${(from[i][0] * left).toFixed(1)}px, ${(from[i][1] * left).toFixed(1)}px) scale(${(1 - .08 * left).toFixed(3)})` : '';
+      k.style.opacity = left ? (1 - .85 * left).toFixed(2) : '';
+    }));
+  }
+
+  /* The light under the pointer for .spot surfaces (landing.css). One listener for the page; a mouse only. */
+  function spot(scope = document) {
+    if (!fine.matches) return;
+    scope.addEventListener('pointermove', e => { const el = e.target.closest && e.target.closest('.spot'); if (!el) return;
+      const r = el.getBoundingClientRect(); el.style.setProperty('--mx', (e.clientX - r.left) + 'px'); el.style.setProperty('--my', (e.clientY - r.top) + 'px'); }, { passive: true });
+  }
+
+  window.nuScene = { canvas, layers, stops, play, words, count, each, chart, assemble, tied, spot, seen, rand, ease, out, lerp, clamp, calm, ink };
 })();

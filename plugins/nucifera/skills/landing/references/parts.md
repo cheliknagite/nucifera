@@ -1,6 +1,6 @@
 # Ready parts: what is already built
 
-Read this before the sketches and before the build. The fragile pieces of a landing are written once and tested: the scene engine, the material of the first screen, the section layouts, a working starter page. Use them and spend the effort on the idea, the product's own objects and the words.
+Read this before the sketches and before the build. The fragile pieces of a landing are written once and tested; use them and spend the effort on the idea, the product's own objects and the words.
 
 | File (in `assets/`) | What it is |
 |---|---|
@@ -18,6 +18,7 @@ Open it in a browser first: it shows what the parts do together. Then build from
 - Every block that still shows the invented product carries `data-example`. Remove the attribute when the block shows the real product; delete the blocks the page plan does not use. `verify.mjs --landing` fails a page with an example left in it.
 - The sections stand in the order of a visitor's questions (`page.md`). Take the compositions the plan names; a home page needs at least four different ones, not all nine.
 - The page's own classes keep the `lp-` prefix; the parts' classes have none.
+- Do not read `landing.css` and `scene.js` through: this file lists what they give. Read the starter in pieces: its head and first screen, then the sections the plan keeps.
 - Colours: set `--obj`, `--obj-ink`, `--cta-bg`, `--cta-fg`, `--stage-tone` and up to three subject colours named by role, in `.design/brand.css`.
 
 ## 2. Scenes: `nuScene`
@@ -47,9 +48,26 @@ nuScene.play(box, {              // a product demo: replays while on screen, sho
 nuScene.ease(u)  nuScene.out(u)  nuScene.lerp(a, b, u)  nuScene.clamp(v)  nuScene.calm()  nuScene.ink(el, '--token')
 ```
 
-Two scenes in the starter show the pattern, both of the "trace" mechanic (a line of values over a zone, a cursor that walks it): the first screen's 21 nights and the season band. Other mechanics are built the same way: a sweep (a beam turns and lights marks: a radar, a lighthouse), a field (cells fill: a timetable, a seat map), a route (a mark travels a path). The mechanic may repeat between projects; the subject, the shapes and the data never do.
+Two scenes in the starter show the pattern: the first screen's 21 nights (columns on a zero line under a curve, a cursor walking them) and the season band (a line of values over a zone). Other mechanics are built the same way: a sweep (a beam turns and lights marks: a radar, a lighthouse), a field (cells fill: a timetable, a seat map), a route (a mark travels a path). The mechanic may repeat between projects; the subject, the shapes and the data never do.
 
 A step that carries words stays long enough to read: in the starter one message holds from the first event to the last, then gives way to the one that matters. A label that changes with every tick of the scene cannot be read.
+
+### Moments: one planned motion per section
+
+Stronger than an app screen allows, so they live here and not in the `ui` kit. Each plays once, as its block comes into view; nothing is hidden without the script, and under reduced motion every block stands in its final state.
+
+| Call or class | What happens | Use it for |
+|---|---|---|
+| `nuScene.words(heading)` | the words rise out of their own line, one after another | the page's headline, a section heading that carries the idea |
+| `nuScene.count(el)` | the figure counts up to its value and settles ("147", "$27,400", "30 years") | a statement, a key number |
+| `nuScene.each(box, { gap })` | the children arrive one after another | tiles, cards, steps, close-ups |
+| `nuScene.chart(svg)` | `[data-draw="line"]` draws, `[data-draw="fill"]` comes up under it, `[data-draw="mark"]` lands last | every SVG chart |
+| `nuScene.assemble(box)` | the children come together as the page scrolls the box into view | a product object made of parts |
+| `nuScene.tied(el, u => {})` | your own motion tied to the scroll, `u` from 0 to 1 | one object per page at most; never text |
+| `.spot` and `nuScene.spot()` | the card lifts and a soft light follows the pointer over its face and edge | cards and tiles a visitor can explore |
+| `.travels` | on a site of several pages the one object with this class on both pages moves from its old place to its new one; pages cross-fade | the object a block and its detail page share |
+
+Quiet by choice: buttons and links answer with a little more light and a leaning arrow (`.btn .arrow`), plain text blocks fade up with `nuMotion.reveal`, and text is never tied to the scroll.
 
 ## 3. Material: the first screen as a lit space
 
@@ -102,4 +120,4 @@ Rhythm: a statement and the final call are calm screens, and calm screens work b
 
 ## 6. What the parts do not do
 
-They do not choose the idea, and a page built from them with no hook is still the sterile twin. They carry no artwork: photos, illustrations and a world's layers come from the product or are made for it. They are a floor, not the look: change sizes, proportions and the first screen's arrangement to fit the concept the user chose.
+They do not choose the idea: a page built from them with no hook is still the sterile twin. They carry no artwork. They are a floor, not the look: change sizes, proportions and the first screen's arrangement to fit the concept the user chose.

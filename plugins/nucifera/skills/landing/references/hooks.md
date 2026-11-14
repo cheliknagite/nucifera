@@ -36,23 +36,12 @@ Example, a bot that takes coffee pre-orders: (live product) the barista's queue 
 
 ## 4. The sketch
 
-A sketch answers one question: is this the page? It needs:
-
-- the real headline (three to eight words), one sentence, the main action;
-- the hook at its real size and place, filling most of a 1440 by 900 screen down to the fold, with its main motion running (a still is not enough to judge life);
-- a still frame for reduced motion and for screenshots that shows the scene at its most telling moment, never at its empty start;
-- the colours the concept proposes, when the product has none of its own;
-- real or rebuilt product imagery, never grey boxes;
-- one neutral line under the screen: what it is, what moves, what the rest of the page would show.
-
-It also needs depth and material in rough form (`finish.md`). It does not need other sections, a phone layout, polish or fallbacks. About 200 lines per concept. All three in one file, one screen each, labelled A, B, C, so the user compares them in one scroll. Do not label them by technique and do not say which you prefer until the user has looked.
+A sketch answers one question: is this the page? What it holds is listed in the skill's Step 2: the real headline and action, the hook at its real size with its main motion running, a telling still frame, the proposed colours, real or rebuilt product imagery, one neutral line under the screen. No other sections, no phone layout, no polish. Do not label the sketches by technique and do not say which you prefer until the user has looked.
 
 ## 5. Numbers from the measured pages
 
 - Share of the first screen: a backdrop hook 60 to 92 %; an object beside the text 12 to 45 %. In reviews of pages built with this skill, a hook in a column beside the text never passed: make it the stage.
-- Headline 48 to 64px on a desktop, 32 to 40px on a phone.
 - Loops: small interface loops inside a demo 1.6 to 3.2 s; a scene or film 6 to 21 s; background drift 60 to 120 s.
 - Weight: a 2D canvas scene needs no library (a whole scene can be under 100 KB of script); layered artwork 1 to 2 MB; a hero film 1.3 to 2.4 MB; a full 3D world 10 to 17 MB and a loader, which is studio work.
 - Images on the page: 20 to 140, median 45. The product is shown many times.
-- Below the first screen the background is usually one flat colour: emptiness is cured by the hook and by things to look at, not by gradients.
-- Storytelling tied to the scroll is rare; plain scrolling is the norm.
+- Below the first screen the background is usually one flat colour and the scrolling is plain: emptiness is cured by the hook and by things to look at, not by gradients.

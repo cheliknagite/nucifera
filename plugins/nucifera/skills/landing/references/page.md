@@ -14,6 +14,8 @@ Add a "Sections" table to `.design/DESIGN.md`, one row per section, and build fr
 
 The order follows the questions a visitor asks: what is it and is it for me; what routine does it remove; what do I get; why trust it; how does it work; what does it cost and how do I try it; what else do I need to know; the final call. Merge sections that answer the same question.
 
+**Motion is planned, not left to chance.** Each section gets one motion that fits what it shows (`parts.md`, section 2): the headline's words rise (`words`), a figure counts up (`count`), tiles, cards and steps arrive one by one (`each`), a chart draws and its marks land (`chart`), an object assembles as it scrolls into view (`assemble`), a demo replays (`play`), a scene lives (`canvas`), cards answer the mouse (`.spot`). Plain text blocks such as plans and questions fade up (`nuMotion.reveal`). Kept quiet on purpose: buttons and links answer with a little light and a leaning arrow, and text is never tied to the scroll.
+
 If the product already has a design (a signature, a face, real screens in its `.design/DESIGN.md`), the page carries it; one of the three concepts is built on it.
 
 ## 2. Compositions
@@ -61,11 +63,10 @@ When the story does not fit a short home page, do not lengthen it: split it.
 
 ## 6. Rhythm and surfaces
 
-- One idea per section; on a desktop a section fits about one screen. `.section` gives `--sec-y` between sections; `.section--screen` gives the hero, the signature and the final call a screen of their own.
-- Headings: `.t-hero` for the one headline, `.t-section` for sections, `.t-lead` for the sentence under them.
+- One idea per section; on a desktop a section fits about one screen.
 - Alternate dense and calm sections: a statement and the final call are calm screens and work between dense ones. Two calm screens in a row read as emptiness, so plans and questions share one screen instead of standing as two screens of text. No scroll-snap, no slide-by-slide scrolling.
 - One grid per section: columns do not change halfway.
-- Surfaces: the canvas, a tinted band (`--bg-1`) for a section that should stand apart, an opaque panel over the scene. Light behind one object with `.light-behind`; `.grain` on a large dark gradient. Never a coloured gradient to fill emptiness.
+- Surfaces: the canvas, a tinted band (`--bg-1`) for a section that should stand apart, an opaque panel over the scene. Never a coloured gradient to fill emptiness.
 
 ## 7. Charts and drawings
 
@@ -84,12 +85,10 @@ When the story does not fit a short home page, do not lengthen it: split it.
 - Questions: those a buyer actually asks, answers of one or two sentences, one open at a time (`<details name="faq">` inside `.faq`).
 - Plans named by situation ("one client to try", "several clients", "a team"), shown as one table: labels once on the left, one column per plan headed by its price and situation. The trial and "no automatic renewal" sit next to the price; the full terms behind a link.
 
-## 10. A character
+## 10. Check
 
-If the product's character is the chosen hook, it is large and alive on the first screen and returns where it helps. Otherwise it stays small: an avatar, an empty state, a small success.
+`verify.mjs --landing` walks the page screen by screen in real time, at 1440 and at 390.
 
-## 11. Check
-
-- `verify.mjs --landing` walks the page screen by screen in real time. It fails a nearly empty screen, two sparse screens in a row, or more than a third of the screens thin (detail on under a fifth of them), a still first screen, more than 1,500 words and a block still marked `data-example`; it warns about one sparse screen, a stretch with no words, media cut by an edge, stretched images, a fixed element over text, more than 1,000 words and questions that can stay open together.
-- In the walk shots: something to look at on every screenful, neighbouring sections of different compositions, no image cut by an edge, every chart headed by its point.
-- The critic's landing pass (`agents/design-critic.md`).
+- It fails: a nearly empty screen; two sparse screens in a row, or more than a third of the screens thin (detail on under a fifth of them); a first screen where nothing moves after its entrance; more than 1,500 words; a block still marked `data-example`; a script error.
+- It warns about: one sparse screen, a stretch with no words, media cut by an edge, stretched images, a small fixed element over text, more than 1,000 words, questions that can stay open together.
+- Then the critic's landing pass (`agents/design-critic.md`).
