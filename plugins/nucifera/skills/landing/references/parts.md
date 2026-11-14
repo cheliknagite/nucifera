@@ -7,15 +7,17 @@ Read this before the sketches and before the build. The fragile pieces of a land
 | `scene.js` | `window.nuScene`: runs canvas scenes, backdrops, layered worlds, scroll stops and replaying demos by the contract of `world.md`, and the landing moments |
 | `landing.css` | the material of `finish.md` as classes, the header and footer, the scene boxes, nine section compositions. Load it after `tokens.css` and `kit.css` |
 | `starter.html` | a whole landing built from these parts and filled with one invented product, so every part can be seen alive |
-| `backdrops.js` | the starter's two example backdrops: a simple world and a plan of the product's world |
+| `backdrops.js` | the starter's two example backdrops: a simple world and a plan of the product's world. Read the one you need; do not copy the file into another product |
 
-Copy `landing.css` and `scene.js` into `.design/` next to `tokens.css`, `kit.css` and `motion.js` before the sketches; `starter.html` and `backdrops.js` join them at the build.
+Copy `landing.css` and `scene.js` into `.design/` next to `tokens.css`, `kit.css` and `motion.js` before the sketches; `starter.html` is opened at the build.
 
 ## 1. The starter page
 
 Open it in a browser first: it shows what the parts do together. Then build from it.
 
-- **Keep the mechanics, replace the subject.** The hook, the scene's data and look, the product views, the colours and every word come from the real product. The starter's product is invented; its scene belongs to it and never ships.
+- **Keep the mechanics, replace the subject.** What stays: the page skeleton, the classes, the calls, the timing. What is rewritten: the hook, the scenes, the product views, the data, the colours and every word. That is most of the file, and it is expected.
+- **Not its first screen's arrangement.** A figure on the left, the copy on the right and columns under them belong to the starter's product; moved to another product, the same arrangement was rejected. Take the mechanics from it (a scene tied to a line of type, a backdrop), and arrange the first screen for the chosen concept.
+- The page needs `<body class="app">`: without it the kit does not set the type or the colours.
 - Every block that still shows the invented product carries `data-example`. Remove the attribute when the block shows the real product; delete the blocks the page plan does not use. `verify.mjs --landing` fails a page with an example left in it.
 - The sections stand in the order of a visitor's questions (`page.md`). Take the compositions the plan names; a home page needs at least four different ones, not all nine.
 - The page's own classes keep the `lp-` prefix; the parts' classes have none.
@@ -40,7 +42,8 @@ nuScene.canvas(box, {            // box: the .scene element; a canvas is added i
 
 ```js
 nuScene.backdrop(box, {          // what stands behind the text: box is the .backdrop that wraps the first screen
-  draw(ctx, t, w, h, env) {      //   env.u: the scroll through the box, 0 to 1; env.calm(el): a calm zone under text
+  draw(ctx, t, w, h, env) {      //   env.u: the scroll through the box, 0 to 1
+                                 //   env.calm(el, pad, alpha): a calm zone under a block of text (40px, .8 by default)
   },
 });
 nuScene.layers(box)              // a world from artwork: .world > .world__layer
@@ -51,7 +54,8 @@ nuScene.play(box, {              // a product demo: replays while on screen, sho
   reset() {}, pause: 3600,
   steps: [[900, () => {}], [1500, () => {}]],   // [ms after the previous step, what happens]
 });
-nuScene.ease(u)  nuScene.out(u)  nuScene.lerp(a, b, u)  nuScene.clamp(v)  nuScene.calm()  nuScene.ink(el, '--token')
+nuScene.ease(u)  nuScene.out(u)  nuScene.lerp(a, b, u)  nuScene.clamp(v)  nuScene.ink(el, '--token')
+nuScene.calm()                   // true while motion is allowed (no reduced motion, not a weak device)
 ```
 
 Two scenes in the starter show the pattern: the first screen's 21 nights (columns on a zero line under a curve, a cursor walking them) and the season band (a line of values over a zone). Other mechanics are built the same way: a sweep (a beam turns and lights marks: a radar, a lighthouse), a field (cells fill: a timetable, a seat map), a route (a mark travels a path). The mechanic may repeat between projects; the subject, the shapes and the data never do.
@@ -80,7 +84,7 @@ Quiet by choice: buttons and links answer with a little more light and a leaning
 | Class | What it makes |
 |---|---|
 | `.stage` | the first screen as a place: it clips and stacks its content; it has no light of its own, the backdrop stands behind it |
-| `.backdrop` | wraps a stretch of the page that shares one backdrop; `nuScene.backdrop` puts the canvas in it |
+| `.backdrop` | wraps a stretch of the page that shares one backdrop; `nuScene.backdrop` puts the canvas in it. The canvas stays in the window while the content scrolls over it, and the first block inside is pulled up over it; each stretch gets its own view of the world |
 | `.solid` | the hero object in type (a figure, a word): one hue from light to dark, a thin top highlight, a dark cast shadow. `--obj` |
 | `.cast` | the contact shadow under an object standing on the stage |
 | `.tile`, `.tile.is-chosen` | small raised surfaces; the chosen one lifted and filled with `--obj` |

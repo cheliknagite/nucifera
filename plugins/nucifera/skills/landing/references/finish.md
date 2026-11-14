@@ -41,5 +41,5 @@ Boxes with one style are right below the first screen, where the page turns into
 ## 4. Before you show it
 
 - All three layers are there, each from the product's own world.
-- The first screen holds together at 1440 by 900 and at about 1400 by 800: the hook is not cut.
+- The first screen holds together at 1440 by 900 and at about 1400 by 800: the hook is not cut (`verify.mjs --landing` shoots both: `page-1440.png` and `page-1400x800.png`).
 - Watch it for ten seconds in real time: the scene moves, numbers stay rounded, nothing collides midway.

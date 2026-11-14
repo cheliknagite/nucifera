@@ -40,6 +40,7 @@ What keeps it quiet, measured on pages where the backdrop is strongest:
 4. **Long text on an opaque panel.**
 5. **Slow motion, away from the text.**
 6. **It opens up with the scroll**: the horizon drops, the plan slides, more of the world shows between the sections.
+7. **It never repeats.** One world, many views: when a backdrop returns lower on the page it shows another place, another scale or another time of that world (the wide plan becomes one street, the plan becomes the view from the ground, night becomes morning), or the other kind of backdrop. The same picture behind three sections reads as wallpaper. A page that showed one plan behind three of its sections was called uncreative in review.
 
 `nuScene.backdrop(box, { draw })` runs it (`parts.md`, section 2): `.backdrop` wraps the first screen and what follows it, the canvas stays in the window, `env.u` is the scroll through the box and `env.calm(el)` lays the calm zone under a block of text. `assets/backdrops.js` holds one example of each kind for the starter's invented product; draw the real product's own. With real artwork the same backdrop is built from layers (`nuScene.layers`). A backdrop may also run behind text-heavy sections lower on the page, where a screen would otherwise be bare.
 

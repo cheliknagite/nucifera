@@ -65,8 +65,45 @@ const common = ['--headless=new', '--disable-gpu', '--hide-scrollbars', '--disab
 const url = q => base + (base.includes('?') ? '&' : '?') + new URLSearchParams(q).toString();
 const launch = extra => execFileSync(browser, [...common, ...extra], { encoding: 'utf8', maxBuffer: 256 * 1024 * 1024, timeout: 90000, stdio: ['ignore', 'pipe', 'ignore'] });
 const run = extra => { try { return launch(extra); } catch { return launch(extra); } };   /* the first launch with a fresh profile can fail: once more */
-const dump = q => run(['--window-size=1400,1000', '--dump-dom', url(q)]);
-const shot = (q, w, h, file) => { run([`--window-size=${w},${h}`, `--screenshot=${file}`, url(q)]); return file; };
+/* Some browsers hand the launch to a background process and return at once (Edge with an update pending does):
+   the screenshot then arrives a moment later, and --dump-dom prints nothing. So a shot waits for its file, and an
+   empty dump is read again through the debugging port. A check that could not look says so; it never passes silently. */
+const nap = ms => Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
+const take = (extra, file) => {
+  rmSync(file, { force: true });
+  for (let attempt = 0; attempt < 2; attempt++) {
+    run([...extra, `--screenshot=${file}`]);
+    for (let i = 0; i < 80 && !existsSync(file); i++) nap(250);
+    if (existsSync(file)) { nap(300); return file; }
+  }
+  throw new Error(`the browser did not write ${file}`);
+};
+const shot = (q, w, h, file) => take([`--window-size=${w},${h}`, url(q)], file);
+async function dump(q) {
+  const html = run(['--window-size=1400,1000', '--dump-dom', url(q)]);
+  if (html && html.includes('</html>')) return html;
+  if (typeof WebSocket !== 'function') throw new Error('the browser returned no page (its launcher exits early here): run with Node 22 or newer, or pass --browser with another browser');
+  const port = 9900 + Math.floor(Math.random() * 90), dir = `${profile}-dump-${process.pid}`;
+  const child = spawn(browser, ['--headless=new', '--no-first-run', '--no-default-browser-check', '--hide-scrollbars', '--force-device-scale-factor=1', '--force-prefers-reduced-motion',
+    `--remote-debugging-port=${port}`, `--user-data-dir=${dir}`, '--window-size=1400,1000', 'about:blank'], { stdio: 'ignore' });
+  let page;
+  try {
+    let list = null;
+    for (let i = 0; i < 100 && !list; i++) { await sleep(250); try { list = await (await fetch(`http://127.0.0.1:${port}/json/list`)).json(); } catch { /* not up yet */ } }
+    if (!list) throw new Error('the browser did not open its debugging port');
+    page = await cdp(list.find(x => x.type === 'page').webSocketDebuggerUrl);
+    await page.send('Page.enable'); await page.send('Runtime.enable'); await page.send('Page.navigate', { url: url(q) });
+    let out = '';
+    for (let i = 0; i < 24; i++) { await sleep(500); out = await page.evaluate('document.documentElement.outerHTML'); if (/<pre id="ui-(screens|probe)"/.test(out)) break; }
+    return out;
+  } finally {
+    try { if (page) await Promise.race([page.send('Browser.close'), sleep(1500)]); } catch { /* already gone */ }
+    if (page) page.close();
+    if (platform() === 'win32') { try { execFileSync('taskkill', ['/PID', String(child.pid), '/T', '/F'], { stdio: 'ignore', timeout: 10000 }); } catch { /* it has closed by itself */ } }
+    child.kill();
+    try { rmSync(dir, { recursive: true, force: true, maxRetries: 8, retryDelay: 300 }); } catch { /* cleared by a later run */ }
+  }
+}
 /* headless browsers do not lay a page out narrower than about 500px, so a local plain page is shot inside an iframe
    of exactly the asked width (frame.js pages size their own phone and need no wrapper) */
 const frameShot = (q, w, h, file) => {
@@ -74,8 +111,7 @@ const frameShot = (q, w, h, file) => {
   const wrap = join(out, `.wrap-${w}-${h}.html`);
   writeFileSync(wrap, `<!doctype html><meta charset="utf-8"><style>html,body{margin:0;overflow:hidden;background:#000}` +
     `iframe{display:block;width:${w}px;height:${h}px;border:0}</style><iframe src="${url(q)}"></iframe>`, 'utf8');
-  try { run([`--window-size=${w},${h}`, `--screenshot=${file}`, pathToFileURL(wrap).href]); } finally { rmSync(wrap, { force: true }); }
-  return file;
+  try { return take([`--window-size=${w},${h}`, pathToFileURL(wrap).href], file); } finally { rmSync(wrap, { force: true }); }
 };
 const pre = (html, id) => { const m = html.match(new RegExp(`<pre id="${id}"[^>]*>([\\s\\S]*?)</pre>`)); return m ? m[1].replace(/&quot;/g, '"').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&') : null; };
 
@@ -151,7 +187,7 @@ const SETTLE = `(async () => { const t0 = performance.now();
 async function walkPage(pageUrl, walkWidths, landing, each) {
   const port = 9400 + Math.floor(Math.random() * 500), walkProfile = `${profile}-walk-${process.pid}`;   /* its own profile: a browser left from another run cannot swallow this one */
   /* a browser can hold its profile for a moment after it has closed: folders left by earlier runs are cleared here */
-  try { for (const d of readdirSync(tmpdir())) if (d.startsWith('nucifera-verify-profile-walk-') && join(tmpdir(), d) !== walkProfile) { try { rmSync(join(tmpdir(), d), { recursive: true, force: true }); } catch { /* still in use by another run */ } } } catch { /* no access to the temp folder */ }
+  try { for (const d of readdirSync(tmpdir())) if (/^nucifera-verify-profile-(walk|dump)-/.test(d) && join(tmpdir(), d) !== walkProfile) { try { rmSync(join(tmpdir(), d), { recursive: true, force: true }); } catch { /* still in use by another run */ } } } catch { /* no access to the temp folder */ }
   const child = spawn(browser, ['--headless=new', '--no-first-run', '--no-default-browser-check', '--hide-scrollbars', '--force-device-scale-factor=1',
     '--enable-unsafe-swiftshader', '--disable-background-timer-throttling', '--disable-renderer-backgrounding', '--disable-backgrounding-occluded-windows', `--remote-debugging-port=${port}`, `--user-data-dir=${walkProfile}`, '--window-size=1440,900', 'about:blank'], { stdio: 'ignore' });
   let page, helper; const results = [];
@@ -244,7 +280,7 @@ async function walkPage(pageUrl, walkWidths, landing, each) {
 
 const report = { target, browser, when: new Date().toISOString(), shots: [], probe: [], pageWarn: [], pageFail: [], fail: 0, warn: 0, mode: 'frame' };
 let screens = [];
-if (!isUrl) { try { screens = JSON.parse(pre(dump({ list: 1 }), 'ui-screens') || '[]'); } catch { screens = []; } }
+if (!isUrl) { const listed = pre(await dump({ list: 1 }), 'ui-screens'); try { screens = JSON.parse(listed || '[]'); } catch { screens = []; } }
 
 if (!screens.length) {
   report.mode = 'page';
@@ -252,6 +288,7 @@ if (!screens.length) {
     report.shots.push(frameShot({}, w, HEIGHT[w] || 900, join(out, `page-${w}.png`)));
     report.shots.push(frameShot({}, w, LONG, join(out, `page-${w}-long.png`)));
   }
+  if (args.includes('--landing')) report.shots.push(frameShot({}, 1400, 800, join(out, 'page-1400x800.png')));   /* a lower window: is the hook still inside the first screen? */
   for (const w of lightWidths) {
     report.shots.push(frameShot({ theme: 'light' }, w, HEIGHT[w] || 900, join(out, `page-${w}-light.png`)));
     report.shots.push(frameShot({ theme: 'light' }, w, LONG, join(out, `page-${w}-light-long.png`)));
@@ -280,7 +317,8 @@ if (!screens.length) {
     if (report.walkNote && args.includes('--landing')) { report.warn++; report.walkNote = 'WARN ' + report.walkNote + ' The landing checks (empty screens, motion, layout faults) were skipped: run it again.'; }
   }
   report.note = args.includes('--landing')
-    ? 'page-<width>.png is the first screen with motion reduced; walk-<width>-NN.png are the screens in real time; each-<n>-*.png (with --each) are the blocks one by one; -long.png is a tall view where blocks sized in vh look stretched.'
+    ? 'page-<width>.png is the first screen with motion reduced (page-1400x800.png: the same on a lower window); walk-<width>-NN.png are the screens in real time, so a counting figure or a drawing chart may be caught midway; each-<n>-*.png (with --each) are the blocks one by one; -long.png is a tall view where blocks sized in vh look stretched. ' +
+      'Thresholds: a screen with detail on under 15 % of it is nearly empty, under 24 % sparse, under 20 % thin; a first screen (or a block) where under 0.3 % changes in three seconds stands still.'
     : 'No frame.js screens found: no layout measurements. page-<width>.png is the first screen; walk-<width>-NN.png are the screens in real time; ' +
       '-long.png is the page in a tall view (--long, 9000px by default) (sections sized in vh look stretched there, blank space after the footer is outside the page). ' +
       'The light shots need the page to read ?theme=light. Build app mockups from assets/frame.html to get measurements.';
@@ -290,7 +328,7 @@ if (!screens.length) {
     for (const w of lightWidths) report.shots.push(shot({ shot: id, w, theme: 'light' }, w, HEIGHT[w] || 844, join(out, `${id}-${w}-light.png`)));
   }
   for (const theme of ['dark', 'light']) {
-    const raw = pre(dump({ probe: 1, theme }), 'ui-probe');
+    const raw = pre(await dump({ probe: 1, theme }), 'ui-probe');
     if (!raw) { report.probe.push({ theme, error: 'probe did not finish (is probe.js next to frame.js?)' }); report.fail++; continue; }
     const p = JSON.parse(raw);
     for (const s of p.screens) { report.fail += s.fail.length; report.warn += s.warn.length; report.probe.push({ theme, ...s }); }
@@ -303,7 +341,7 @@ md.push(`**${report.fail} FAIL · ${report.warn} WARN**`, '');
 if (report.page) md.push(`Page text: ${report.page.words} words`, ...report.pageFail.map(w => `- FAIL ${w}`), ...report.pageWarn.map(w => `- WARN ${w}`), '');
 if (report.walkNote) md.push(report.walkNote, '');
 for (const r of report.walk || []) md.push(`## Walk · ${r.width}x${r.height} · first screen: ${r.motion} % of it moves`,
-  ...r.screens.map(s => `- screen ${s.n}: detail on ${s.busy} %, ${s.words} words, ${s.objects} things shown`), ...(r.each || []).map(e => `- block ${e.n}: ${e.motion} % of it moves (each-${e.n}-motion-1..3.png, each-${e.n}-still.png)`), ...r.fail.map(f => `- FAIL ${f}`), ...r.warn.map(w => `- WARN ${w}`), '');
+  ...r.screens.map(s => `- screen ${s.n}: detail on ${s.busy} %, ${s.words} words, ${s.objects} media (img, video, canvas, svg)`), ...(r.each || []).map(e => `- block ${e.n}: ${e.motion} % of it moves (each-${e.n}-motion-1..3.png, each-${e.n}-still.png)`), ...r.fail.map(f => `- FAIL ${f}`), ...r.warn.map(w => `- WARN ${w}`), '');
 for (const s of report.probe) {
   if (s.error) { md.push(`- FAIL ${s.theme}: ${s.error}`); continue; }
   md.push(`## ${s.id} · ${s.theme} · ${s.size}`, `min contrast ${s.stats.minContrast} · accent places ${s.stats.accentPlaces} · glass ${s.stats.glass} · fonts ${s.stats.fonts.join(', ')}`);
