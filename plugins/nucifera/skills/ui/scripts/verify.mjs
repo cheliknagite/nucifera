@@ -14,7 +14,7 @@
 // Writes <out>/report.md and <out>/report.json. Exit code 1 when anything FAILs.
 
 import { execFileSync, spawn } from 'node:child_process';
-import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir, platform, cpus, setPriority, constants as osConstants } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
@@ -150,6 +150,8 @@ const SETTLE = `(async () => { const t0 = performance.now();
 
 async function walkPage(pageUrl, walkWidths, landing, each) {
   const port = 9400 + Math.floor(Math.random() * 500), walkProfile = `${profile}-walk-${process.pid}`;   /* its own profile: a browser left from another run cannot swallow this one */
+  /* a browser can hold its profile for a moment after it has closed: folders left by earlier runs are cleared here */
+  try { for (const d of readdirSync(tmpdir())) if (d.startsWith('nucifera-verify-profile-walk-') && join(tmpdir(), d) !== walkProfile) { try { rmSync(join(tmpdir(), d), { recursive: true, force: true }); } catch { /* still in use by another run */ } } } catch { /* no access to the temp folder */ }
   const child = spawn(browser, ['--headless=new', '--no-first-run', '--no-default-browser-check', '--hide-scrollbars', '--force-device-scale-factor=1',
     '--enable-unsafe-swiftshader', '--disable-background-timer-throttling', '--disable-renderer-backgrounding', '--disable-backgrounding-occluded-windows', `--remote-debugging-port=${port}`, `--user-data-dir=${walkProfile}`, '--window-size=1440,900', 'about:blank'], { stdio: 'ignore' });
   let page, helper; const results = [];
@@ -228,9 +230,14 @@ async function walkPage(pageUrl, walkWidths, landing, each) {
       await page.send('Emulation.setEmulatedMedia', { features: [] });
     }
   } finally {
-    if (page) page.close(); if (helper) helper.close(); child.kill();
+    /* close the whole browser: asking it first, then ending its process tree. Ending only the first process leaves
+       its renderers running, hidden, after every check */
+    try { if (page) await Promise.race([page.send('Browser.close'), sleep(1500)]); } catch { /* already gone */ }
+    if (page) page.close(); if (helper) helper.close();
+    if (platform() === 'win32') { try { execFileSync('taskkill', ['/PID', String(child.pid), '/T', '/F'], { stdio: 'ignore', timeout: 10000 }); } catch { /* it has closed by itself */ } }
+    child.kill();
     await new Promise(r => { if (child.exitCode !== null || child.signalCode) return r(); child.once('exit', r); setTimeout(r, 3000); });
-    try { rmSync(walkProfile, { recursive: true, force: true }); } catch { /* the browser may still hold it; the system clears the temp folder */ }
+    try { rmSync(walkProfile, { recursive: true, force: true, maxRetries: 8, retryDelay: 300 }); } catch { /* the browser may still hold it; the system clears the temp folder */ }
   }
   return results;
 }
