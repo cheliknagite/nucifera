@@ -1,10 +1,12 @@
 <!doctype html>
 <!-- nucifera landing starter (the landing skill, references/parts.md).
-     Copy to .design/ together with tokens.css, kit.css, motion.js (from the ui skill) and landing.css, scene.js.
+     Copy to .design/ together with tokens.css, kit.css, motion.js (from the ui skill) and landing.css, scene.js, backdrops.js.
      It is a catalogue of working parts, filled with one invented product so that every part can be seen alive.
      Keep the mechanics; replace the subject: the hook, the scene's data and look, the product views, the words, the colours.
      Every block that still shows the invented product carries data-example. Remove the attribute when the block shows
-     the real product; delete the blocks the page plan does not use. verify.mjs fails a landing with an example left in it. -->
+     the real product; delete the blocks the page plan does not use. verify.mjs fails a landing with an example left in it.
+     Every part has three pieces under one name: its styles (/* ---- name), its markup (<!-- ==== name) and its script
+     (/* ---- name). Search for the name: backdrop, first screen, comparison, stage, close-up, statement, band, steps, plans, final call. -->
 <html lang="en" data-theme="dark">
 <head>
 <meta charset="utf-8">
@@ -17,7 +19,7 @@
 <style>
 /* ---- the product's colours (in a real project: .design/brand.css). Up to three, from the subject, named by role ---- */
 :root { --leaf: #8fd66a; --leaf-ink: #10200a; --frost: #7db7ff; --soil: #2b2218;
-  --obj: var(--leaf); --obj-ink: var(--leaf-ink); --cta-bg: var(--leaf); --cta-fg: var(--leaf-ink); --stage-tone: #17240f; --stage-x: 24%; }
+  --obj: var(--leaf); --obj-ink: var(--leaf-ink); --cta-bg: var(--leaf); --cta-fg: var(--leaf-ink); }
 html { background: var(--bg-0); } body { margin: 0; }
 .lp-mark { flex: none; width: 22px; height: 22px; border-radius: 6px; background: linear-gradient(var(--leaf) 0 52%, #a9713f 52% 100%); }
 .btn { text-decoration: none; }
@@ -180,6 +182,10 @@ html { background: var(--bg-0); } body { margin: 0; }
 </head>
 <body class="app">
 
+<main>
+<!-- ============ backdrop one: a simple world. The garden at night stands behind the first screen and the section after
+     it, and opens up as the page scrolls. The hook's columns stand on its ground ============ -->
+<div class="backdrop" data-backdrop="world">
 <!-- ============ first screen: header, the hook (figure + nights under a living curve), headline, one sentence, one action,
      and the product as one real moment of use, set in type: no interface boxes on this screen ============ -->
 <section class="first stage" data-nights data-example="hero">
@@ -203,7 +209,6 @@ html { background: var(--bg-0); } body { margin: 0; }
   </div>
 </section>
 
-<main>
 <!-- ============ comparison: the routine the product removes; the heading is the takeaway ============ -->
 <section class="section" data-example="comparison">
   <div class="wrap">
@@ -215,6 +220,8 @@ html { background: var(--bg-0); } body { margin: 0; }
     <p class="caption">Leeds, 29 April – 19 May: four frost nights and the planting day. Example</p>
   </div>
 </section>
+
+</div>
 
 <!-- ============ stage: the real product at a readable size, replaying one scenario ============ -->
 <section class="section" id="how" data-example="product demo">
@@ -285,6 +292,9 @@ html { background: var(--bg-0); } body { margin: 0; }
   </div>
 </section>
 
+<!-- ============ backdrop two: a plan of the product's world. The plot from above, in thin lines, behind the steps and the
+     plans; the scroll moves the eye across it ============ -->
+<div class="backdrop" data-backdrop="plan">
 <!-- ============ steps rail: how it works, each step with its own small object ============ -->
 <section class="section" data-example="steps">
   <div class="wrap">
@@ -327,10 +337,12 @@ html { background: var(--bg-0); } body { margin: 0; }
   </div>
 </section>
 
+</div>
+
 <!-- ============ final call: an object, one sentence, one action ============ -->
 <section class="section" id="get" data-final data-example="final call">
   <div class="wrap">
-    <div class="final stage reveal" data-nights style="--stage-x:50%;--stage-y:24%">
+    <div class="final stage reveal" data-nights>
       <h2 class="t-section">Find out when your seedlings can go out</h2>
       <a class="btn btn--primary btn--lit" href="#">Download for free</a>
       <p class="lp-terms">Free for one plot. An example page</p>
@@ -350,6 +362,7 @@ html { background: var(--bg-0); } body { margin: 0; }
 
 <script src="motion.js"></script>
 <script src="scene.js"></script>
+<script src="backdrops.js"></script>
 <script>
 (() => {
   /* ---- the example story, the same everywhere on the page: Leeds, 21 nights from 29 April ---- */
@@ -368,7 +381,7 @@ html { background: var(--bg-0); } body { margin: 0; }
   const LEAF_A = new Path2D('M17 24C8 24 4 18 3 10c8 0 14 4 14 14z'), LEAF_B = new Path2D('M17 18c0-9 5-14 14-15 0 9-5 15-14 15z');   /* the sprout's two leaves */
   const FONT = 'Geist, system-ui, sans-serif';
 
-  /* ---- the hook: 21 nights as columns standing on the zero line, a curve over them; a cursor walks from today to the day
+  /* ---- first screen, the hook: 21 nights as columns standing on the zero line, a curve over them; a cursor walks from today to the day
      planting is safe, and the product speaks at the two moments that matter. A pure function of t:
      city = floor(t / CYCLE), the walk = t % CYCLE. The final call mounts the same scene without the figure and the message. ---- */
   function hero(sec) {
@@ -437,6 +450,14 @@ html { background: var(--bg-0); } body { margin: 0; }
     } });
   }
   document.querySelectorAll('[data-nights]').forEach(hero);
+
+  /* ---- backdrops: what stands behind the text is about the product (references/world.md, section 3). The drawings are
+     in backdrops.js; here they are tied to the page: the world's horizon follows the hook, the plan stays calm under text ---- */
+  document.querySelectorAll('[data-backdrop="world"]').forEach(box => { const hook = box.querySelector('.lp-season');
+    nuScene.backdrop(box, { draw: nuBackdrops.nightGarden({ horizon: () => { const b = hook.getBoundingClientRect(); return b.top + b.height * .55; } }) }); });
+  document.querySelectorAll('[data-backdrop="plan"]').forEach(box => {
+    const labels = { house: 'house', path: 'path', beds: 'beds 1–4, 1.2 × 6 m', greenhouse: 'greenhouse 3 × 6 m', tree1: 'apple', tree2: 'pear', tree3: 'plum', barrel: 'barrel 200 l', compost: 'compost', rows: 'beds 5–10', scale: '5 m' };
+    nuScene.backdrop(box, { draw: nuBackdrops.gardenPlan({ labels, quiet: () => box.querySelectorAll('.section-top, .steps > *, .lp-cost > *') }) }); });
 
   /* ---- comparison: 21 evenings by hand, 5 alerts with the product (the same nights as the hook's first city) ---- */
   const ICON = { look: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="7" cy="7" r="4.2"/><path d="M10.2 10.2 14 14"/></svg>',

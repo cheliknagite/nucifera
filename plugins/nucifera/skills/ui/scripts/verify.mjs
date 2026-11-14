@@ -2,21 +2,30 @@
 // nucifera verify: screenshots + measurements for HTML mockups, with no npm dependencies.
 // Uses an installed Chrome, Edge or Chromium in headless mode.
 //
-//   node verify.mjs <page.html | http://url> [--out <dir>] [--widths 360,390,430] [--light 390 | none] [--landing] [--walk off] [--browser <path>]
+//   node verify.mjs <page.html | http://url> [--out <dir>] [--widths 360,390,430] [--light 390 | none] [--landing] [--each <selector>] [--walk off] [--browser <path>]
 //
 // Pages built from assets/frame.html: every screen is shot at each width in the dark theme and at --light widths
 // in the light theme, and probe.js measures each screen. Other pages (landings) and URLs: still shots (the first
 // screen and a long view per width, the light theme through ?theme=light) and a walk in real time, screen by screen,
 // at 1440 and 390: detail on each screen, motion on the first one, layout faults, script errors. --landing fails a
 // nearly empty screen, a stretch of sparse ones, a still first screen, a page far over its word budget and blocks
-// still marked data-example from the starter page.
+// still marked data-example from the starter page. --each "[data-concept]" is for a file of several sketches: every
+// matching block is also seen on its own, three frames in real time and one still frame (each-<n>-*.png).
 // Writes <out>/report.md and <out>/report.json. Exit code 1 when anything FAILs.
 
 import { execFileSync, spawn } from 'node:child_process';
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
-import { tmpdir, platform } from 'node:os';
+import { tmpdir, platform, cpus, setPriority, constants as osConstants } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
+
+/* A quiet neighbour: the check and its browsers run at low priority and on a few cores (4 by default; the environment
+   variable NUCIFERA_VERIFY_JOBS changes it), so the person can keep working on the same machine. Child processes inherit both. */
+try { setPriority(osConstants.priority.PRIORITY_BELOW_NORMAL); } catch { /* not allowed here: run as it is */ }
+if (platform() === 'win32') {
+  const jobs = Math.max(1, Math.min(cpus().length, Number(process.env.NUCIFERA_VERIFY_JOBS) || 4));
+  try { execFileSync('powershell', ['-NoProfile', '-NonInteractive', '-Command', `(Get-Process -Id ${process.pid}).ProcessorAffinity = ${2 ** jobs - 1}`], { stdio: 'ignore', timeout: 20000 }); } catch { /* no PowerShell: low priority alone */ }
+}
 
 const args = process.argv.slice(2);
 const opt = (name, def) => { const i = args.indexOf('--' + name); return i >= 0 ? args[i + 1] : def; };
@@ -139,7 +148,7 @@ const SETTLE = `(async () => { const t0 = performance.now();
     await new Promise(r => setTimeout(r, 120)); }
   return 0; })()`;
 
-async function walkPage(pageUrl, walkWidths, landing) {
+async function walkPage(pageUrl, walkWidths, landing, each) {
   const port = 9400 + Math.floor(Math.random() * 500), walkProfile = `${profile}-walk-${process.pid}`;   /* its own profile: a browser left from another run cannot swallow this one */
   const child = spawn(browser, ['--headless=new', '--no-first-run', '--no-default-browser-check', '--hide-scrollbars', '--force-device-scale-factor=1',
     '--enable-unsafe-swiftshader', '--disable-background-timer-throttling', '--disable-renderer-backgrounding', '--disable-backgrounding-occluded-windows', `--remote-debugging-port=${port}`, `--user-data-dir=${walkProfile}`, '--window-size=1440,900', 'about:blank'], { stdio: 'ignore' });
@@ -197,6 +206,27 @@ async function walkPage(pageUrl, walkWidths, landing) {
       [...new Set(page.errors)].forEach(e => res.fail.push(`script error at ${w}px: ${e}`));
       results.push(res);
     }
+    if (each && results.length) {   /* a file of several sketches: each block on its own, moving and then still */
+      const w = walkWidths[0], h = HEIGHT[w] || 900, res = results[0], q = `document.querySelectorAll(${JSON.stringify(each)})`;
+      const go = i => page.evaluate(`${q}[${i}].scrollIntoView({ block: 'start' }); 0`);
+      const save = (name, b64) => { const file = join(out, name); writeFileSync(file, Buffer.from(b64, 'base64')); report.shots.push(file); };
+      await page.send('Emulation.setDeviceMetricsOverride', { width: w, height: h, deviceScaleFactor: 1, mobile: false });
+      await page.send('Page.navigate', { url: pageUrl }); await sleep(2000);
+      const count = Math.min(6, await page.evaluate(`${q}.length`)), still = await page.evaluate(`document.documentElement.dataset.hook === 'still'`);
+      res.each = [];
+      if (!count) res.warn.push(`--each: nothing on the page matches ${each}`);
+      for (let i = 0; i < count; i++) {
+        await go(i); await sleep(2200);
+        let moved = 0;
+        for (let k = 0; k < 3; k++) { if (k) await sleep(1500); const f = await grab(), m = await pix(f, 'each' + i); if (m.moved != null) moved = Math.max(moved, m.moved); save(`each-${i + 1}-motion-${k + 1}.png`, f); }
+        res.each.push({ n: i + 1, motion: moved });
+        if (landing && moved < 0.3 && !still) res.fail.push(`block ${i + 1} of ${each}: nothing moves on it (${moved} % of it changed in three seconds)`);
+      }
+      await page.send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'reduce' }] });
+      await page.send('Page.navigate', { url: pageUrl }); await sleep(1800);
+      for (let i = 0; i < count; i++) { await go(i); await sleep(500); save(`each-${i + 1}-still.png`, await grab()); }
+      await page.send('Emulation.setEmulatedMedia', { features: [] });
+    }
   } finally {
     if (page) page.close(); if (helper) helper.close(); child.kill();
     await new Promise(r => { if (child.exitCode !== null || child.signalCode) return r(); child.once('exit', r); setTimeout(r, 3000); });
@@ -237,14 +267,16 @@ if (!screens.length) {
     if (typeof WebSocket !== 'function') report.walkNote = 'The walk needs Node 22 or newer: only still screenshots were taken.';
     else try {
       const ww = [1440, 390].filter(w => pageWidths.includes(w));
-      report.walk = await walkPage(base, ww.length ? ww : [pageWidths[0]], args.includes('--landing'));
+      report.walk = await walkPage(base, ww.length ? ww : [pageWidths[0]], args.includes('--landing'), opt('each'));
       for (const r of report.walk) { report.fail += r.fail.length; report.warn += r.warn.length; }
     } catch (e) { report.walkNote = 'The walk did not run: ' + e.message; }
     if (report.walkNote && args.includes('--landing')) { report.warn++; report.walkNote = 'WARN ' + report.walkNote + ' The landing checks (empty screens, motion, layout faults) were skipped: run it again.'; }
   }
-  report.note = 'No frame.js screens found: no layout measurements. page-<width>.png is the first screen; walk-<width>-NN.png are the screens in real time; ' +
-    '-long.png is the page in a tall view (--long, 9000px by default) (sections sized in vh look stretched there, blank space after the footer is outside the page). ' +
-    'The light shots need the page to read ?theme=light. Build app mockups from assets/frame.html to get measurements.';
+  report.note = args.includes('--landing')
+    ? 'page-<width>.png is the first screen with motion reduced; walk-<width>-NN.png are the screens in real time; each-<n>-*.png (with --each) are the blocks one by one; -long.png is a tall view where blocks sized in vh look stretched.'
+    : 'No frame.js screens found: no layout measurements. page-<width>.png is the first screen; walk-<width>-NN.png are the screens in real time; ' +
+      '-long.png is the page in a tall view (--long, 9000px by default) (sections sized in vh look stretched there, blank space after the footer is outside the page). ' +
+      'The light shots need the page to read ?theme=light. Build app mockups from assets/frame.html to get measurements.';
 } else {
   for (const id of screens) {
     for (const w of widths) report.shots.push(shot({ shot: id, w, theme: 'dark' }, w, HEIGHT[w] || 844, join(out, `${id}-${w}-dark.png`)));
@@ -264,7 +296,7 @@ md.push(`**${report.fail} FAIL · ${report.warn} WARN**`, '');
 if (report.page) md.push(`Page text: ${report.page.words} words`, ...report.pageFail.map(w => `- FAIL ${w}`), ...report.pageWarn.map(w => `- WARN ${w}`), '');
 if (report.walkNote) md.push(report.walkNote, '');
 for (const r of report.walk || []) md.push(`## Walk · ${r.width}x${r.height} · first screen: ${r.motion} % of it moves`,
-  ...r.screens.map(s => `- screen ${s.n}: detail on ${s.busy} %, ${s.words} words, ${s.objects} things shown`), ...r.fail.map(f => `- FAIL ${f}`), ...r.warn.map(w => `- WARN ${w}`), '');
+  ...r.screens.map(s => `- screen ${s.n}: detail on ${s.busy} %, ${s.words} words, ${s.objects} things shown`), ...(r.each || []).map(e => `- block ${e.n}: ${e.motion} % of it moves (each-${e.n}-motion-1..3.png, each-${e.n}-still.png)`), ...r.fail.map(f => `- FAIL ${f}`), ...r.warn.map(w => `- WARN ${w}`), '');
 for (const s of report.probe) {
   if (s.error) { md.push(`- FAIL ${s.theme}: ${s.error}`); continue; }
   md.push(`## ${s.id} · ${s.theme} · ${s.size}`, `min contrast ${s.stats.minContrast} · accent places ${s.stats.accentPlaces} · glass ${s.stats.glass} · fonts ${s.stats.fonts.join(', ')}`);

@@ -8,20 +8,20 @@ A first screen reaches when three layers meet:
 
 1. **The idea**: the hook (`hooks.md`).
 2. **A living scene from the subject** (`world.md`): under the figure, the coming nights as one curve over a frost zone, a cursor walking to the safe day, a sprout rising there.
-3. **Depth and material**: the screen is a lit space with objects in it, not a flat black sheet with flat shapes.
+3. **A place and material**: behind the text stands the product's world, drawn quietly (the backdrop, `world.md`, section 3), and the hero objects have material. Not a flat black sheet, and not a light effect.
 
 One layer alone reads as thin, whichever it is. Build all three already in the sketch, roughly.
 
-## 2. Depth and material
+## 2. A place and material
 
-The recipe is ready as classes (`parts.md`, section 3): `.stage`, `.solid`, `.cast`, `.tile`, `.btn--lit`. Set the hues with `--obj`, `--obj-ink`, `--stage-tone`, `--stage-x` and `--stage-y`.
+The place is a backdrop about the product (`world.md`, section 3). The material is ready as classes (`parts.md`, section 3): `.solid`, `.cast`, `.tile`, `.btn--lit`; set the hues with `--obj` and `--obj-ink`.
 
 Rules of the material:
 
 - One hue per object, from lighter to darker. Never two hues in one object, never a rainbow.
 - Shadows are dark, never coloured. No glow around text, no neon.
 - Light comes from one side for everything on the screen (in the classes, from the top left).
-- The background is never the flat canvas on a first screen, and never a coloured cloud: a wide dark tone of the subject's own colour, darkest at the edges.
+- The background is never a light effect. A coloured glow behind the hero object, a vignette, a light from above and an even dark tint were shown side by side and all rejected as generated-looking; so was the flat canvas, and so was a ruled grid of the product's calendar. What reached was the product's world itself.
 - This is material for a landing's first screen, its hero objects and the final call. App screens keep the quiet rules of the `ui` skill; rows 2 to 4 of its refusals still describe decoration there.
 
 ## 3. The product on the first screen: a moment of use, and no boxes
@@ -30,7 +30,8 @@ Three studies led here. A boxed card of label and value rows did not reach: it r
 
 So on the first screen:
 
-- **Nothing is an interface box.** No cards, no tiles, no chips with outlines. The only raised object is the main action.
+- **Nothing stands beside the hook as an interface box.** No cards, no tiles, no chips with outlines added next to the scene. The only raised object is the main action.
+- **When the hook is the live product, its interface is the scene.** It fills the stage at full size with the product's own content: the lessons of a week as blocks in a timetable, a conversation set large in type without chat bubbles. No window frame, no panel and no shadow around it, and nothing shrunk into a card. Both of these were liked in review; a small product widget in a box beside the copy was not.
 - **The data is drawn in the scene.** In the study: the nights as columns standing on a zero line under the curve, their dates and temperatures set as plain type under them, the day that matters as the one solid column.
 - **The product speaks in type.** One line under the action, separated by a hairline: the product's mark, a time, one or two sentences in its own words. It answers the scene's events (a message at the first frost night, another on the day planting is safe) and each message stays long enough to read, two seconds and more.
 - Under reduced motion the last message stands.

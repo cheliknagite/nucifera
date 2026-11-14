@@ -1,5 +1,5 @@
 /* nucifera: scenes and moments for landing pages (references/world.md, references/parts.md). No dependencies.
-   window.nuScene = { canvas, layers, stops, play,                    scenes: they live all the time
+   window.nuScene = { canvas, backdrop, layers, stops, play,          scenes: they live all the time
                       words, count, each, chart, assemble, tied, spot,  moments: once, as a block comes into view
                       seen, rand, ease, out, lerp, clamp, calm, ink }
 
@@ -67,6 +67,34 @@
       box.addEventListener('pointerleave', () => { aim.x = aim.y = 0; });
     }
     return { start, stop, redraw: rest, get time() { return t; }, set time(v) { t = v; if (!on) rest(); } };
+  }
+
+  /* A backdrop about the product, drawn in code and standing behind a stretch of the page (.backdrop, landing.css).
+     box: the .backdrop element that wraps the first screen (and what follows it, while the backdrop should stay).
+       draw(ctx, t, w, h, env)  as in canvas, plus env.u: how far the box has scrolled, 0 to 1, so the backdrop opens up
+                                as the page moves; env.calm(el, pad, alpha): lays a soft patch of the canvas colour under
+                                a block of text, so words never sit on detail
+     Two kinds were liked in review: a simple world (a place seen from the ground) and a plan of the product's world
+     in thin lines. assets/backdrops.js holds one of each. */
+  function backdrop(box, opt) {
+    let sc = box.querySelector(':scope > .backdrop__scene');
+    if (!sc) { sc = document.createElement('div'); sc.className = 'backdrop__scene scene'; sc.setAttribute('aria-hidden', 'true'); box.prepend(sc); }
+    const hex = ink(box, '--bg-0').replace('#', ''), n = parseInt(hex.length === 3 ? hex.replace(/./g, '$&$&') : hex, 16);
+    const rgb = Number.isNaN(n) ? '7,6,11' : `${n >> 16 & 255},${n >> 8 & 255},${n & 255}`, env = { u: 0, calm: null };
+    const api = canvas(sc, { still: opt.still == null ? 3 : opt.still, from: opt.from, draw(ctx, t, w, h) {
+      const r = box.getBoundingClientRect(); env.u = clamp(-r.top / Math.max(1, r.height - h));
+      env.calm = (el, pad = 40, a = .8) => {
+        const b = el.getBoundingClientRect(); if (b.bottom < -pad || b.top > h + pad || !b.width) return;
+        const rx = b.width / 2 + pad, ry = b.height / 2 + pad;
+        ctx.save(); ctx.translate(b.left + b.width / 2, b.top + b.height / 2); ctx.scale(1, ry / rx);
+        const g = ctx.createRadialGradient(0, 0, rx * .62, 0, 0, rx); g.addColorStop(0, `rgba(${rgb},${a})`); g.addColorStop(1, `rgba(${rgb},0)`);
+        ctx.fillStyle = g; ctx.beginPath(); ctx.arc(0, 0, rx, 0, 6.3); ctx.fill(); ctx.restore();
+      };
+      opt.draw(ctx, t, w, h, env);
+    } });
+    let raf = 0;   /* with motion reduced nothing animates, yet the picture still has to follow the scroll */
+    addEventListener('scroll', () => { if (!calm() && !raf) raf = requestAnimationFrame(() => { raf = 0; api.redraw(); }); }, { passive: true });
+    return api;
   }
 
   /* A world backdrop from layered artwork (.world > .world__layer, landing.css).
@@ -226,5 +254,5 @@
       const r = el.getBoundingClientRect(); el.style.setProperty('--mx', (e.clientX - r.left) + 'px'); el.style.setProperty('--my', (e.clientY - r.top) + 'px'); }, { passive: true });
   }
 
-  window.nuScene = { canvas, layers, stops, play, words, count, each, chart, assemble, tied, spot, seen, rand, ease, out, lerp, clamp, calm, ink };
+  window.nuScene = { canvas, backdrop, layers, stops, play, words, count, each, chart, assemble, tied, spot, seen, rand, ease, out, lerp, clamp, calm, ink };
 })();

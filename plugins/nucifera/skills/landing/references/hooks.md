@@ -23,6 +23,8 @@ Every category has a page everyone builds. For most products: a headline on the 
 
 Two types may combine (an instrument scene around a live product), but one leads; say which.
 
+**An instrument from the product's data is not a product board.** A board is the app's own screen shown as it is: panels, widgets, a sidebar, several things at once; on a dark page it reads as one more dashboard. An instrument is one object of the subject drawn across the whole stage with real names, times and numbers, and it works: a tutor's week as a timetable where a lesson moves to a free slot, a season as one curve. If the sketch has more than one kind of panel, it is a board.
+
 ## 3. Find three concepts in the product
 
 1. List what the product's world holds: places, instruments, documents, characters, streams of data, the moment the product is used, the thing it saves the user from.
@@ -36,7 +38,7 @@ Example, a bot that takes coffee pre-orders: (live product) the barista's queue 
 
 ## 4. The sketch
 
-A sketch answers one question: is this the page? What it holds is listed in the skill's Step 2: the real headline and action, the hook at its real size with its main motion running, a telling still frame, the proposed colours, real or rebuilt product imagery, one neutral line under the screen. No other sections, no phone layout, no polish. Do not label the sketches by technique and do not say which you prefer until the user has looked.
+A sketch answers one question: is this the page? What it holds is listed in the skill's Step 2: the real headline and action, the hook at its real size with its main motion running, a backdrop about the product behind it, a telling still frame, the proposed colours, real or rebuilt product imagery, one neutral line under the screen. No other sections, no phone layout, no polish. Do not label the sketches by technique and do not say which you prefer until the user has looked.
 
 ## 5. Numbers from the measured pages
 

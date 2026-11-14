@@ -2,10 +2,9 @@
    The page's own classes keep the lp- prefix. Set per page, in .design/brand.css or on <body>:
      --obj                 the one hue of the hero object and of chosen tiles (the subject's lead colour)
      --obj-ink             text on that hue
-     --stage-tone          the dark tone of the lit screen, from the subject's palette
-     --stage-x, --stage-y  where the light sits: behind the hero object */
+     */
 :root { --gutter: clamp(20px, 4vw, 40px); --page: 1200px;
-  --obj: var(--fg-1); --obj-ink: #111113; --stage-tone: #1b1a26; --stage-x: 28%; --stage-y: 44%; }
+  --obj: var(--fg-1); --obj-ink: #111113; }
 
 .wrap { width: min(var(--page), 100% - 2 * var(--gutter)); margin-inline: auto; }
 
@@ -27,12 +26,9 @@
 @media (max-width: 760px) { .site-foot { grid-template-columns: repeat(2, minmax(0, 1fr)); } .site-foot > :first-child { grid-column: 1 / -1; } }
 
 /* ---------- material (references/finish.md): the first screen and its hero objects; app screens stay flat ---------- */
-/* a lit space: a wide dark tone of the subject's colour with the light behind the hero object, a grain, a vignette */
-.stage { position: relative; isolation: isolate; overflow: clip;
-  background: radial-gradient(90% 80% at var(--stage-x) var(--stage-y), var(--stage-tone) 0%, color-mix(in oklab, var(--stage-tone) 42%, var(--bg-0)) 42%, var(--bg-0) 78%); }
-.stage::before, .stage::after { content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none; }
-.stage::before { opacity: .07; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
-.stage::after { background: radial-gradient(120% 100% at 50% 40%, transparent 55%, rgb(0 0 0 / .5) 100%); }
+/* the stage: the first screen as a place. It carries no light effect of its own: what stands behind the text is a
+   backdrop about the product (.backdrop below), and depth comes from that world and from the objects' material */
+.stage { position: relative; isolation: isolate; overflow: clip; }
 :where(.stage > *) { position: relative; z-index: 2; }
 /* the hero object in type (a figure, a word): one hue from light to dark, a thin top highlight, a dark cast shadow */
 .solid { color: transparent; -webkit-background-clip: text; background-clip: text;
@@ -67,6 +63,12 @@
 .scene > canvas { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
 .scene__poster { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .scene.is-live > .scene__poster { visibility: hidden; }   /* the canvas has drawn: the poster steps back */
+/* a backdrop about the product behind a stretch of the page (nuScene.backdrop): its canvas stays in the window while
+   the content of .backdrop scrolls over it */
+.backdrop { position: relative; }
+.backdrop__scene { position: sticky; top: 0; z-index: 0; height: 100svh; pointer-events: none; }
+.backdrop__scene + * { margin-top: -100svh; }
+.backdrop > :not(.backdrop__scene) { position: relative; z-index: 1; }
 .world { position: relative; overflow: hidden; }
 .world__layer { position: absolute; inset: 0; background: 50% 100% / cover no-repeat; }
 .world__layer[data-drift] { right: auto; width: 200%; background-size: 50% 100%; background-repeat: repeat-x; background-position: 0 100%; will-change: transform; }
@@ -185,5 +187,5 @@
 
 /* final call: an object, one sentence, one action */
 .final { display: grid; justify-items: center; gap: var(--s-6); text-align: center; }
-.final.stage { padding: clamp(40px, 7vw, 96px) var(--gutter); border-radius: var(--r-xl); box-shadow: inset 0 0 0 1px var(--line-1); }   /* as a lit panel inside the page margins */
+.final.stage { padding: clamp(40px, 7vw, 96px) var(--gutter); border-radius: var(--r-xl); background: var(--bg-1); box-shadow: inset 0 0 0 1px var(--line-1); }   /* as a lit panel inside the page margins */
 .final .t-section { max-width: 720px; }

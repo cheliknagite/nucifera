@@ -4,11 +4,12 @@ Read this before the sketches and before the build. The fragile pieces of a land
 
 | File (in `assets/`) | What it is |
 |---|---|
-| `scene.js` | `window.nuScene`: runs canvas scenes, layered worlds, scroll stops and replaying demos by the contract of `world.md` |
+| `scene.js` | `window.nuScene`: runs canvas scenes, backdrops, layered worlds, scroll stops and replaying demos by the contract of `world.md`, and the landing moments |
 | `landing.css` | the material of `finish.md` as classes, the header and footer, the scene boxes, nine section compositions. Load it after `tokens.css` and `kit.css` |
 | `starter.html` | a whole landing built from these parts and filled with one invented product, so every part can be seen alive |
+| `backdrops.js` | the starter's two example backdrops: a simple world and a plan of the product's world |
 
-Copy all three into `.design/` next to `tokens.css`, `kit.css` and `motion.js`.
+Copy `landing.css` and `scene.js` into `.design/` next to `tokens.css`, `kit.css` and `motion.js` before the sketches; `starter.html` and `backdrops.js` join them at the build.
 
 ## 1. The starter page
 
@@ -18,8 +19,9 @@ Open it in a browser first: it shows what the parts do together. Then build from
 - Every block that still shows the invented product carries `data-example`. Remove the attribute when the block shows the real product; delete the blocks the page plan does not use. `verify.mjs --landing` fails a page with an example left in it.
 - The sections stand in the order of a visitor's questions (`page.md`). Take the compositions the plan names; a home page needs at least four different ones, not all nine.
 - The page's own classes keep the `lp-` prefix; the parts' classes have none.
-- Do not read `landing.css` and `scene.js` through: this file lists what they give. Read the starter in pieces: its head and first screen, then the sections the plan keeps.
-- Colours: set `--obj`, `--obj-ink`, `--cta-bg`, `--cta-fg`, `--stage-tone` and up to three subject colours named by role, in `.design/brand.css`.
+- Do not read `landing.css` and `scene.js` through: this file lists what they give. Read the starter in pieces. Every part of it has three pieces under one name: its styles (`/* ---- name`), its markup (`<!-- ==== name`) and its script (`/* ---- name`); search for the name. Start with "first screen", then take the sections the plan keeps.
+- The tokens you need without opening `tokens.css`: colours `--bg-0` to `--bg-3`, `--fg-1`, `--fg-2`, `--line-1` to `--line-3`; type `--font-sans`, `--t-hero`, `--t-section`, `--t-lead`, `--t-title`, `--t-body`, `--t-small`; space `--s-1` to `--s-8`, `--s-12`, `--s-16`; radius `--r-sm` to `--r-xl`; motion `--dur-exit`, `--dur-enter`, `--dur-moment`, `--ease-out`, `--ease-move`.
+- Colours: set `--obj`, `--obj-ink`, `--cta-bg`, `--cta-fg` and up to three subject colours named by role, in `.design/brand.css`.
 
 ## 2. Scenes: `nuScene`
 
@@ -37,6 +39,10 @@ nuScene.canvas(box, {            // box: the .scene element; a canvas is added i
 `canvas` keeps the contract for you: one canvas at a pixel ratio of 2 at most, a loop that runs only while the scene is on screen in a visible tab, one frame at `still` under reduced motion, on weak devices and before the start, a redraw on resize. Because `draw` is a pure function of `t`, the still frame and every screenshot are exact. Take randomness from `nuScene.rand(seed)`, so the scene is the same on every load. Things outside the canvas that follow the scene (a lit tile, a label, a notification) are updated from `draw`, and only when their state changes.
 
 ```js
+nuScene.backdrop(box, {          // what stands behind the text: box is the .backdrop that wraps the first screen
+  draw(ctx, t, w, h, env) {      //   env.u: the scroll through the box, 0 to 1; env.calm(el): a calm zone under text
+  },
+});
 nuScene.layers(box)              // a world from artwork: .world > .world__layer
                                  //   data-depth="0…1": how far a layer leans after the mouse
                                  //   data-drift="90": seconds per pass for a strip that tiles sideways
@@ -69,11 +75,12 @@ Stronger than an app screen allows, so they live here and not in the `ui` kit. E
 
 Quiet by choice: buttons and links answer with a little more light and a leaning arrow (`.btn .arrow`), plain text blocks fade up with `nuMotion.reveal`, and text is never tied to the scroll.
 
-## 3. Material: the first screen as a lit space
+## 3. Material and place
 
 | Class | What it makes |
 |---|---|
-| `.stage` | the screen (or a panel) as a lit space: a wide dark tone of the subject's colour with the light behind the hero object, a grain, a vignette. `--stage-tone`, `--stage-x`, `--stage-y` |
+| `.stage` | the first screen as a place: it clips and stacks its content; it has no light of its own, the backdrop stands behind it |
+| `.backdrop` | wraps a stretch of the page that shares one backdrop; `nuScene.backdrop` puts the canvas in it |
 | `.solid` | the hero object in type (a figure, a word): one hue from light to dark, a thin top highlight, a dark cast shadow. `--obj` |
 | `.cast` | the contact shadow under an object standing on the stage |
 | `.tile`, `.tile.is-chosen` | small raised surfaces; the chosen one lifted and filled with `--obj` |
