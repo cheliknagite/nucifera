@@ -4,7 +4,9 @@
 
    window.nuMotion = { setTheme, menu, tooltips, dialog, sheet, toast, crossfade, swap, stagger, grow, collapse,
                        roll, shake, loading, reveal, hairline, ctaBar, haptic, onHaptic, ms,
-                       moments: calm, once, morph, arrive, draw, success, sheen, demo, genie } */
+                       slide, flash, count,
+                       moments: calm, once, morph, arrive, draw, success, sheen, demo, genie }
+   It also installs the press light for .tap surfaces. */
 (function () {
   const root = document.documentElement;
   const css = name => getComputedStyle(root).getPropertyValue(name).trim();
@@ -192,6 +194,16 @@
     panel.animate([{ opacity: 0 }, { opacity: 1 }], { duration: ms('--dur-exit'), easing: ease('--ease-out') });
   }
 
+  /* a sibling view (a tab, a segment) changes: the new content comes in from the side of the pressed tab, its first
+     block a little further than the rest. dir 1: the pressed tab is to the right of the old one; -1: to the left */
+  function slide(panel, update, dir) {
+    stop(panel); update();
+    if (!calm()) return;
+    Array.from(panel.children).slice(0, 8).forEach((el, i) => el.animate(
+      [{ opacity: 0, transform: `translateX(${(dir || 1) * px('--move-md') * (i ? 1.8 : 2.8)}px)` }, { opacity: 1, transform: 'none' }],
+      { duration: ms('--dur-moment') * .85, delay: i * 28, easing: ease('--ease-out'), fill: 'backwards' }));
+  }
+
   /* screen change with direction: dir 1 deeper (comes from the right), -1 back, 0 a sibling view (crossfade).
      Both screens are stacked in one positioned parent. A late finish never hides the screen now on top. */
   const onTop = new WeakMap();
@@ -206,11 +218,15 @@
       { duration: ms('--dur-enter'), easing: ease('--ease-out') });
   }
 
-  /* first show of a list: up to five rows rise one after another; the rest are there at once */
+  /* first show of a list: up to eight rows rise one after another, each row's picture or badge growing into place;
+     the rest are there at once. The whole arrival takes under a second */
   function stagger(items) {
-    Array.from(items).slice(0, 5).forEach((el, i) => el.animate(
-      [{ opacity: 0, transform: `translateY(${px('--move-sm')}px)` }, { opacity: 1, transform: 'none' }],
-      { duration: ms('--dur-enter'), delay: i * ms('--stagger'), easing: ease('--ease-out'), fill: 'backwards' }));
+    Array.from(items).slice(0, 8).forEach((el, i) => {
+      const o = { duration: ms('--dur-moment'), delay: i * ms('--stagger'), easing: ease('--ease-out'), fill: 'backwards' };
+      el.animate([{ opacity: 0, transform: `translateY(${px('--move-md') * 4 / 3}px)` }, { opacity: 1, transform: 'none' }], o);
+      const lead = el.querySelector('.row__thumb, .row__mark');
+      if (lead && calm()) lead.animate([{ transform: 'scale(.7)' }, { transform: 'none' }], Object.assign({}, o, { delay: o.delay + 70 }));
+    });
   }
 
   /* a new row (.grow > .grow__in) grows in; collapse removes one, and the rows around it follow */
@@ -364,9 +380,46 @@
   /* success, after the server confirmed: show the result with a .check-draw SVG in it, then call this:
      the block settles from 96 % and the success haptic fires. Once per flow, no confetti. */
   function success(block) {
-    if (calm()) { stop(block); block.animate([{ transform: 'scale(.96)' }, { transform: 'none' }], { duration: ms('--dur-moment') * 2 / 3, easing: ease('--ease-out') }); }
+    if (calm()) {
+      stop(block); block.animate([{ transform: 'scale(.96)' }, { transform: 'none' }], { duration: ms('--dur-moment') * 2 / 3, easing: ease('--ease-out') });
+      const edge = document.createElement('i'); edge.className = 'edge-run'; edge.setAttribute('aria-hidden', 'true');   /* one pass of light along the block's edge */
+      if (getComputedStyle(block).position === 'static') block.style.position = 'relative';
+      block.append(edge);
+      edge.animate([{ '--nu-a': '-90deg', opacity: 0 }, { opacity: 1, offset: .15 }, { opacity: 1, offset: .8 }, { '--nu-a': '270deg', opacity: 0 }],
+        { duration: ms('--dur-sheen'), delay: 250, easing: 'cubic-bezier(.4, 0, .2, 1)' }).finished.then(() => edge.remove(), () => edge.remove());
+    }
     haptic('success');
   }
+
+  /* the row an action has just changed lights up once in its status colour: kind 'ok' (default), 'warn' or 'err'.
+     Use it with nuMotion.roll for the number that changed */
+  function flash(el, kind) {
+    if (!calm()) return;
+    const i = document.createElement('i'); i.className = 'flash-run flash-run--' + (kind || 'ok'); i.setAttribute('aria-hidden', 'true');
+    if (getComputedStyle(el).position === 'static') el.style.position = 'relative';
+    el.style.isolation = 'isolate'; el.append(i);
+    i.animate([{ opacity: 0 }, { opacity: 1, offset: .25 }, { opacity: 0 }], { duration: ms('--dur-roll') * 1.5, easing: 'ease' }).finished.then(() => i.remove(), () => i.remove());
+  }
+
+  /* a total that has just arrived with its data counts up to its value, once: "$648", "27,400". Never on a value
+     the user is waiting to read during a task: there the number is simply there */
+  function count(el, duration) {
+    const text = el.textContent, m = text.match(/\d(?:[\d,\u00a0 ]*\d)?/);
+    if (!m || !calm()) return;
+    const to = parseInt(m[0].replace(/\D/g, ''), 10), sep = (m[0].match(/[,\u00a0 ]/) || [''])[0], dur = duration || ms('--dur-roll') * 1.5, t0 = performance.now();
+    const step = now => { const u = Math.min(1, (now - t0) / dur), n = Math.round(to * (1 - Math.pow(1 - u, 4)));
+      el.textContent = text.replace(m[0], sep ? String(n).replace(/\B(?=(\d{3})+(?!\d))/g, sep) : String(n)); if (u < 1 && el.isConnected) requestAnimationFrame(step); };
+    requestAnimationFrame(step);
+  }
+
+  /* the press light: a soft light where the finger or the pointer landed on a .tap surface. One listener for the page */
+  document.addEventListener('pointerdown', e => {
+    const el = e.target.closest && e.target.closest('.tap'); if (!el || !calm()) return;
+    const b = el.getBoundingClientRect(), ink = document.createElement('i'); ink.className = 'tap__ink'; ink.setAttribute('aria-hidden', 'true');
+    ink.style.left = (e.clientX - b.left) + 'px'; ink.style.top = (e.clientY - b.top) + 'px'; el.append(ink);
+    ink.animate([{ opacity: 0, transform: 'scale(.4)' }, { opacity: 1, transform: 'scale(1)', offset: .3 }, { opacity: 0, transform: 'scale(1.25)' }],
+      { duration: ms('--dur-roll'), easing: ease('--ease-out'), fill: 'forwards' }).finished.then(() => ink.remove(), () => ink.remove());
+  }, { passive: true });
 
   /* the main button (.btn--sheen) just became available: one pass of light */
   function sheen(btn) {
@@ -480,7 +533,7 @@
   }
 
   const api = { setTheme, menu, tooltips, dialog, sheet, toast, crossfade, swap, stagger, grow, collapse,
-    roll, shake, loading, reveal, hairline, ctaBar, haptic, onHaptic: null, ms,
+    roll, shake, loading, reveal, hairline, ctaBar, haptic, onHaptic: null, ms, slide, flash, count,
     calm, once, morph, arrive, draw, success, sheen, demo, genie, miniApp: false };
   window.nuMotion = api;
 })();

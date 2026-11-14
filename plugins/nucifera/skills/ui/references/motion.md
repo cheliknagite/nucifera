@@ -77,9 +77,9 @@ Exits take about two thirds of the entry. Never ease-in on interface motion. No 
 5. Anything that can be triggered again uses transitions, not keyframes: a transition reverses from where it is, keyframes restart.
 6. Animate `transform` and `opacity` only (height through `grid-template-rows`, as the kit does). Never `transition: all`; never width, height, top, margin, `box-shadow` or a blur radius.
 7. One focal point: nothing moves in two directions at once.
-8. Do not delay the payload: prices, totals, search results and the main content are there at once. App screens open straight into the task, with no load choreography.
-9. Sibling views (tabs, segments) change with a short crossfade; going deeper or back slides 12 px with direction.
-10. Stagger only on the first show of a list, at most five rows; never two staggered lists in one view.
+8. Do not hide the payload behind a wait: prices, totals and search results are on screen within a second. A list's first show may arrive row by row (rule 10); nothing else is choreographed on load.
+9. Sibling views (tabs, segments) come in from the side of the pressed tab (`nuMotion.slide`); going deeper or back slides 12 px with direction, and when a row has a picture or a badge it travels into the detail (`nuMotion.morph`).
+10. Stagger only on the first show of a list: up to eight rows, 50 ms apart, the whole arrival under a second; never two staggered lists in one view.
 11. Hover motion only where a real pointer exists: `@media (hover: hover) and (pointer: fine)`.
 12. Interruptible: a new action cancels the running animation; nothing waits for an animation to end.
 13. Motion is never the only signal: the state also shows in text, colour or an icon.
@@ -87,25 +87,27 @@ Exits take about two thirds of the entry. Never ease-in on interface motion. No 
 15. The theme switches without transitions (`nuMotion.setTheme`, or `.nu-no-tx` on `<html>` for two frames).
 16. Waiting: nothing for the first 200 ms; then a skeleton for at least 400 ms; past 2 s add progress; the result crossfades in (`nuMotion.loading`).
 
+App screens are not kept still. In a blind review of eight pairs the stronger variant won seven times: the list's first show, the press, the changed number, success, list to detail, tabs, loading. One stayed plain: the switch. So objects and results move with weight; small controls (switches, checkboxes) change state and nothing more.
+
 ## 4. Recipes
 
 CSS in `assets/kit.css`, behaviour in `assets/motion.js` (load it after the page; it exposes `window.nuMotion`).
 
 | Recipe | Use for | How | Numbers |
 |---|---|---|---|
-| Press and highlight | buttons, tappable rows, menu items | `.btn`, `.tap`, `.menu__item` | press 100 ms; highlight 0 in, 180 out |
+| Press and highlight | buttons, tappable rows and cards, menu items | `.btn`, `.tap`, `.menu__item`; a `.tap` surface presses in a little and a soft light opens where the finger landed (`motion.js` installs it) | press 100 ms; highlight 0 in, 180 out; the light 600 |
 | Menu, popover | sort, actions, pickers | `.pop.menu` > `.menu__item`, `nuMotion.menu(trigger, pop)` | 240 in from 95 % at the trigger, 180 out |
 | Tooltip | icon buttons, mouse and keyboard | `[data-tip]` > `.tip`, `nuMotion.tooltips()` | first after 400 ms, 180 in, 120 out; neighbours at once |
 | Dialog | confirmations | `.dialog` + `.scrim`, `nuMotion.dialog(el, scrim)`; `nudge()` on a blocked action | 240 in from 96 %, 180 out; nudge to 98 % |
 | Bottom sheet | filters and pickers on phones | `.sheet` > `.sheet__grab`, `nuMotion.sheet(el, scrim)` | 420 in on the spring, 240 out; a fast drag or one past 35 % closes it |
-| Selection | segmented controls, tabs | `.seg` > `.seg__pill` + `.seg__opt`; `.tabs` > `.tabs__tab` + `.tabs__ink`; set `--i`, `--n`; the panel with `nuMotion.crossfade` | 240 on the spring; panel 180 |
+| Selection | segmented controls, tabs | `.seg` > `.seg__pill` + `.seg__opt`; `.tabs` > `.tabs__tab` + `.tabs__ink`; set `--i`, `--n`; the panel with `nuMotion.slide(panel, update, dir)` | pill 240 on the spring; the panel's blocks 380, 28 apart, from the pressed side |
 | Toast | confirmations | `.toasts` container, `nuMotion.toast(container, html)` | 420 in from the top, 180 out; three at most; 4 s, waits while hovered |
-| New content | added and removed rows; a list's first show | `.grow` > `.grow__in`, `nuMotion.grow`, `nuMotion.collapse`, `nuMotion.stagger` | 240; stagger 50, five rows at most |
+| New content | added and removed rows; a list's first show | `.grow` > `.grow__in`, `nuMotion.grow`, `nuMotion.collapse`; `nuMotion.stagger(rows)` for the first show: rows rise, a `.row__thumb` or `.row__mark` grows into place | 240; first show 450 a row, 50 apart, eight rows at most |
 | Accordion | details, analysis sections | `.fold` > `.fold__head` (`.fold__chev`) + `.fold__body` > `.fold__in` > `.fold__content`; toggle `.open` | 240 |
-| Number change | prices, counters | `.roll`, `nuMotion.roll(el, text, dir)`; dir 1 up, -1 down; call it when the action ends | 600 (moment tempo); the old digit leaves in 360 |
-| Screen change | going deeper or back in an app | `nuMotion.swap(from, to, dir)`; screens stacked in one positioned parent | 240 in, 135 out, 12 px by direction |
-| Waiting | loading data | `.skeleton`, `nuMotion.loading(work, show, hide)` | thresholds 200 / 400 ms; progress after 2 s |
-| Success, error | results of actions | `.check-draw` (SVG with `pathLength="1"`) and `nuMotion.success(block)` (section 5); `nuMotion.shake(el)` plus the message | check 450; shake 4 px three times, 360 |
+| Number change | prices, counters, totals | `.roll`, `nuMotion.roll(el, text, dir)` when the action ends, with `nuMotion.flash(row)` on the row that changed; `nuMotion.count(el)` for a total that has just arrived with its data | roll 600 (the old digit leaves in 360); flash 900; count 900 |
+| Screen change | going deeper or back in an app | `nuMotion.morph(from, to, update)` when the row has a picture or a badge that the detail shows large; otherwise `nuMotion.swap(from, to, dir)`; screens stacked in one positioned parent | morph 450; swap 240 in, 135 out, 12 px by direction |
+| Waiting | loading data | `.skeletons` around the `.skeleton` blocks (one light passes over the set), `nuMotion.loading(work, show, hide)`; the result arrives with `nuMotion.stagger` and its total with `nuMotion.count` | thresholds 200 / 400 ms; progress after 2 s; the light 1100 a pass |
+| Success, error | results of actions | `.check-draw` (SVG with `pathLength="1"`) and `nuMotion.success(block)` (section 5): the block settles and one light runs along its edge; `nuMotion.shake(el)` plus the message | check 450; edge light 1100; shake 4 px three times, 360 |
 | Landing hero and scroll | landing pages only | `.rise` with `--i` per line; `nuMotion.reveal('.reveal')`; `.glassbar--quiet` + `nuMotion.hairline(bar)` | hero 840, 105 between lines; reveal 840, once |
 | Phone action bar | landing pages on phones | `.cta-bar` + `nuMotion.ctaBar(bar, heroButton, finalBlock)` | fades in and out in 180, no slide |
 
@@ -126,8 +128,8 @@ Rules:
 |---|---|---|---|
 | Shared element | a photo or object opens into its detail (a listing thumbnail into the card's hero) | `nuMotion.morph(from, to, update, { back, screen })`: one named pair travels, the rest of the screen changes plainly; only the latest call changes the screen; without View Transitions the new screen fades in | 450 there, about 340 back |
 | Signature once | the signature's first show in a session (a dot sliding to its place on a market ruler, a price history drawing itself) | `nuMotion.once(key, play)`; inside it `nuMotion.arrive(el, dx)` for the object, `nuMotion.draw(path, 150)` for an SVG line with `pathLength="1"`, `haptic('light')` when it lands | dot 700, line 800; later opens: in place, still |
-| Number after an action | a count or total that changes because of the user's action (results after a budget slider) | `.roll` and `nuMotion.roll` on `change`, not `input`; the label by the control updates at once | 600; only the changed digits move; never counts up by itself |
-| Success | a payment, a sent request, a saved brief, once the server confirmed | a `.check-draw` SVG in the result, then `nuMotion.success(block)`: the block settles from 96 % and the success haptic fires | circle 450, the mark 315 after 180; settle 300; no confetti |
+| Number after an action | a count or total that changes because of the user's action (a debt paid, results after a budget slider) | `.roll` and `nuMotion.roll` on `change`, not `input`, and `nuMotion.flash` on the row that caused it; the label by the control updates at once | 600; only the changed digits move; the row lights up once in its status colour |
+| Success | a payment, a sent request, a saved brief, once the server confirmed | a `.check-draw` SVG in the result, then `nuMotion.success(block)`: the block settles from 96 %, one light runs along its edge and the success haptic fires | circle 450, the mark 315 after 180; settle 300; edge light 1100, once; no confetti |
 | Main button sheen | the main button just became available (a plan chosen, a form now valid) | `.btn--sheen` on the button, `nuMotion.sheen(btn)` | one pass, 1100, white light |
 | Window genie from its source (websites only) | a window opened from an element on a desktop website (a link, a video cover, a list row, a card), or one the user minimizes into a dock | `nuMotion.genie(win, source, true)` pours the window out of the element that was clicked, `false` pours it back in and hides it; wherever the source stands (left, right, above, below, partly under the window) the funnel points at it. Measure before locking the page's scroll; focus returns to the source; a video keeps its last frame. Below 641px, in a mini app, under reduced motion, on a weak device or without a visible source it fades. Only from what the user clicked: never into a panel the user never opened | 620 in, 470 out |
 | Live product window | a landing hero: the real product plays a few steps by itself | heading lines with `.rise`; the window `.tempo-calm` with `nuMotion.demo(win, steps)`: it fades in after the heading, then each step runs 600 apart (a row grows in, a price rolls, a note fades in), then everything stays still; on a phone keep only the steps that let the key data land inside the first screen | window after about 1.2 s, fade 840; three steps |

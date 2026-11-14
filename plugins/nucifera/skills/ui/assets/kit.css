@@ -91,6 +91,7 @@
 .row { display: flex; align-items: center; gap: var(--s-3); min-height: 64px; padding: var(--s-3) 0; }
 .row__thumb { flex: none; width: 88px; height: 64px; border-radius: var(--r-sm); overflow: hidden; background: var(--bg-2); }
 .row__thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.row__mark { flex: none; display: grid; place-items: center; width: 40px; height: 40px; border-radius: var(--r-md); background: var(--bg-2); font-weight: var(--w-semibold); color: var(--fg-1); }   /* a row's badge: an initial, an icon */
 .row__main { flex: 1; min-width: 0; }
 .row__title { font: var(--t-label); font-size: 16px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .row__meta { margin-top: 2px; font: var(--t-small); color: var(--fg-2); }
@@ -127,6 +128,13 @@
 /* states */
 .skeleton { border-radius: var(--r-sm); background: var(--bg-2); animation: pulse 1.8s var(--ease) infinite; }
 @keyframes pulse { 0%, 100% { opacity: .4 } 50% { opacity: .7 } }
+/* a set of skeletons waits under one passing light; a lone .skeleton still breathes */
+.skeletons { position: relative; overflow: hidden; }
+.skeletons .skeleton { animation: none; opacity: .55; }
+.skeletons::after { content: ""; position: absolute; inset: 0; transform: translateX(-100%); pointer-events: none;
+  background: linear-gradient(100deg, transparent 30%, var(--accent-tint) 50%, transparent 70%); animation: nu-shimmer 1100ms linear infinite; }
+@keyframes nu-shimmer { to { transform: translateX(100%); } }
+@media (prefers-reduced-motion: reduce) { .skeletons::after { animation: none; } }
 .empty { padding: var(--s-12) var(--pad-screen); text-align: center; color: var(--fg-2); }
 .empty h2 { font: var(--t-headline); color: var(--fg-1); margin-bottom: var(--s-2); }
 .status { display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 10px; border-radius: var(--r-pill); font: var(--t-small); font-weight: 500; }
@@ -147,6 +155,10 @@
 /* press and highlight: the highlight appears at once and fades out; hover only where a real pointer exists */
 .tap, .menu__item { transition: background-color var(--dur-exit) var(--ease-color); -webkit-tap-highlight-color: transparent; }
 .tap:active, .menu__item:active { background: var(--bg-3); transition-duration: 0s; }
+/* a tappable row or card answers with its whole body, and a soft light opens where the finger landed (motion.js adds .tap__ink) */
+.tap { position: relative; overflow: hidden; isolation: isolate; transition: transform var(--dur-exit) var(--ease-out), background-color var(--dur-exit) var(--ease-color); }
+.tap:active { transform: scale(calc(1 - (1 - var(--press-scale)) * .66)); transition-duration: var(--dur-press), 0s; }
+.tap__ink { position: absolute; z-index: -1; width: 220px; height: 220px; margin: -110px 0 0 -110px; border-radius: 50%; pointer-events: none; background: radial-gradient(closest-side, var(--accent-tint), transparent); }
 @media (hover: hover) and (pointer: fine) {
   .tap:hover, .menu__item:hover { background: var(--bg-2); transition-duration: 0s; }
   .btn--secondary:hover { background: var(--bg-3); transition-duration: 0s; }
@@ -308,6 +320,13 @@
   background: linear-gradient(100deg, transparent 30%, var(--sheen) 50%, transparent 70%); }
 .btn--sheen.shine::after { animation: nu-sheen var(--dur-sheen) var(--ease-out) 1; }
 @keyframes nu-sheen { to { transform: translateX(120%); } }
+/* success: one pass of light along the edge of the block (nuMotion.success adds it); a changed row lights up once (nuMotion.flash) */
+@property --nu-a { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
+.edge-run { position: absolute; inset: 0; border-radius: inherit; padding: 1.5px; pointer-events: none; opacity: 0;
+  background: conic-gradient(from var(--nu-a), transparent 0 68%, var(--sheen) 84%, transparent 100%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0); }
+.flash-run { position: absolute; inset: 0 calc(var(--s-2) * -1); z-index: -1; border-radius: var(--r-md); pointer-events: none; opacity: 0; background: var(--ok-tint); }
+.flash-run--warn { background: var(--warn-tint); } .flash-run--err { background: var(--err-tint); }
 /* a calm scope: recipes inside it (a landing's live product window) take the moment tempo */
 .tempo-calm { --dur-enter: var(--dur-moment); }
 

@@ -15,19 +15,19 @@ Compose screens from these. When a screen needs something new, add a component t
 | Card | `.card`, `.card--edge`, `.lit`, `.grain` | raised panel | at most one per screen, for the signature; hairline outline; corner light or top edge; grain over a large dark gradient |
 | Hero | `.hero` > `.hero__media` + `.hero__body` | the one main object of a screen (best result, product, article) | photo full-bleed, kept clear; in light theme add `.night` |
 | Badge | `.badge` | one short label over media or next to a title | opaque, no dot |
-| Rows | `.rows` > `.row` | lists of results, settings, history | thumb, title (2 lines max), meta, aside value; hairline separators; a status only when it is not the usual one |
+| Rows | `.rows` > `.row` | lists of results, settings, history | thumb or `.row__mark` (an initial, an icon), title (2 lines max), meta, aside value; `.tap` on a row that opens something; hairline separators; a status only when it is not the usual one |
 | Stat | `.stat` | a number as the object (score, total, count) | big number + unit + label |
 | Key-value | `.kv` > `.kv__row`, `.kv__total` | specs, receipts, summaries, details | a plain list on the canvas: label left in `--fg-2`, value right; no box, no grid of cells; totals in `.price` |
 | Section head | `.section-head` | title of a list block with an action on the right | action is a ghost button with a 44px area |
 | Glass bar | `.glassbar` | sticky header or filter bar | counts toward the two-glass limit |
 | Time | `.t-time` | timestamps only | 13px; all other secondary text is 14px |
-| States | `.skeleton`, `.empty`, `.status--ok/warn/err` | loading, empty, status | skeleton mirrors the final layout; empty states explain and offer the way out |
+| States | `.skeletons` > `.skeleton`, `.empty`, `.status--ok/warn/err` | loading, empty, status | skeleton mirrors the final layout; empty states explain and offer the way out |
 | Tap surface | `.tap` | a tappable row or tile | highlight in at once, out in `--dur-exit`; hover only with a real pointer |
 | Menu | `.pop.menu` > `.menu__item` | sort, actions, pickers | grows from its trigger (`--origin`); `nuMotion.menu` |
 | Tooltip | `[data-tip]` > `.tip` | icon buttons with a mouse or keyboard | `nuMotion.tooltips()`; the first waits, neighbours open at once |
 | Dialog | `.dialog` + `.scrim` | confirmations | from the centre; `nuMotion.dialog` with `nudge()` for a blocked action |
 | Bottom sheet | `.sheet` > `.sheet__grab` | filters and pickers on phones | spring in, drag down to close; `nuMotion.sheet` |
-| Segmented, tabs | `.seg` > `.seg__pill` + `.seg__opt`; `.tabs` > `.tabs__tab` + `.tabs__ink` | choices and sibling views | set `--i` and `--n`; the indicator slides; swap the panel with `nuMotion.crossfade` |
+| Segmented, tabs | `.seg` > `.seg__pill` + `.seg__opt`; `.tabs` > `.tabs__tab` + `.tabs__ink` | choices and sibling views | set `--i` and `--n`; the indicator slides; change the panel with `nuMotion.slide(panel, update, dir)` |
 | Toasts | `.toasts` > `.toast` | confirmations | at the top; stack of three; `nuMotion.toast` |
 | Growing row | `.grow` > `.grow__in` | rows added or removed | `nuMotion.grow`, `nuMotion.collapse`; `nuMotion.stagger` on a list's first show |
 | Accordion | `.fold` > `.fold__head` (`.fold__chev`) + `.fold__body` > `.fold__in` > `.fold__content` | details, analysis sections | toggle `.open`; height by grid rows, no script |
