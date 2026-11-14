@@ -47,13 +47,14 @@ Do not build the page before the answer: a round of sketches costs far less than
 
 Read `references/page.md`. Add a "Sections" table to `.design/DESIGN.md` and build from it:
 
-| Section | Visitor's question | Composition | What is shown | Backdrop | Motion | Words | Link |
-|---|---|---|---|---|---|---|---|
+| Section | Visitor's question | Composition | What is shown | Backdrop | Motion | Phone | Words | Link |
+|---|---|---|---|---|---|---|---|---|
 
 - "What is shown" is never empty: every section shows a real thing (a product view, a close crop, a photo, an object, the scene).
 - No two neighbouring rows share a composition; a home page uses at least four different ones.
 - "Motion" names the section's one planned motion (`references/page.md`, section 1): a scene, a demo, words, count, each, chart, assemble; plain text blocks take reveal. No section with something to show stands still.
 - "Backdrop" says what stands behind the section: a view of the product's world, or none. The same view never comes twice: each return shows another place, scale or time of that world (`references/world.md`, section 3).
+- "Phone" says how the section is rebuilt on a narrow screen where a plain stack would lose what it shows (`references/page.md`, section 10): a row of 21 cells becomes a calendar of seven, a wide object is recomposed into columns; "stack" where nothing is lost.
 - The home page stays short; the full story lives on detail pages, and "Link" names the page a block leads to.
 
 Count the things shown before you build and note the count under the table. If the project has too little imagery for the plan, say so now and propose what to capture, draw or generate; do not fill the gap with text.
@@ -64,14 +65,14 @@ Count the things shown before you build and note the count under the table. If t
 - Start from `assets/starter.html` (`references/parts.md`): a working landing with every part alive, filled with an invented product. Keep the skeleton, the classes, the calls and the timing; expect to rewrite the hook, the scenes, the product views, the data, the words and the colours. Take the sections the plan names in the order the plan gives, not the starter's own set, and never its first-screen arrangement. Remove `data-example` from a block only when it shows the real product. `assets/backdrops.js` is an example to read for the kind of backdrop you need; the product's own backdrop is written for it.
 - Build the first screen in the three layers of `references/finish.md`, with the product on it as one real moment of use. Build the hook first, as its own layer: `nuScene.canvas` (or `nuScene.layers` for artwork) keeps the contract of `references/world.md` for you.
 - Then the sections, top to bottom, from the table, each with its composition's class. A product demo is live markup replayed by `nuScene.play` while it is in view.
-- On a phone the hook is inside the first screen, and a bottom bar repeats the main action once the hero button has scrolled away (`.cta-bar`, `nuMotion.ctaBar`).
+- On a phone the text leads and the hook stays inside the first screen as a band below it; every section takes the form its "Phone" cell names, and nothing scrolls sideways. A bottom bar repeats the main action once the hero button has scrolled away (`.cta-bar`, `nuMotion.ctaBar`).
 - One theme, dark, unless the user asks for the light one too.
 
 ## Step 5. Check
 
-1. From the project folder run `node <this skill's folder>/../ui/scripts/verify.mjs <page> --landing` on each page (add `--light none` for a dark-only site). It shoots the page still and walks it in real time at 1440 and at 390; what it fails and what it warns about is listed in `references/page.md`, section 10. Fix every FAIL; at most three rounds. A concept of still art sets `data-hook="still"` on `<html>`. Then look at every `walk-*.png` yourself: something to look at on every screenful, neighbouring sections of different compositions, the hook reading on the first screen at both widths. The check finds holes; it does not judge whether the page is good.
+1. From the project folder run `node <this skill's folder>/../ui/scripts/verify.mjs <page> --landing` on each page (add `--light none` for a dark-only site). It shoots the page still and walks it in real time at 1440 and at 390; what it fails and what it warns about is listed in `references/page.md`, section 11. Fix every FAIL; at most three rounds. A concept of still art sets `data-hook="still"` on `<html>`. Then look at every `walk-*.png` yourself: something to look at on every screenful, neighbouring sections of different compositions, the hook reading on the first screen at both widths, and at 390 every label still there and readable. The check finds holes; it does not judge whether the page is good.
 2. If a browser tool is at hand, open the page: the scene runs, stops off screen and in a hidden tab, and stands still under reduced motion; every demo plays. If not, say in the hand-over that this was not checked.
-3. Run the `design-critic` agent once (without the plugin installed: a subagent given `agents/design-critic.md`). Hand it eight shots at most: `walk-1440-01`, the three motion frames, the three desktop screens that differ most, `walk-390-01`; with them the brief, `.design/DESIGN.md`, the calibration files and `../ui/references/exemplars/hero/twin.md` (both twins). Ask it one extra question: "What would a visitor describe an hour after seeing only the first screen?" If the honest answer is "a dark page with a screenshot", or its verdict is "sterile", go back to the hook, not to polish. Its rule-backed findings get one more round of fixes and a last verify run, on top of the three.
+3. Run the `design-critic` agent once (without the plugin installed: a subagent given `agents/design-critic.md`). Hand it eight shots at most: `walk-1440-01`, the three motion frames, the two desktop screens that differ most, `walk-390-01` and the phone screen that was rebuilt most; with them the brief, `.design/DESIGN.md`, the calibration files and `../ui/references/exemplars/hero/twin.md` (both twins). Ask it one extra question: "What would a visitor describe an hour after seeing only the first screen?" If the honest answer is "a dark page with a screenshot", or its verdict is "sterile", go back to the hook, not to polish. Its rule-backed findings get one more round of fixes and a last verify run, on top of the three.
 4. Hand over: file paths, the shots, what was not checked. When the user gives a verdict, append their words to `.design/calibration.md`.
 
 ## Ten rules of this mode
@@ -93,5 +94,5 @@ Count the things shown before you build and note the count under the table. If t
 - `references/finish.md`: the three layers of a first screen; no boxes on it.
 - `references/parts.md`: ready code: scenes, moments, classes, the starter page.
 - `references/world.md`: what a scene must keep, demos, scroll stops.
-- `references/page.md`: the plan, compositions, motion per section, words, the check.
+- `references/page.md`: the plan, compositions, motion per section, words, the phone, the check.
 - `../ui/references/`: style, components, motion recipes, image direction, refusals.

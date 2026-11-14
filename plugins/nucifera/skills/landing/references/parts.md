@@ -17,6 +17,7 @@ Open it in a browser first: it shows what the parts do together. Then build from
 
 - **Keep the mechanics, replace the subject.** What stays: the page skeleton, the classes, the calls, the timing. What is rewritten: the hook, the scenes, the product views, the data, the colours and every word. That is most of the file, and it is expected.
 - **Not its first screen's arrangement.** A figure on the left, the copy on the right and columns under them belong to the starter's product; moved to another product, the same arrangement was rejected. Take the mechanics from it (a scene tied to a line of type, a backdrop), and arrange the first screen for the chosen concept.
+- At 390 it shows the phone forms of `page.md`, section 10: the figure and its caption on one row, the 21 evenings as a calendar, the plot in two columns. Look at them before writing the phone styles of a section.
 - The page needs `<body class="app">`: without it the kit does not set the type or the colours.
 - Every block that still shows the invented product carries `data-example`. Remove the attribute when the block shows the real product; delete the blocks the page plan does not use. `verify.mjs --landing` fails a page with an example left in it.
 - The sections stand in the order of a visitor's questions (`page.md`). Take the compositions the plan names; a home page needs at least four different ones, not all nine.

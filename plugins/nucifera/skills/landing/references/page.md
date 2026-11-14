@@ -6,11 +6,11 @@ Read after the user has chosen a concept (`hooks.md`). Basis: landings built wit
 
 Add a "Sections" table to `.design/DESIGN.md`, one row per section, and build from it:
 
-| Section | Visitor's question | Composition | What is shown | Motion | Words | Link |
-|---|---|---|---|---|---|---|
-| Hero | What is it, is it for me? | scene with headline | the hook | scene | 40 | none |
-| Routine | What does it take off my hands? | comparison | by hand against the product, as a chart | moment: the chart fills once | 50 | how it works |
-| Output | What do I get? | stage | the real result at full size | demo | 40 | none |
+| Section | Visitor's question | Composition | What is shown | Backdrop | Motion | Phone | Words | Link |
+|---|---|---|---|---|---|---|---|---|
+| Hero | What is it, is it for me? | scene with headline | the hook | the product's world | scene | text first, the scene a band below | 40 | none |
+| Routine | What does it take off my hands? | comparison | by hand against the product, as a chart | none | moment: the chart fills once | 21 cells as a calendar of seven | 50 | how it works |
+| Output | What do I get? | stage | the real result at full size | a plan of that world | demo | two columns, nothing sideways | 40 | none |
 
 The order follows the questions a visitor asks: what is it and is it for me; what routine does it remove; what do I get; why trust it; how does it work; what does it cost and how do I try it; what else do I need to know; the final call. Merge sections that answer the same question.
 
@@ -85,10 +85,21 @@ When the story does not fit a short home page, do not lengthen it: split it.
 - Questions: those a buyer actually asks, answers of one or two sentences, one open at a time (`<details name="faq">` inside `.faq`).
 - Plans named by situation ("one client to try", "several clients", "a team"), shown as one table: labels once on the left, one column per plan headed by its price and situation. The trial and "no automatic renewal" sit next to the price; the full terms behind a link.
 
-## 10. Check
+## 10. On a phone
+
+A phone page is not the desktop page squeezed into one column: a section is rebuilt wherever a plain stack would lose what it shows. These forms were chosen in a blind review of three pairs.
+
+- **The first screen: the text leads.** Headline, sentence, action; the hook stays inside the first screen as a band below them. A hook placed on top, pushing the headline down, lost the comparison.
+- **A big figure is never alone on a line.** There it reads as a stray number. It makes one phrase with its caption on one row: the figure large, the words beside it ("9 days until tomatoes can go out").
+- **A chart or a comparison keeps its labels.** A row of 21 cells becomes a calendar, three weeks of seven, dates and icons kept; it does not become 21 thin strips with the labels hidden. Hiding labels to make a thing fit is the sign to rebuild it.
+- **A wide object is recomposed into the column** (a plan, a board, a table): fewer columns, the same parts at a readable size. Never a strip that scrolls sideways: half of it is off the screen and nobody looks for the rest.
+- Nothing scrolls sideways; text is 13px or larger; whatever is tapped is at least 44px high.
+- The plan's "Phone" column names the form for every section where a stack would lose something; "stack" for the rest.
+
+## 11. Check
 
 `verify.mjs --landing` walks the page screen by screen in real time, at 1440 and at 390.
 
-- It fails: a nearly empty screen; two sparse screens in a row, or more than a third of the screens thin (detail on under a fifth of them); a first screen where nothing moves after its entrance; more than 1,500 words; a block still marked `data-example`; a script error.
-- It warns about: one sparse screen, a stretch with no words, media cut by an edge, stretched images, a small fixed element over text, more than 1,000 words, questions that can stay open together.
+- It fails: a nearly empty screen; two sparse screens in a row, or more than a third of the screens thin (detail on under a fifth of them); a first screen where nothing moves after its entrance; more than 1,500 words; a block still marked `data-example`; a script error; at 390, a page that scrolls sideways.
+- It warns about: one sparse screen, a stretch with no words, media cut by an edge, stretched images, a small fixed element over text, more than 1,000 words, questions that can stay open together; at 390, text that runs off the side or is cut short, text under 13px, a button too small for a finger.
 - Then the critic's landing pass (`agents/design-critic.md`).

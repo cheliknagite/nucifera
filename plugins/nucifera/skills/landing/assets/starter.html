@@ -56,9 +56,13 @@ html { background: var(--bg-0); } body { margin: 0; }
   .lp-copy .t-hero { font-size: clamp(34px, 3.5vw, 48px); } .lp-copy .t-lead { font-size: 18px; margin-top: 12px; } .lp-actions { margin-top: 18px; } .lp-wire { margin-top: 16px; }
 }
 @media (max-width: 760px) {
-  .lp-hero { grid-template-columns: minmax(0, 1fr); align-items: start; padding-top: 8px; }
-  .lp-figure { height: 118px; } .lp-num { left: -4px; top: 0; font-size: 132px; }
-  .lp-copy { padding: 0; } .lp-kicker { font-size: 17px; margin-bottom: 8px; } .lp-copy .t-lead { margin-top: 12px; }
+  /* on a phone the figure and its caption are one phrase on one row: a figure alone on a line says nothing
+     (references/page.md, section 10). The copy's children become rows of the same grid. */
+  .lp-hero { grid-template-columns: auto minmax(0, 1fr); column-gap: 14px; align-items: end; padding-top: 8px; }
+  .lp-figure { height: auto; } .lp-figure::after { display: none; } .lp-num { position: static; display: block; font-size: 96px; line-height: .86; }
+  .lp-copy { display: contents; } .lp-copy > * { grid-column: 1 / -1; }
+  .lp-copy > .lp-kicker { grid-column: 2; grid-row: 1; margin: 0 0 6px; font-size: 17px; line-height: 1.35; } .lp-kicker b { display: block; }
+  .lp-copy .t-hero { margin-top: 14px; } .lp-copy .t-lead { margin-top: 12px; }
   .lp-actions { margin-top: 20px; flex-wrap: wrap; } .lp-actions .btn { flex: 1 1 100%; }
   .lp-wire { flex-wrap: wrap; font-size: 15px; margin-top: 16px; padding-top: 12px; }
   .lp-season { min-height: 0; height: 150px; margin-top: 12px; }
@@ -82,7 +86,9 @@ html { background: var(--bg-0); } body { margin: 0; }
 .is-ours .lp-sum b { color: var(--leaf); }
 @media (max-width: 860px) {
   .lp-evenings > * { grid-template-columns: minmax(0, 1fr); gap: var(--s-4); padding: var(--s-5); }
-  .lp-days { gap: 3px; } .lp-days i { height: 34px; border-radius: 5px; } .lp-days i small, .lp-days i svg { display: none; } .lp-days i.is-off::before { margin: 0; }
+  /* 21 evenings in a row would be 21 unlabeled strips here: on a phone they become a calendar, three weeks of seven, dates and icons kept */
+  .lp-days { grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; } .lp-days i { height: 50px; border-radius: 9px; gap: 4px; }
+  .lp-days i svg { width: 14px; height: 14px; } .lp-days i small { font-size: 13px; } .lp-days i.is-off::before { margin: 5px; } .lp-days i.is-go { transform: translateY(-3px); }
 }
 
 /* ---- stage: the plot from above, living through one frost night ---- */

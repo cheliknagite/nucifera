@@ -40,6 +40,7 @@ Landing pass, for landing pages only (the landing skill: `SKILL.md`, `references
 - One grid per section; every chart headed by its takeaway; the questions open one at a time; one name per thing, one number format, one example story across the page; plans as one table with the labels once.
 - The product's own signature and real screens carried over from its DESIGN.md; on a desktop the product takes the larger half of the first screen.
 - Each section's background chosen with a reason (plain, local light, grain, a photo with a mask, lines that explain); images fit the story, keep their focal point on a phone, and text over a photo stays readable; no decoration repeated without a reason; a brand character small unless it is the chosen hook.
+- The phone shots (`page.md`, section 10): the text leads on the first screen with the hook as a band below; a big figure makes one phrase with its caption on one row; a chart or a comparison still has its labels (not a row of bare strips); a wide object is recomposed into the column; nothing scrolls sideways.
 Report landing findings like rule findings, citing the landing skill's file and section.
 
 Judge only clear gaps: on close calls model judges are near chance, and a person's blind choice decides.

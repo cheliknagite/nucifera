@@ -150,7 +150,11 @@ const PIX = `window.nuPix = async (b64, key) => {
 }; 0`;
 /* runs in the page at each stop: words on screen, things to look at, and the three layout faults */
 const DOMPROBE = `(() => {
-  const vw = innerWidth, vh = innerHeight, o = { words: 0, objects: 0, cut: [], stretched: [], floating: [] };
+  /* a phone zooms out to fit a page wider than itself, and innerWidth grows with it: the layout width is the phone's real one */
+  const root = document.documentElement, phone = root.clientWidth < 700, vw = phone ? root.clientWidth : innerWidth, vh = phone ? root.clientHeight : innerHeight;
+  const o = { words: 0, objects: 0, cut: [], stretched: [], floating: [], wide: 0, off: [], small: [], taps: [] };
+  const add = (list, s) => { if (list.length < 4 && !list.includes(s)) list.push(s); };
+  if (phone) { const sw = Math.max(document.documentElement.scrollWidth, document.body.scrollWidth); if (sw > vw + 2) o.wide = sw; }
   const vis = r => r.width > 0 && r.height > 0 && r.bottom > 4 && r.top < vh - 4 && r.right > 0 && r.left < vw;
   const sel = el => el.tagName.toLowerCase() + (el.id ? '#' + el.id : '') + (el.classList && el.classList.length ? '.' + [...el.classList].slice(0, 2).join('.') : '');
   const tw = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT); let node;
@@ -158,7 +162,16 @@ const DOMPROBE = `(() => {
     if (!p || /^(SCRIPT|STYLE|NOSCRIPT|TEMPLATE)$/.test(p.tagName)) continue;
     const cs = getComputedStyle(p); if (cs.visibility === 'hidden' || cs.display === 'none' || +cs.opacity === 0) continue;
     const rg = document.createRange(); rg.selectNodeContents(node); const r = rg.getBoundingClientRect();
-    if (vis(r)) o.words += (t.match(/[\\p{L}\\p{N}]+/gu) || []).length; }
+    if (!vis(r)) continue;
+    o.words += (t.match(/[\\p{L}\\p{N}]+/gu) || []).length;
+    if (!phone || !/[\\p{L}\\p{N}]{2}/u.test(t)) continue;
+    /* a phone's own faults: words that run off the side or are cut short, and type too small to read */
+    if (r.right > vw + 4 || r.left < -4) add(o.off, sel(p) + ' runs off the side');
+    else if (cs.textOverflow === 'ellipsis' && cs.overflowX !== 'visible' && p.scrollWidth > p.clientWidth + 1) add(o.off, sel(p) + ' is cut short');
+    if (parseFloat(cs.fontSize) < 12.5) add(o.small, sel(p) + ' (' + parseFloat(cs.fontSize) + 'px)'); }
+  if (phone) for (const el of document.querySelectorAll('button, a.btn, summary, [role="button"], select, input:not([type="hidden"])')) { const r = el.getBoundingClientRect(), cs = getComputedStyle(el);
+    if (!vis(r) || cs.visibility === 'hidden' || +cs.opacity === 0 || el.disabled) continue;
+    if (r.height < 40 || r.width < 40) add(o.taps, sel(el) + ' (' + Math.round(r.width) + ' × ' + Math.round(r.height) + 'px)'); }
   for (const el of document.querySelectorAll('img, video, canvas, svg')) { const r = el.getBoundingClientRect();
     if (!vis(r) || r.width < 64 || r.height < 48) continue;
     if (el.tagName.toLowerCase() === 'svg' && el.closest('button, a')) continue;
@@ -231,6 +244,11 @@ async function walkPage(pageUrl, walkWidths, landing, each) {
         dom.cut.forEach(c => warn(`cut by the screen edge at ${w}px: ${c}`));
         dom.stretched.forEach(c => warn(`stretched image: ${c}`));
         dom.floating.forEach(c => warn(`at ${w}px a fixed element covers text: ${c}`));
+        /* the phone's own faults (references/page.md, On a phone) */
+        if (dom.wide && !res.wide) { res.wide = dom.wide; (landing ? res.fail : res.warn).push(`the page scrolls sideways at ${w}px (it is ${dom.wide}px wide): something is wider than the phone; recompose it into the column`); }
+        dom.off.forEach(c => warn(`text does not fit at ${w}px: ${c}`));
+        dom.small.forEach(c => warn(`text too small for a phone at ${w}px: ${c}; 13px is the floor`));
+        dom.taps.forEach(c => warn(`too small for a finger at ${w}px: ${c}; a tap target is at least 44px`));
       }
       /* a calm screen between dense ones is rhythm (a statement, the final call); a stretch of them, or too many, is an empty page */
       const thin = res.screens.filter(s => s.busy < 24), row = thin.find(s => thin.some(o => o.n === s.n + 1 && o.y - s.y > h * .6));   /* the last stop overlaps the one before it: that pair is one place */
